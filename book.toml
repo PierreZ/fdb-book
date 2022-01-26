@@ -9,6 +9,7 @@ title = "the FoundationDB Book"
 git-repository-url = "https://github.com/PierreZ/fdb-book"
 site-url = "/fdb-book/"
 additional-js =["mermaid.min.js", "mermaid-init.js"]
+
 [preprocessor]
 [preprocessor.mermaid]
 command = "mdbook-mermaid"

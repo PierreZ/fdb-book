@@ -62,7 +62,7 @@ We said earlier that there is a lot of criteria to choose a database, but we can
 * What is the **data model**,
 * What is the **Storage Engine**.
 
-For example, PostgreSQL is exposing relational data through the SQL language and storing files on a single node. If you need to change one requirement, you will need another database.
+For example, PostgreSQL is exposing relational data through the SQL language and storing files on a single node. 
 
 Let's update the flowchart:
 
@@ -84,9 +84,11 @@ flowchart TD
     dm2 -- which are stored in --> se2
 ```
 
-So we will need to spawn as many datastores as we need. This might be possible for a single company, but for cloud-providers, it means that they will have to spawn a huge cardinality of datastores(and maintain them!). Can we **mutualize** parts of the infrastructure? 
+Document databases, column-oriented, row-oriented, JSON, key-value, etc. all make sense in the right context, and often different parts of an application call for different choices. That means we cannot mutualize the Query language and the data models. That leaves the storage engine.
 
-Now, here's the question: **what if we share the storage engine?**
+## Sharing the storage engine 🤔
+
+Let's mutualize the storage Engine!
 
 ```mermaid
 flowchart TD
@@ -105,9 +107,12 @@ flowchart TD
     dm2 -- which are stored in --> se
 ```
 
-This design has another side-effect: any components above the storage Engine **has become stateless**
+This design has some great advantages:
 
-Now let's talk about what we need for the shared storage engine.
+* the storage engine *only need to focus* on storage,
+* any components above the storage Engine **has become stateless**.
+
+That could work, but if we have put a lot of contraints on the storage engine, let's talk about what we require. 
 
 ## Requirements for such a storage engine
 

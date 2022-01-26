@@ -5,13 +5,9 @@
 # Meet FoundationDB
 
 - [Yet another database?](./meet_fdb/01_another_db.md)
-- [TODO: Enter FoundationDB]()
-  - [TODO: FoundationDB for operators]()
-  - [TODO: FoundationDB for developers]()
+- [Enter FoundationDB](./meet_fdb/02_enter_fdb.md)
 - [TODO: Everything is a key-value!]()
 - [TODO: Correct and robust, choose both]()
-- [TODO: Who uses FoundationDB?]()
-- [TODO: FoundationDB's Origin]()
 
 # Getting started with FoundationDB
 
