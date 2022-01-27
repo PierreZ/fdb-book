@@ -14,16 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v1
-        with:
-          mdbook-version: 'latest'
-
-      - name: Install mdbook-mermaid
-        env:
-          LINK: https://github.com/badboy/mdbook-mermaid/releases/download
-          FILENAME: mdbook-mermaid-v0.9.0-x86_64-unknown-linux-gnu.tar.gz
-        run: curl -L "$LINK/v0.9.0/$FILENAME" | tar xz -C $HOME/.cargo/bin
+      - run: which mdbook || cargo install mdbook --locked --version 0.4.15
+      - run: which mdbook-toc || cargo install mdbook-toc --locked --version 0.8.0
+      - run: which mdbook-mermaid || cargo install mdbook-mermaid --locked --version 0.9.0
+      - run: which mdbook-linkcheck || cargo install mdbook-linkcheck --locked --version 0.7.6
 
       - run: mdbook build
 

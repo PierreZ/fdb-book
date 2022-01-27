@@ -1,12 +1,12 @@
 # Summary
 
-[The FoundationDB Book](00_welcome.md)
+[The FoundationDB Book](welcome.md)
 
 # Meet FoundationDB
 
-- [Yet another database?](./meet_fdb/01_another_db.md)
-- [Enter FoundationDB](./meet_fdb/02_enter_fdb.md)
-- [TODO: Everything is a key-value!]()
+- [Yet another database?](./meet_fdb/another_db.md)
+- [Enter FoundationDB](./meet_fdb/enter_fdb.md)
+- [Everything is a key-value!](./meet_fdb/everything_is_kv.md)
 - [TODO: Correct and robust, choose both]()
 
 # Getting started with FoundationDB
