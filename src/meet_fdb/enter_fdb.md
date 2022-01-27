@@ -1,5 +1,7 @@
 # Enter FoundationDB
 
+<!-- toc -->
+
 Let's start by quoting the [official overview](https://apple.github.io/foundationdb/):
 
 > FoundationDB is a distributed database designed to handle large volumes of structured data across clusters of commodity servers. It organizes data as an ordered key-value store and employs ACID transactions for all operations. It is especially well-suited for read/write workloads but also has excellent performance for write-intensive workloads.
@@ -57,7 +59,9 @@ Each layer can expose high level data models. They can be developed as libraries
 
 ## A brief history of FoundationDB
 
-FoundationDB started first as a company in 2009. The FoundationDB Alpha program began in January 2012 and concluded on March 4, 2013 with their public Beta release.[7] Their 1.0 version was released for general availability on August 20, 2013. On March 24, 2015 it was reported that Apple has acquired the company.
+FoundationDB started first as a company in 2009. The FoundationDB Alpha program began in January 2012 and concluded on March 4, 2013 with their public Beta release.
+
+Their 1.0 version was released for general availability on August 20, 2013. On March 24, 2015 it was reported that Apple has acquired the company.
 
 On April 19, 2018, Apple open sourced the software, releasing it under the Apache 2.0 license.
 

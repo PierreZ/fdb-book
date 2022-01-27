@@ -1,5 +1,7 @@
 # Yet another database?
 
+<!-- toc -->
+
 > Another database? There is so many of them 😑
 
 You are right, we are living in the golden age of data, and as such, we have many options to store our data.

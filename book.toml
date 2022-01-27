@@ -13,3 +13,10 @@ additional-js =["mermaid.min.js", "mermaid-init.js"]
 [preprocessor]
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+
+[output.linkcheck]
+follow-web-links = true
