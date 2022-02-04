@@ -7,7 +7,7 @@
 - [Yet another database?](./meet_fdb/another_db.md)
 - [Enter FoundationDB](./meet_fdb/enter_fdb.md)
 - [Everything is a key-value!](./meet_fdb/everything_is_kv.md)
-- [TODO: Correct and robust, choose both]()
+- [Correct and robust, choose both](./meet_fdb/correctess.md)
 
 # Getting started with FoundationDB
 
