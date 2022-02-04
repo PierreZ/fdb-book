@@ -1,3 +1,5 @@
+![FDB_logo.png](FDB_logo.png)
+
 # The FoundationDB's Book 📖
 
 Welcome to FoundationDB's Book! If you are looking to start writing your own datastore with FoundationDB, or if you are curious about FDB, you have come to the right place.
@@ -6,7 +8,9 @@ Welcome to FoundationDB's Book! If you are looking to start writing your own dat
 
 ## What This Book Covers
 
-This book aims to be a comprehensive, up-to-date guide to use FoundationDB features and libraries, appropriate for beginners and old hands alike. It is also designed to be an entrypoint towards the FoundationDB's community. This is definitely not designed as a replacement for the [official documentation](https://apple.github.io/foundationdb/) or the [forum](https://forums.foundationdb.org/).
+This book aims to be a comprehensive, up-to-date guide to use FoundationDB features and libraries, appropriate for beginners and old hands alike.
+
+It is designed as **an entrypoint towards the FoundationDB's community**, with links pointing to the [official documentation](https://apple.github.io/foundationdb/) or the [forum](https://forums.foundationdb.org/).
 
 * The early chapters provide an introduction to FoundationDB, why it may interest you, and what is a layer.
 * The Record-Layer chapter is focusing on the Record-Layer, a Java library to write layers made by Apple.

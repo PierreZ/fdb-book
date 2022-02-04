@@ -86,7 +86,7 @@ flowchart TD
     dm2 -- which are stored in --> se2
 ```
 
-Document databases, column-oriented, row-oriented, JSON, key-value, etc. all make sense in the right context, and often different parts of an application call for different choices. That means we cannot mutualize the Query language and the data models. That leaves the storage engine.
+Document databases, column-oriented, row-oriented, JSON, key-value, etc. all make sense in the right context, and often different parts of an application call for different choices. That means we cannot mutualize the Query language and the data models. What's left is the **storage engine**.
 
 ## Sharing the storage engine 🤔
 
