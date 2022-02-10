@@ -11,8 +11,8 @@
 
 # Getting started with FoundationDB
 
-- [TODO: Installing FoundationDB]()
-- [TODO: Using `fdbcli`]()
+- [Installing FoundationDB](./getting_started/installing-fdb.md)
+- [Playing with `fdbcli`](./getting_started/fdbcli.md)
 
 # Common Programming concepts
 
