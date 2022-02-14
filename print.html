@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><div><strong aria-hidden="true">5.</strong> TODO: Installing FoundationDB</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> TODO: Using fdbcli</div></li><li class="chapter-item expanded affix "><li class="part-title">Common Programming concepts</li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Row-key</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> TODO: Tuple</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: Subspace</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: Directory</div></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: designs</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: tips and tricks</div></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> TODO: QuiCK</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Common Programming concepts</li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Row-key</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> TODO: Tuple</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: Subspace</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: Directory</div></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: designs</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: tips and tricks</div></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> TODO: QuiCK</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -588,6 +588,298 @@ testTitle = 'SwizzledCycleTest'
 <p>I think this is like really scary and really true, and the implications is that tests can be useful for turning up regressions, but almost completely useless for telling you about unknown unknowns.</p>
 <p>I think this is the real secret sauce behind what FoundationDB did, it's not so much the deterministic simulation although that was a very important part of it. It was that whenever we had a new piece of functionality, we didn't say &quot;how can I write some tests to cover this?&quot;. It was more like &quot;how can I write a system that will forever be generating new and interesting tests?&quot;</p>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installing-foundationdb"><a class="header" href="#installing-foundationdb">Installing FoundationDB</a></h1>
+<ul>
+<li><a href="getting_started/installing-fdb.html#client-or-server">Client or server?</a>
+<ul>
+<li><a href="getting_started/installing-fdb.html#clients">Clients</a></li>
+<li><a href="getting_started/installing-fdb.html#server">Server</a></li>
+</ul>
+</li>
+<li><a href="getting_started/installing-fdb.html#the-cluster-file">The cluster file</a></li>
+<li><a href="getting_started/installing-fdb.html#-wire-protocol">⚠️ Wire protocol</a></li>
+</ul>
+<p>The official documentation has plenty of docs on how to install FoundationDB:</p>
+<ul>
+<li><a href="https://apple.github.io/foundationdb/getting-started-linux.html">Getting Started on Linux</a></li>
+<li><a href="https://apple.github.io/foundationdb/getting-started-mac.html">Getting Started on macOS</a></li>
+</ul>
+<h2 id="client-or-server"><a class="header" href="#client-or-server">Client or server?</a></h2>
+<p>In the <a href="https://apple.github.io/foundationdb/downloads.html">Downloads page</a>, you will find reference to two archives:</p>
+<ul>
+<li>clients</li>
+<li>server</li>
+</ul>
+<h3 id="clients"><a class="header" href="#clients">Clients</a></h3>
+<p>The clients package is required by all bindings(i.e. programming libraries). These are needed files for all bindings:</p>
+<ul>
+<li><code>/usr/lib/libfdb_c.so</code></li>
+<li><code>/usr/include/foundationdb/fdb_c.h</code></li>
+<li><code>/usr/include/foundationdb/fdb_c_options.g.h</code></li>
+</ul>
+<p>You will also find different binaries:</p>
+<ul>
+<li>dr_agent</li>
+<li>fdbbackup</li>
+<li>fdbcli</li>
+<li>fdbdr</li>
+<li>fdbrestore</li>
+</ul>
+<h3 id="server"><a class="header" href="#server">Server</a></h3>
+<p>The server package is holding FDB's binaries:</p>
+<ul>
+<li>fdbmonitor</li>
+<li>fdbserver</li>
+</ul>
+<p>And a default configuration file for <code>fdbmonitor</code> located at <code>/etc/foundationdb/foundationdb.conf</code>. <code>fdbserver</code> is the main binary, and <code>fdbmonitor</code> is simply a wrapper on top of <code>fdbserver</code>.</p>
+<h2 id="the-cluster-file"><a class="header" href="#the-cluster-file">The cluster file</a></h2>
+<p>Both packages will install a default <a href="https://apple.github.io/foundationdb/administration.html#cluster-files">cluster file</a>:</p>
+<blockquote>
+<p>FoundationDB servers and clients use a cluster file (usually named <code>fdb.cluster</code>) to connect to a cluster. The contents of the cluster file are the same for all processes that connect to the cluster. An <code>fdb.cluster</code> file is created automatically when you install a FoundationDB server and updated automatically when you <a href="https://apple.github.io/foundationdb/configuration.html#configuration-choosing-coordination-servers">change coordination servers</a>. To connect to a cluster from a client machine, you will need access to a copy of the cluster file used by the servers in the cluster.</p>
+</blockquote>
+<h2 id="-wire-protocol"><a class="header" href="#-wire-protocol">⚠️ Wire protocol</a></h2>
+<p>FoundationDB's wire protocol is not compatible between minors releases, i.e. client version 6.2 will <strong>not</strong> be able to communicate with 6.3.X, 6.1.X, and all versions different from 6.3.X.</p>
+<p>On the bindings-side, the client will be <a href="https://forums.foundationdb.org/t/detecting-a-version-mismatch/3055/2">stalling</a>. On the server's logs,  you would see events like <code>ConnectionRejected</code> with a reason <code>IncompatibleProtocolVersion</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="playing-with-fdbcli"><a class="header" href="#playing-with-fdbcli">Playing with fdbcli</a></h1>
+<ul>
+<li><a href="getting_started/fdbcli.html#setting-up-foundationdb-with-docker">Setting up FoundationDB with Docker</a></li>
+<li><a href="getting_started/fdbcli.html#fdbcli"><code>fdbcli</code>?</a></li>
+<li><a href="getting_started/fdbcli.html#start-the-shell">Start the shell</a></li>
+<li><a href="getting_started/fdbcli.html#useful-commands">Useful commands</a>
+<ul>
+<li><a href="getting_started/fdbcli.html#status">Status</a></li>
+<li><a href="getting_started/fdbcli.html#create-a-new-database">Create a new database</a></li>
+<li><a href="getting_started/fdbcli.html#insert-keys">Insert keys</a></li>
+<li><a href="getting_started/fdbcli.html#scan-keys">scan keys</a></li>
+<li><a href="getting_started/fdbcli.html#help">Help</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="setting-up-foundationdb-with-docker"><a class="header" href="#setting-up-foundationdb-with-docker">Setting up FoundationDB with Docker</a></h2>
+<pre><code class="language-shell">docker run --name fdb -d -p 4500:4500 --rm foundationdb/foundationdb:6.3.23
+</code></pre>
+<h2 id="fdbcli"><a class="header" href="#fdbcli"><code>fdbcli</code>?</a></h2>
+<p><code>fdbcli</code> is a command-line interface that can be used to administrate your FDB cluster.</p>
+<h2 id="start-the-shell"><a class="header" href="#start-the-shell">Start the shell</a></h2>
+<pre><code class="language-shell">docker exec -ti fdb fdbcli
+
+docker exec -ti fdb fdbcli                                                 
+Using cluster file `/var/fdb/fdb.cluster'.
+
+The database is unavailable; type `status' for more information.
+
+Welcome to the fdbcli. For help, type `help'.
+</code></pre>
+<h2 id="useful-commands"><a class="header" href="#useful-commands">Useful commands</a></h2>
+<h3 id="status"><a class="header" href="#status">Status</a></h3>
+<p><code>status</code> is one of the most useful command. It will display a human-readable report:</p>
+<pre><code class="language-shell">fdb&gt; status
+
+Using cluster file `/var/fdb/fdb.cluster'.
+
+The coordinator(s) have no record of this database. Either the coordinator
+addresses are incorrect, the coordination state on those machines is missing, or
+no database has been created.
+
+  172.17.0.2:4500  (reachable)
+
+Unable to locate the data distributor worker.
+
+Unable to locate the ratekeeper worker.
+</code></pre>
+<h3 id="create-a-new-database"><a class="header" href="#create-a-new-database">Create a new database</a></h3>
+<p>As our container is brand-new, we need to create a database.</p>
+<pre><code class="language-shell">fdb&gt; configure new single memory
+Database created
+</code></pre>
+<p>A few elements to notes:</p>
+<ul>
+<li>running this will nuke your database,</li>
+<li><code>single</code> is the <a href="https://apple.github.io/foundationdb/configuration.html#choosing-a-redundancy-mode">redundancy mode</a>,</li>
+<li><code>memory</code> is the <a href="https://apple.github.io/foundationdb/configuration.html#configuring-the-storage-subsystem">storage subsystem</a>.</li>
+</ul>
+<p>Then we can run the <code>status</code> command:</p>
+<pre><code class="language-shell">fdb&gt; help status
+
+status [minimal|details|json]
+
+Get the status of a FoundationDB cluster.
+
+If the cluster is down, this command will print a diagnostic which may be useful
+in figuring out what is wrong. If the cluster is running, this command will
+print cluster statistics.
+
+Specifying `minimal' will provide a minimal description of the status of your
+database.
+
+Specifying `details' will provide load information for individual workers.
+
+Specifying `json' will provide status information in a machine readable JSON
+format.
+</code></pre>
+<pre><code class="language-shell">fdb&gt; status
+
+Using cluster file `/var/fdb/fdb.cluster'.
+
+Configuration:
+  Redundancy mode        - single
+  Storage engine         - memory-2
+  Coordinators           - 1
+  Usable Regions         - 1
+
+Cluster:
+  FoundationDB processes - 1
+  Zones                  - 1
+  Machines               - 1
+  Memory availability    - 8.0 GB per process on machine with least available
+  Fault Tolerance        - 0 machines
+  Server time            - 02/10/22 12:57:50
+
+Data:
+  Replication health     - Healthy
+  Moving data            - 0.000 GB
+  Sum of key-value sizes - 0 MB
+  Disk space used        - 105 MB
+
+Operating space:
+  Storage server         - 1.0 GB free on most full server
+  Log server             - 1555.9 GB free on most full server
+
+Workload:
+  Read rate              - 7 Hz
+  Write rate             - 0 Hz
+  Transactions started   - 3 Hz
+  Transactions committed - 0 Hz
+  Conflict rate          - 0 Hz
+
+Backup and DR:
+  Running backups        - 0
+  Running DRs            - 0
+
+Client time: 02/10/22 12:57:50
+</code></pre>
+<h3 id="insert-keys"><a class="header" href="#insert-keys">Insert keys</a></h3>
+<pre><code class="language-shell">fdb&gt; help writemode 
+
+writemode &lt;on|off&gt;
+
+Enables or disables sets and clears.
+
+Setting or clearing keys from the CLI is not recommended.
+</code></pre>
+<pre><code class="language-shell">fdb&gt; help set
+
+set &lt;KEY&gt; &lt;VALUE&gt;
+
+Set a value for a given key.
+
+If KEY is not already present in the database, it will be created.
+
+For information on escaping keys and values, type `help escaping'.
+</code></pre>
+<pre><code class="language-shell"># we first need to set writemode
+
+fdb&gt; writemode on
+fdb&gt; set hello world
+Committed (1442988082)
+</code></pre>
+<p><code>1442988082</code> is the commitVersion or versionStamp.</p>
+<h3 id="scan-keys"><a class="header" href="#scan-keys">scan keys</a></h3>
+<pre><code class="language-shell">fdb&gt; help getrange
+
+getrange &lt;BEGINKEY&gt; [ENDKEY] [LIMIT]
+
+Fetch key/value pairs in a range of keys.
+
+Displays up to LIMIT keys and values for keys between BEGINKEY (inclusive) and
+ENDKEY (exclusive). If ENDKEY is omitted, then the range will include all keys
+starting with BEGINKEY. LIMIT defaults to 25 if omitted.
+
+For information on escaping keys, type `help escaping'
+</code></pre>
+<pre><code class="language-shell">fdb&gt; getrange \x00 \xfe 10
+
+Range limited to 10 keys
+`hello' is `world'
+</code></pre>
+<h3 id="help"><a class="header" href="#help">Help</a></h3>
+<pre><code class="language-shell">fdb&gt; help
+
+List of commands:
+
+ advanceversion:
+      Force the cluster to recover at the specified version
+ begin:
+      begin a new transaction
+ clear:
+      clear a key from the database
+ clearrange:
+      clear a range of keys from the database
+ commit:
+      commit the current transaction
+ configure:
+      change the database configuration
+ consistencycheck:
+      permits or prevents consistency checking
+ coordinators:
+      change cluster coordinators or description
+ exclude:
+      exclude servers from the database
+ exit:
+      exit the CLI
+ fileconfigure:
+      change the database configuration from a file
+ force_recovery_with_data_loss:
+      Force the database to recover into DCID
+ get:
+      fetch the value for a given key
+ getrange:
+      fetch key/value pairs in a range of keys
+ getrangekeys:
+      fetch keys in a range of keys
+ getversion:
+      Fetch the current read version
+ help:
+      get help about a topic or command
+ include:
+      permit previously-excluded servers to rejoin the database
+ kill:
+      attempts to kill one or more processes in the cluster
+ lock:
+      lock the database with a randomly generated lockUID
+ maintenance:
+      mark a zone for maintenance
+ option:
+      enables or disables an option
+ profile:
+      namespace for all the profiling-related commands.
+ reset:
+      reset the current transaction
+ rollback:
+      rolls back the current transaction
+ set:
+      set a value for a given key
+ setclass:
+      change the class of a process
+ sleep:
+      sleep for a period of time
+ status:
+      get the status of a FoundationDB cluster
+ suspend:
+      attempts to suspend one or more processes in the cluster
+ throttle:
+      view and control throttled tags
+ triggerddteaminfolog:
+      trigger the data distributor teams logging
+ unlock:
+      unlock the database with the provided lockUID
+ writemode:
+      enables or disables sets and clears
+
+For information on a specific command, type `help &lt;command&gt;'.
+For information on escaping keys and values, type `help escaping'.
+For information on available options, type `help options'.
+</code></pre>
 
                     </main>
 
