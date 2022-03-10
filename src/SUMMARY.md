@@ -14,17 +14,12 @@
 - [Installing FoundationDB](./getting_started/installing-fdb.md)
 - [Playing with `fdbcli`](./getting_started/fdbcli.md)
 
-# Common Programming concepts
-
-- [TODO: Transaction]()
-- [TODO: Row-key]()
-- [TODO: Tuple]()
-- [TODO: Subspace]()
-- [TODO: Directory]()
 
 # Developing a layer
-- [TODO: designs]()
-- [TODO: tips and tricks]()
+
+- [Crafting row keys](./develop_layer/crafting-row-keys.md)
+- [TODO: Transaction]()
+- [Tips and tricks](./develop_layer/tips.md)
 
 # FoundationDB's internals
 
