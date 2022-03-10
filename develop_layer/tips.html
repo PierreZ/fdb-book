@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Installing FoundationDB - the FoundationDB Book</title>
+        <title>Tips and tricks - the FoundationDB Book</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="../meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="../meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="../meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="../meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="../getting_started/installing-fdb.html" class="active"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="../getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="../develop_layer/crafting-row-keys.html"><strong aria-hidden="true">7.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><a href="../develop_layer/tips.html"><strong aria-hidden="true">9.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: QuiCK</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="../meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="../meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="../meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="../meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="../getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="../getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="../develop_layer/crafting-row-keys.html"><strong aria-hidden="true">7.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><a href="../develop_layer/tips.html" class="active"><strong aria-hidden="true">9.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: QuiCK</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -137,68 +137,54 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="installing-foundationdb"><a class="header" href="#installing-foundationdb">Installing FoundationDB</a></h1>
+                        <h1 id="tips-and-tricks"><a class="header" href="#tips-and-tricks">Tips and tricks</a></h1>
 <ul>
-<li><a href="#client-or-server">Client or server?</a>
+<li><a href="#about-the-run-method">About the <code>run</code> method</a></li>
+<li><a href="#transaction-priority">Transaction priority</a></li>
+<li><a href="#use-transaction-tagging">Use transaction Tagging</a></li>
+<li><a href="#the-metadataversion">The <code>metadataVersion</code></a></li>
+<li><a href="#the-timekeeper">The TimeKeeper</a></li>
+<li><a href="#special-keys">Special keys</a></li>
+</ul>
+<p>Here's a few tips and tricks that should help you develop a production-ready layer.</p>
+<h2 id="about-the-run-method"><a class="header" href="#about-the-run-method">About the <code>run</code> method</a></h2>
+<p>Most bindings are offering a <code>run</code> method, that is taking a closure, like this in <a href="https://apple.github.io/foundationdb/javadoc/com/apple/foundationdb/Database.html#run(java.util.function.Function)">Java</a>.</p>
+<p>You should use the <code>run</code> method on your bindings, <strong>BUT</strong> you must add some transactionOptions to avoid blocking forever:</p>
 <ul>
-<li><a href="#clients">Clients</a></li>
-<li><a href="#server">Server</a></li>
+<li><strong>Timeout</strong> Set a timeout in milliseconds which, when elapsed, will cause the transaction automatically to be cancelled.</li>
+<li><strong>RetryLimit</strong> Set a maximum number of retries</li>
 </ul>
-</li>
-<li><a href="#the-cluster-file">The cluster file</a></li>
-<li><a href="#-wire-protocol">⚠️ Wire protocol</a></li>
-</ul>
-<p>The official documentation has plenty of docs on how to install FoundationDB:</p>
+<p>it is safe and legal to set these options at the first line of your <code>run</code> closure.</p>
+<h2 id="transaction-priority"><a class="header" href="#transaction-priority">Transaction priority</a></h2>
+<p>There is 3 transaction priority in FDB:</p>
 <ul>
-<li><a href="https://apple.github.io/foundationdb/getting-started-linux.html">Getting Started on Linux</a></li>
-<li><a href="https://apple.github.io/foundationdb/getting-started-mac.html">Getting Started on macOS</a></li>
+<li><strong>Default</strong>,</li>
+<li><strong>Batch</strong> Specifies that this transaction should be treated as low priority and that default priority transactions will be processed first. Useful for doing batch work simultaneously with latency-sensitive work</li>
+<li><strong>SystemImmediate</strong> Specifies that this transaction should be treated as highest priority and that lower priority transactions should block behind this one. Use is discouraged outside of low-level tools.</li>
 </ul>
-<h2 id="client-or-server"><a class="header" href="#client-or-server">Client or server?</a></h2>
-<p>In the <a href="https://apple.github.io/foundationdb/downloads.html">Downloads page</a>, you will find reference to two archives:</p>
-<ul>
-<li>clients</li>
-<li>server</li>
-</ul>
-<h3 id="clients"><a class="header" href="#clients">Clients</a></h3>
-<p>The clients package is required by all bindings(i.e. programming libraries). These are needed files for all bindings:</p>
-<ul>
-<li><code>/usr/lib/libfdb_c.so</code></li>
-<li><code>/usr/include/foundationdb/fdb_c.h</code></li>
-<li><code>/usr/include/foundationdb/fdb_c_options.g.h</code></li>
-</ul>
-<p>You will also find different binaries:</p>
-<ul>
-<li>dr_agent</li>
-<li>fdbbackup</li>
-<li>fdbcli</li>
-<li>fdbdr</li>
-<li>fdbrestore</li>
-</ul>
-<h3 id="server"><a class="header" href="#server">Server</a></h3>
-<p>The server package is holding FDB's binaries:</p>
-<ul>
-<li>fdbmonitor</li>
-<li>fdbserver</li>
-</ul>
-<p>And a default configuration file for <code>fdbmonitor</code> located at <code>/etc/foundationdb/foundationdb.conf</code>. <code>fdbserver</code> is the main binary, and <code>fdbmonitor</code> is simply a wrapper on top of <code>fdbserver</code>.</p>
-<h2 id="the-cluster-file"><a class="header" href="#the-cluster-file">The cluster file</a></h2>
-<p>Both packages will install a default <a href="https://apple.github.io/foundationdb/administration.html#cluster-files">cluster file</a>:</p>
+<h2 id="use-transaction-tagging"><a class="header" href="#use-transaction-tagging">Use transaction Tagging</a></h2>
 <blockquote>
-<p>FoundationDB servers and clients use a cluster file (usually named <code>fdb.cluster</code>) to connect to a cluster. The contents of the cluster file are the same for all processes that connect to the cluster. An <code>fdb.cluster</code> file is created automatically when you install a FoundationDB server and updated automatically when you <a href="https://apple.github.io/foundationdb/configuration.html#configuration-choosing-coordination-servers">change coordination servers</a>. To connect to a cluster from a client machine, you will need access to a copy of the cluster file used by the servers in the cluster.</p>
+<p>FoundationDB provides the ability to add arbitrary byte-string tags to transactions. The cluster can be configured to limit the rate of transactions with certain tags, either automatically in response to tags that are very busy, or manually using the throttle command in fdbcli.</p>
 </blockquote>
-<h2 id="-wire-protocol"><a class="header" href="#-wire-protocol">⚠️ Wire protocol</a></h2>
-<p>FoundationDB's wire protocol is not compatible between minors releases, i.e. client version 6.2 will <strong>not</strong> be able to communicate with 6.3.X, 6.1.X, and all versions different from 6.3.X.</p>
-<p>On the bindings-side, the client will be <a href="https://forums.foundationdb.org/t/detecting-a-version-mismatch/3055/2">stalling</a>. On the server's logs,  you would see events like <code>ConnectionRejected</code> with a reason <code>IncompatibleProtocolVersion</code>.</p>
+<p>More info can be found <a href="https://apple.github.io/foundationdb/transaction-tagging.html">here</a>.</p>
+<h2 id="the-metadataversion"><a class="header" href="#the-metadataversion">The <code>metadataVersion</code></a></h2>
+<p>The metadata version key <code>\xFF/metadataVersion</code> is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.</p>
+<p>It is useful to implement some caching-strategy on a layer. More info on how to use the metadataVersion key can be found <a href="https://forums.foundationdb.org/t/sharing-the-metadataversionkey-for-multiple-tenants/1659">here</a>.</p>
+<p>⚠️ In a transaction, if you update the \xff/metadataVersion key, and then attempt to read it again, I get a “Read or wrote an unreadable key” error (1036) when trying to read again. Context can be found <a href="https://forums.foundationdb.org/t/cannot-commit-transaction-that-reads-the-metadataversion-key-after-changing-it/1833">here</a></p>
+<h2 id="the-timekeeper"><a class="header" href="#the-timekeeper">The TimeKeeper</a></h2>
+<p><code>Cluster Controller</code> actor is keeping a map of read version to system clock time, updated every second. Can be accessible by scanning the <code>\xFF\x02/timeKeeper/map/</code>. More info <a href="https://forums.foundationdb.org/t/approximating-a-global-clock-for-a-watchdog-timer-using-versionstamps-readversions-or-the-timekeeper/477">here</a></p>
+<h2 id="special-keys"><a class="header" href="#special-keys">Special keys</a></h2>
+<blockquote>
+<p>Keys starting with the bytes \xff\xff are called “special” keys, and they are materialized when read. \xff\xff/status/json is an example of a special key.</p>
+</blockquote>
+<p>More info can be found <a href="https://apple.github.io/foundationdb/special-keys.html">here</a></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../meet_fdb/correctess.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
-                            </a>
-                            <a rel="next" href="../getting_started/fdbcli.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
                     </nav>
@@ -206,11 +192,8 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../meet_fdb/correctess.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
-                    </a>
-                    <a rel="next" href="../getting_started/fdbcli.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 

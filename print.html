@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Common Programming concepts</li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Row-key</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> TODO: Tuple</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: Subspace</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: Directory</div></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: designs</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: tips and tricks</div></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> TODO: QuiCK</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="develop_layer/crafting-row-keys.html"><strong aria-hidden="true">7.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><a href="develop_layer/tips.html"><strong aria-hidden="true">9.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: QuiCK</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -880,6 +880,260 @@ For information on a specific command, type `help &lt;command&gt;'.
 For information on escaping keys and values, type `help escaping'.
 For information on available options, type `help options'.
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="crafting-row-keys"><a class="header" href="#crafting-row-keys">Crafting row keys</a></h1>
+<ul>
+<li><a href="develop_layer/crafting-row-keys.html#row-key">Row key?</a></li>
+<li><a href="develop_layer/crafting-row-keys.html#hand-crafting-row-keys">Hand-crafting row keys</a></li>
+<li><a href="develop_layer/crafting-row-keys.html#fdbs-abstractions-and-helpers">FDB's abstractions and helpers</a>
+<ul>
+<li><a href="develop_layer/crafting-row-keys.html#tuple">Tuple</a></li>
+<li><a href="develop_layer/crafting-row-keys.html#subspace">Subspace</a></li>
+<li><a href="develop_layer/crafting-row-keys.html#directory">Directory</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="row-key"><a class="header" href="#row-key">Row key?</a></h2>
+<p>When you are using a key/value store, the design of the <code>row key</code> is extremely important, as this will define how well:</p>
+<ul>
+<li>your scans will be optimized,</li>
+<li>your puts will be spread,</li>
+<li>you will avoid <code>hot-spotting</code> a shard/region.</li>
+</ul>
+<p>If you need more information on <code>row keys</code>, I recommend going through these links before moving on:</p>
+<ul>
+<li><a href="https://cloud.google.com/bigtable/docs/schema-design">&quot;Designing your schema&quot; BigTable documentation</a></li>
+<li><a href="https://hbase.apache.org/book.html#rowkey.design">&quot;Rowkey Design&quot; HBase documentation</a></li>
+</ul>
+<h2 id="hand-crafting-row-keys"><a class="header" href="#hand-crafting-row-keys">Hand-crafting row keys</a></h2>
+<p>Most of the time, you will need to craft the <code>row key</code> &quot;by hand&quot;, like this for <a href="https://github.com/senx/warp10-platform/blob/879734d7f63791b487f3e535cd79ac4c23e99377/warp10/src/main/java/io/warp10/continuum/store/Store.java#L1215-L1222">an HBase's app</a>:</p>
+<pre><code class="language-java">// Prefix + classId + labelsId + timestamp
+// 128 bits
+byte[] rowkey = new byte[Constants.HBASE_RAW_DATA_KEY_PREFIX.length + 8 + 8 + 8];
+
+System.arraycopy(Constants.HBASE_RAW_DATA_KEY_PREFIX, 0, rowkey, 0, Constants.HBASE_RAW_DATA_KEY_PREFIX.length);
+// Copy classId/labelsId
+System.arraycopy(Longs.toByteArray(msg.getClassId()), 0, rowkey, Constants.HBASE_RAW_DATA_KEY_PREFIX.length, 8);
+System.arraycopy(Longs.toByteArray(msg.getLabelsId()), 0, rowkey, Constants.HBASE_RAW_DATA_KEY_PREFIX.length + 8, 8);
+</code></pre>
+<p>Or maybe you will wrap things in a function <a href="https://github.com/pingcap/tidb/blob/ef57bdbbb04f60a8be744060a99207e08a37514a/tablecodec/tablecodec.go#L80-L86">like this in Go</a>:</p>
+<pre><code class="language-go">// EncodeRowKey encodes the table id and record handle into a kv.Key
+func EncodeRowKey(tableID int64, encodedHandle []byte) kv.Key {
+	buf := make([]byte, 0, prefixLen+len(encodedHandle))
+	buf = appendTableRecordPrefix(buf, tableID)
+	buf = append(buf, encodedHandle...)
+	return buf
+}
+</code></pre>
+<p>Each time, you need to wrap the complexity of converting your objects to a row-key, by creating a buffer and write stuff in it.</p>
+<p>In our Java example, there is an interesting comment:</p>
+<pre><code class="language-java">// Prefix + classId + labelsId + timestamp
+</code></pre>
+<p>If we are replacing some characters, we are not really far from:</p>
+<pre><code class="language-java">// (Prefix, classId, labelsId, timestamp)
+</code></pre>
+<p>Which looks like a <code>Tuple</code>(a collection of values of different types) and this is what FoundationDB is using as an abstraction to create keys 😍</p>
+<h2 id="fdbs-abstractions-and-helpers"><a class="header" href="#fdbs-abstractions-and-helpers">FDB's abstractions and helpers</a></h2>
+<h3 id="tuple"><a class="header" href="#tuple">Tuple</a></h3>
+<p>Instead of crafting bytes by hand, we are <code>packing</code> a Tuple:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// create a Tuple&lt;String, i64&gt; with (&quot;tenant-42&quot;, 1)
+let tuple = (String::from(&quot;tenant-42&quot;), 1);
+
+// and compute a row-key from the Tuple
+let row_key = foundationdb::tuple::pack::&lt;(String, i64)&gt;(&amp;tuple);
+<span class="boring">}
+</span></code></pre></pre>
+<p>The generated row-key will be readable from any bindings, as it's construction is standardized. Let's print it:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// and print-it in hexa
+println!(&quot;{:#04X?}&quot;, row_key);
+<span class="boring">}
+</span></code></pre></pre>
+<pre><code class="language-log">// can be verified with https://www.utf8-chartable.de/unicode-utf8-table.pl
+[
+    0x02,
+    0x74, // t
+    0x65, // e 
+    0x6E, // n
+    0x61, // a
+    0x6E, // n
+    0x74, // t
+    0x2D, // -
+    0x31, // 1
+    0x00, 
+    0x15,
+    0x2A, // 42
+]
+</code></pre>
+<p>As you can see, <code>pack</code> added some extra-characters. There are used to recognized the next type, a bit like when you are encoding/decoding some wire protocols. You can find the relevant documentation <a href="https://github.com/apple/foundationdb/blob/master/design/tuple.md">here</a>.</p>
+<p>Having this kind of standard means that we can easily decompose/<code>unpack</code> it:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// retrieve the user and the magic number In a Tuple (String, i64)
+let from_row_key = foundationdb::tuple::unpack::&lt;(String, i64)&gt;(&amp;row_key)?;
+
+println!(&quot;user='{}', magic_number={}&quot;, from_row_key.0, from_row_key.1);
+// user='tenant-42', magic_number=42
+<span class="boring">}
+</span></code></pre></pre>
+<p>Now that we saw <code>Tuples</code>, let's dig in the next abstraction: <code>subspaces</code></p>
+<h3 id="subspace"><a class="header" href="#subspace">Subspace</a></h3>
+<p>When you are working with key-values store, we are often playing with what we call <code>keyspaces</code>, by dedicating a portion of the key to an usage, like this for example:</p>
+<pre><code class="language-text">/users/tenant-1/...
+/users/tenant-2/...
+/users/tenant-3/...
+</code></pre>
+<p>Here, <code>/users/tenant-1/</code> can be view like a prefix where we will put all the relevant keys. Instead of passing a simple prefix, FoundationDB is offering a dedicated structure called a <code>Subspace</code>:</p>
+<blockquote>
+<p>A Subspace represents a well-defined region of keyspace in a FoundationDB database</p>
+</blockquote>
+<blockquote>
+<p>It provides a convenient way to use FoundationDB tuples to define namespaces for different categories of data. The namespace is specified by a prefix tuple which is prepended to all tuples packed by the subspace. When unpacking a key with the subspace, the prefix tuple will be removed from the result.</p>
+</blockquote>
+<p>As you can see, the <code>Subspace</code> is heavily relying on FoundationDB's tuples, as we can <code>pack</code> and <code>unpack</code> it.</p>
+<blockquote>
+<p>As a best practice, API clients should use at least one subspace for application data.</p>
+</blockquote>
+<p>Well, as we have now the tools to handle keyspaces easily, it is now futile to craft keys by hand 🙃 Let's create a subspace!</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span>
+<span class="boring">fn main() {
+</span>// create a subspace from the Tuple (&quot;tenant-1&quot;, 42)
+let subspace = Subspace::from((String::from(&quot;tenant-1&quot;), 42));
+
+// let's print the range
+println!(&quot;start: {:#04X?}\n end: {:#04X?}&quot;, subspace.range().0, subspace.range().1);
+<span class="boring">}
+</span></code></pre></pre>
+<p>We can see observe this:</p>
+<pre><code class="language-log">// can be verified with https://www.utf8-chartable.de/unicode-utf8-table.pl
+start: [
+    0x02,
+    0x74, // t
+    0x65, // e 
+    0x6E, // n
+    0x61, // a
+    0x6E, // n
+    0x74, // t
+    0x2D, // -
+    0x31, // 1
+    0x00, 
+    0x15,
+    0x2A, // 42
+    0x00,
+    0x00, // smallest possible byte
+]
+end: [
+    0x02,
+    0x74, // t
+    0x65, // e 
+    0x6E, // n
+    0x61, // a
+    0x6E, // n
+    0x74, // t
+    0x2D, // -
+    0x31, // 1
+    0x00, 
+    0x15,
+    0x2A, // 42
+    0x00,
+    0xFF, // biggest possible byte
+]
+</code></pre>
+<p>Which make sens, if we take <code>(&quot;tenant-1&quot;, 42)</code> as a prefix, then the range for this subspace will be between <code>(&quot;tenant-1&quot;, 42, 0x00)</code> and <code>(&quot;tenant-1&quot;, 42, 0xFF)</code></p>
+<h3 id="directory"><a class="header" href="#directory">Directory</a></h3>
+<p>Now that we know our way around <code>Tuples</code> and <code>Subspaces</code>, we can now talk about what I'm working on, which is the <code>Directory</code>. Let's have a look at the relevant <a href="https://apple.github.io/foundationdb/developer-guide.html#directories">documentation</a>:</p>
+<blockquote>
+<p>FoundationDB provides directories (available in each language binding) as a tool for managing related subspaces.</p>
+</blockquote>
+<blockquote>
+<p>Directories are a recommended approach for administering applications. Each application should create or open at least one directory to manage its subspaces.</p>
+</blockquote>
+<p>Okay, let's see the API in Go:</p>
+<pre><code class="language-go">subspace, err := directory.CreateOrOpen(db, []string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;}, nil)
+if err != nil {
+	log.Fatal(err)
+}
+
+fmt.Printf(&quot;%+v\n&quot;, subspace.Bytes())
+// [21 18]
+</code></pre>
+<p>We can see that we have a shorter subspace! The <code>directory</code> allows you to generate some integer that will be bind to a path, like here <code>&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;</code>.</p>
+<p>There are two advantages to this:</p>
+<ul>
+<li>shorter keys,</li>
+<li>cheap metadata operations like <code>List</code> or <code>Move</code>:</li>
+</ul>
+<pre><code class="language-go">// list all tenant in &quot;application&quot;, &quot;my-app&quot;:
+tenants, err := directory.List(db, []string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;})
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Printf(&quot;%+v\n&quot;, tenants)
+// [tenant-42]
+
+// renaming 'tenant-42' in 'tenant-142'
+// This will NOT move the data, only the metadata is modified
+directorySubspace, err = directory.Move(db, 
+	[]string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;},  // old path
+	[]string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-142&quot;}) // new path
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
+// still [21 18]
+</code></pre>
+<p>The returned object is actually a <code>DirectorySubspace</code>, which implements both <code>Directory</code> and <code>Subspace</code>, which means that you can use it to recreate many directories and subspaces at will 👌</p>
+<blockquote>
+<p>If you are wondering about how this integer is generated, I recommend going through this awesome blogpost on <a href="https://activesphere.com/blog/2018/08/05/high-contention-allocator">how high contention allocator works in FoundationDB.</a></p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tips-and-tricks"><a class="header" href="#tips-and-tricks">Tips and tricks</a></h1>
+<ul>
+<li><a href="develop_layer/tips.html#about-the-run-method">About the <code>run</code> method</a></li>
+<li><a href="develop_layer/tips.html#transaction-priority">Transaction priority</a></li>
+<li><a href="develop_layer/tips.html#use-transaction-tagging">Use transaction Tagging</a></li>
+<li><a href="develop_layer/tips.html#the-metadataversion">The <code>metadataVersion</code></a></li>
+<li><a href="develop_layer/tips.html#the-timekeeper">The TimeKeeper</a></li>
+<li><a href="develop_layer/tips.html#special-keys">Special keys</a></li>
+</ul>
+<p>Here's a few tips and tricks that should help you develop a production-ready layer.</p>
+<h2 id="about-the-run-method"><a class="header" href="#about-the-run-method">About the <code>run</code> method</a></h2>
+<p>Most bindings are offering a <code>run</code> method, that is taking a closure, like this in <a href="https://apple.github.io/foundationdb/javadoc/com/apple/foundationdb/Database.html#run(java.util.function.Function)">Java</a>.</p>
+<p>You should use the <code>run</code> method on your bindings, <strong>BUT</strong> you must add some transactionOptions to avoid blocking forever:</p>
+<ul>
+<li><strong>Timeout</strong> Set a timeout in milliseconds which, when elapsed, will cause the transaction automatically to be cancelled.</li>
+<li><strong>RetryLimit</strong> Set a maximum number of retries</li>
+</ul>
+<p>it is safe and legal to set these options at the first line of your <code>run</code> closure.</p>
+<h2 id="transaction-priority"><a class="header" href="#transaction-priority">Transaction priority</a></h2>
+<p>There is 3 transaction priority in FDB:</p>
+<ul>
+<li><strong>Default</strong>,</li>
+<li><strong>Batch</strong> Specifies that this transaction should be treated as low priority and that default priority transactions will be processed first. Useful for doing batch work simultaneously with latency-sensitive work</li>
+<li><strong>SystemImmediate</strong> Specifies that this transaction should be treated as highest priority and that lower priority transactions should block behind this one. Use is discouraged outside of low-level tools.</li>
+</ul>
+<h2 id="use-transaction-tagging"><a class="header" href="#use-transaction-tagging">Use transaction Tagging</a></h2>
+<blockquote>
+<p>FoundationDB provides the ability to add arbitrary byte-string tags to transactions. The cluster can be configured to limit the rate of transactions with certain tags, either automatically in response to tags that are very busy, or manually using the throttle command in fdbcli.</p>
+</blockquote>
+<p>More info can be found <a href="https://apple.github.io/foundationdb/transaction-tagging.html">here</a>.</p>
+<h2 id="the-metadataversion"><a class="header" href="#the-metadataversion">The <code>metadataVersion</code></a></h2>
+<p>The metadata version key <code>\xFF/metadataVersion</code> is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.</p>
+<p>It is useful to implement some caching-strategy on a layer. More info on how to use the metadataVersion key can be found <a href="https://forums.foundationdb.org/t/sharing-the-metadataversionkey-for-multiple-tenants/1659">here</a>.</p>
+<p>⚠️ In a transaction, if you update the \xff/metadataVersion key, and then attempt to read it again, I get a “Read or wrote an unreadable key” error (1036) when trying to read again. Context can be found <a href="https://forums.foundationdb.org/t/cannot-commit-transaction-that-reads-the-metadataversion-key-after-changing-it/1833">here</a></p>
+<h2 id="the-timekeeper"><a class="header" href="#the-timekeeper">The TimeKeeper</a></h2>
+<p><code>Cluster Controller</code> actor is keeping a map of read version to system clock time, updated every second. Can be accessible by scanning the <code>\xFF\x02/timeKeeper/map/</code>. More info <a href="https://forums.foundationdb.org/t/approximating-a-global-clock-for-a-watchdog-timer-using-versionstamps-readversions-or-the-timekeeper/477">here</a></p>
+<h2 id="special-keys"><a class="header" href="#special-keys">Special keys</a></h2>
+<blockquote>
+<p>Keys starting with the bytes \xff\xff are called “special” keys, and they are materialized when read. \xff\xff/status/json is an example of a special key.</p>
+</blockquote>
+<p>More info can be found <a href="https://apple.github.io/foundationdb/special-keys.html">here</a></p>
 
                     </main>
 
