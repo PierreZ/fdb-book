@@ -29,6 +29,23 @@ There is 3 transaction priority in FDB:
 
 More info can be found [here](https://apple.github.io/foundationdb/transaction-tagging.html).
 
+## Traces logs
+
+By default, clients do not generate trace logs. In order to enable traces from the clients, you must enable on the database-level:
+
+* `TraceEnable` Enables trace output to a file in a directory of the clients choosing
+
+You can also enable these optional options:
+
+* `TraceFormat` Select the format of the log files. xml (the default) and json are supported.
+* `TraceLogGroup` Sets the ‘LogGroup’ attribute with the specified value for all events in the trace output files. The default log group is ‘default’.
+
+Then, on a Transaction-level, you can set these options:
+
+* `DebugTransactionIdentifier` String identifier to be used when tracing or profiling this transaction. The identifier must not exceed 100 characters.
+* `LogTransaction` Enables tracing for this transaction and logs results to the client trace logs. The DEBUG_TRANSACTION_IDENTIFIER option must be set before using this option, and client trace logging must be enabled to get log output.
+* `TransactionLoggingMaxFieldLength` Sets the maximum escaped length of key and value fields to be logged to the trace file via the LOG_TRANSACTION option, after which the field will be truncated. A negative value disables truncation.
+
 ## The `metadataVersion`
 
 The metadata version key `\xFF/metadataVersion` is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.
