@@ -142,6 +142,7 @@
 <li><a href="#about-the-run-method">About the <code>run</code> method</a></li>
 <li><a href="#transaction-priority">Transaction priority</a></li>
 <li><a href="#use-transaction-tagging">Use transaction Tagging</a></li>
+<li><a href="#traces-logs">Traces logs</a></li>
 <li><a href="#the-metadataversion">The <code>metadataVersion</code></a></li>
 <li><a href="#the-timekeeper">The TimeKeeper</a></li>
 <li><a href="#special-keys">Special keys</a></li>
@@ -167,6 +168,22 @@
 <p>FoundationDB provides the ability to add arbitrary byte-string tags to transactions. The cluster can be configured to limit the rate of transactions with certain tags, either automatically in response to tags that are very busy, or manually using the throttle command in fdbcli.</p>
 </blockquote>
 <p>More info can be found <a href="https://apple.github.io/foundationdb/transaction-tagging.html">here</a>.</p>
+<h2 id="traces-logs"><a class="header" href="#traces-logs">Traces logs</a></h2>
+<p>By default, clients do not generate trace logs. In order to enable traces from the clients, you must enable on the database-level:</p>
+<ul>
+<li><code>TraceEnable</code> Enables trace output to a file in a directory of the clients choosing</li>
+</ul>
+<p>You can also enable these optional options:</p>
+<ul>
+<li><code>TraceFormat</code> Select the format of the log files. xml (the default) and json are supported.</li>
+<li><code>TraceLogGroup</code> Sets the ‘LogGroup’ attribute with the specified value for all events in the trace output files. The default log group is ‘default’.</li>
+</ul>
+<p>Then, on a Transaction-level, you can set these options:</p>
+<ul>
+<li><code>DebugTransactionIdentifier</code> String identifier to be used when tracing or profiling this transaction. The identifier must not exceed 100 characters.</li>
+<li><code>LogTransaction</code> Enables tracing for this transaction and logs results to the client trace logs. The DEBUG_TRANSACTION_IDENTIFIER option must be set before using this option, and client trace logging must be enabled to get log output.</li>
+<li><code>TransactionLoggingMaxFieldLength</code> Sets the maximum escaped length of key and value fields to be logged to the trace file via the LOG_TRANSACTION option, after which the field will be truncated. A negative value disables truncation.</li>
+</ul>
 <h2 id="the-metadataversion"><a class="header" href="#the-metadataversion">The <code>metadataVersion</code></a></h2>
 <p>The metadata version key <code>\xFF/metadataVersion</code> is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.</p>
 <p>It is useful to implement some caching-strategy on a layer. More info on how to use the metadataVersion key can be found <a href="https://forums.foundationdb.org/t/sharing-the-metadataversionkey-for-multiple-tenants/1659">here</a>.</p>
