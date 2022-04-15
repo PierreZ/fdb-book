@@ -145,6 +145,12 @@
 <li><a href="#cosmosdb">CosmosDB</a></li>
 <li><a href="#cockroachdb">CockroachDB</a></li>
 <li><a href="#dgraph">Dgraph</a></li>
+<li><a href="#examples-from-layers">Examples from layers</a>
+<ul>
+<li><a href="#record-layer">Record-Layer</a></li>
+<li><a href="#document-layer">Document-layer</a></li>
+</ul>
+</li>
 </ul>
 <blockquote>
 <p>Ok, so I could store a table-like data in a key-value?</p>
@@ -219,6 +225,11 @@
 <li>Dgraph - the methods and algorithms used to parse DQL (and now GraphQL) and act accordingly</li>
 </ul>
 </blockquote>
+<h2 id="examples-from-layers"><a class="header" href="#examples-from-layers">Examples from layers</a></h2>
+<h3 id="record-layer"><a class="header" href="#record-layer">Record-Layer</a></h3>
+<p>The <a href="https://foundationdb.github.io/fdb-record-layer/">Record-layer</a> is using Protobuf to store data. <a href="https://github.com/FoundationDB/fdb-record-layer/blob/1715c4dc2dd5565f292003a1f45d87fe14b32ca7/fdb-record-layer-core/src/main/java/com/apple/foundationdb/record/provider/foundationdb/SplitHelper.java#L117">A single Protobuf message is written across multiple rows</a>. It can be encrypted and compressed.</p>
+<h3 id="document-layer"><a class="header" href="#document-layer">Document-layer</a></h3>
+<p>The <a href="https://github.com/FoundationDB/fdb-document-layer">Document-layer</a> is writing a document <a href="https://github.com/FoundationDB/fdb-document-layer/blob/2250bfb6d3c5bd5007bca39ed92b872f2b0dc4b2/src/ExtUtil.actor.cpp#L77">across multiple keys</a></p>
 
                     </main>
 
