@@ -87,3 +87,13 @@ From the official [documentation](https://dgraph.io/docs/dgraph-overview/#dgraph
 > * Badger - Dgraph’s custom-built key-value store 
 > * Ristretto - Dgraph’s custom-built cache 
 > * Dgraph - the methods and algorithms used to parse DQL (and now GraphQL) and act accordingly
+
+## Examples from layers
+
+### Record-Layer
+
+The [Record-layer](https://foundationdb.github.io/fdb-record-layer/) is using Protobuf to store data. [A single Protobuf message is written across multiple rows](https://github.com/FoundationDB/fdb-record-layer/blob/1715c4dc2dd5565f292003a1f45d87fe14b32ca7/fdb-record-layer-core/src/main/java/com/apple/foundationdb/record/provider/foundationdb/SplitHelper.java#L117). It can be encrypted and compressed.
+
+### Document-layer
+
+The [Document-layer](https://github.com/FoundationDB/fdb-document-layer) is writing a document [across multiple keys](https://github.com/FoundationDB/fdb-document-layer/blob/2250bfb6d3c5bd5007bca39ed92b872f2b0dc4b2/src/ExtUtil.actor.cpp#L77)
