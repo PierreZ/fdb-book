@@ -63,3 +63,16 @@ It is useful to implement some caching-strategy on a layer. More info on how to 
 > Keys starting with the bytes \xff\xff are called “special” keys, and they are materialized when read. \xff\xff/status/json is an example of a special key.
 
 More info can be found [here](https://apple.github.io/foundationdb/special-keys.html)
+
+## Caveats when using directory
+
+* [Mutating a directory multiple times simultaneously in the same transaction is unsafe](https://github.com/apple/foundationdb/issues/895)
+* Opening a path with multiple items will generate many read on the metadata-subspace for every transaction. This can lead to hotspotting the [Directory Layer’s metadata subspace](https://forums.foundationdb.org/t/query-hotspotting-on-directory-layers-metadata-subspace/2487). Also, developing a directory that use the [metadataVersion's key](https://github.com/apple/foundationdb/pull/1213) is not that easy:
+  * [Exhibit A](https://forums.foundationdb.org/t/how-to-safely-add-a-metadata-caching-layer-on-top-of-existing-layers/1809/2?u=pierrez),
+  * [Exhibit B](https://github.com/apple/foundationdb/issues/1415).
+
+* Because on how the prefix is generated, multi-cluster deployments can allocate the same [prefix multiple times](https://forums.foundationdb.org/t/redwood-engine-and-directory-layer/3084/8):
+
+* Redwood Engine is a new storage engine released in FDB-7.0. It has some nice features, including native key-prefix compression. Prefix compression's performance is likely to be [similar to using the Directory](https://youtu.be/5iqKu1pVDvE?t=158). When using the Redwood storage engine the remaining benefit of the Directory becomes the ability to move/rename directories and having smaller keys in network messages (though some of these may eventually use prefix compression).
+
+> I’ll also note that due to caching, the Record Layer can’t really make use of the directory layer’s renaming features (at least not without rethinking cache invalidation). I suspect that if we’d had Redwood and prefix compression when the Record Layer was being originally developed, we’d seriously have considered just relying on prefix compression instead of all of that because that would have significantly simplified cross-cluster data movement (and, if we’re honest, single cluster writes).
