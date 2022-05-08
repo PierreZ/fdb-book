@@ -1113,6 +1113,7 @@ fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
 <li><a href="develop_layer/tips.html#the-metadataversion">The <code>metadataVersion</code></a></li>
 <li><a href="develop_layer/tips.html#the-timekeeper">The TimeKeeper</a></li>
 <li><a href="develop_layer/tips.html#special-keys">Special keys</a></li>
+<li><a href="develop_layer/tips.html#caveats-when-using-directory">Caveats when using directory</a></li>
 </ul>
 <p>Here's a few tips and tricks that should help you develop a production-ready layer.</p>
 <h2 id="about-the-run-method"><a class="header" href="#about-the-run-method">About the <code>run</code> method</a></h2>
@@ -1162,6 +1163,28 @@ fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
 <p>Keys starting with the bytes \xff\xff are called “special” keys, and they are materialized when read. \xff\xff/status/json is an example of a special key.</p>
 </blockquote>
 <p>More info can be found <a href="https://apple.github.io/foundationdb/special-keys.html">here</a></p>
+<h2 id="caveats-when-using-directory"><a class="header" href="#caveats-when-using-directory">Caveats when using directory</a></h2>
+<ul>
+<li>
+<p><a href="https://github.com/apple/foundationdb/issues/895">Mutating a directory multiple times simultaneously in the same transaction is unsafe</a></p>
+</li>
+<li>
+<p>Opening a path with multiple items will generate many read on the metadata-subspace for every transaction. This can lead to hotspotting the <a href="https://forums.foundationdb.org/t/query-hotspotting-on-directory-layers-metadata-subspace/2487">Directory Layer’s metadata subspace</a>. Also, developing a directory that use the <a href="https://github.com/apple/foundationdb/pull/1213">metadataVersion's key</a> is not that easy:</p>
+<ul>
+<li><a href="https://forums.foundationdb.org/t/how-to-safely-add-a-metadata-caching-layer-on-top-of-existing-layers/1809/2?u=pierrez">Exhibit A</a>,</li>
+<li><a href="https://github.com/apple/foundationdb/issues/1415">Exhibit B</a>.</li>
+</ul>
+</li>
+<li>
+<p>Because on how the prefix is generated, multi-cluster deployments can allocate the same <a href="https://forums.foundationdb.org/t/redwood-engine-and-directory-layer/3084/8">prefix multiple times</a>:</p>
+</li>
+<li>
+<p>Redwood Engine is a new storage engine released in FDB-7.0. It has some nice features, including native key-prefix compression. Prefix compression's performance is likely to be <a href="https://youtu.be/5iqKu1pVDvE?t=158">similar to using the Directory</a>. When using the Redwood storage engine the remaining benefit of the Directory becomes the ability to move/rename directories and having smaller keys in network messages (though some of these may eventually use prefix compression).</p>
+</li>
+</ul>
+<blockquote>
+<p>I’ll also note that due to caching, the Record Layer can’t really make use of the directory layer’s renaming features (at least not without rethinking cache invalidation). I suspect that if we’d had Redwood and prefix compression when the Record Layer was being originally developed, we’d seriously have considered just relying on prefix compression instead of all of that because that would have significantly simplified cross-cluster data movement (and, if we’re honest, single cluster writes).</p>
+</blockquote>
 
                     </main>
 
