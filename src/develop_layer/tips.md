@@ -54,6 +54,8 @@ It is useful to implement some caching-strategy on a layer. More info on how to 
 
 ⚠️ In a transaction, if you update the \xff/metadataVersion key, and then attempt to read it again, I get a “Read or wrote an unreadable key” error (1036) when trying to read again. Context can be found [here](https://forums.foundationdb.org/t/cannot-commit-transaction-that-reads-the-metadataversion-key-after-changing-it/1833)
 
+More info about the `metadataVersion` can be found [here](https://youtu.be/2HiIgbxtx0c).
+
 ## The TimeKeeper
 
 `Cluster Controller` actor is keeping a map of read version to system clock time, updated every second. Can be accessible by scanning the `\xFF\x02/timeKeeper/map/`. More info [here](https://forums.foundationdb.org/t/approximating-a-global-clock-for-a-watchdog-timer-using-versionstamps-readversions-or-the-timekeeper/477)

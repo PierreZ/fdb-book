@@ -19,6 +19,7 @@
 
 - [Crafting row keys](./develop_layer/crafting-row-keys.md)
 - [TODO: Transaction]()
+- [Studiable layers](./develop_layer/studiable-layers.md)
 - [Tips and tricks](./develop_layer/tips.md)
 
 # FoundationDB's internals
