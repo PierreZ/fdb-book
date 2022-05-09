@@ -14,12 +14,11 @@
 - [Installing FoundationDB](./getting_started/installing-fdb.md)
 - [Playing with `fdbcli`](./getting_started/fdbcli.md)
 
-
 # Developing a layer
 
+- [ACID transactions](./develop_layer/transactions.md)
 - [Crafting row keys](./develop_layer/crafting-row-keys.md)
-- [TODO: Transaction]()
-- [Studiable layers](./develop_layer/studiable-layers.md)
+- [Existing open-source layers](./develop_layer/studiable-layers.md)
 - [Tips and tricks](./develop_layer/tips.md)
 
 # FoundationDB's internals
