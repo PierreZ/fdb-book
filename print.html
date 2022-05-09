@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="develop_layer/crafting-row-keys.html"><strong aria-hidden="true">7.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> TODO: Transaction</div></li><li class="chapter-item expanded "><a href="develop_layer/tips.html"><strong aria-hidden="true">9.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: QuiCK</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="develop_layer/transactions.html"><strong aria-hidden="true">7.</strong> ACID transactions</a></li><li class="chapter-item expanded "><a href="develop_layer/crafting-row-keys.html"><strong aria-hidden="true">8.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><a href="develop_layer/studiable-layers.html"><strong aria-hidden="true">9.</strong> Existing open-source layers</a></li><li class="chapter-item expanded "><a href="develop_layer/tips.html"><strong aria-hidden="true">10.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: QuiCK</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -891,7 +891,15 @@ For information on a specific command, type `help &lt;command&gt;'.
 For information on escaping keys and values, type `help escaping'.
 For information on available options, type `help options'.
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="crafting-row-keys"><a class="header" href="#crafting-row-keys">Crafting row keys</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="transactions"><a class="header" href="#transactions">Transactions</a></h1>
+<ul>
+<li><a href="develop_layer/transactions.html#how-transactions-works-in-foundationdb">How transactions works in FoundationDB?</a></li>
+<li><a href="develop_layer/transactions.html#avoiding-conflicts">Avoiding conflicts</a></li>
+</ul>
+<h2 id="how-transactions-works-in-foundationdb"><a class="header" href="#how-transactions-works-in-foundationdb">How transactions works in FoundationDB?</a></h2>
+<p>TODO</p>
+<h2 id="avoiding-conflicts"><a class="header" href="#avoiding-conflicts">Avoiding conflicts</a></h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2HiIgbxtx0c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><div style="break-before: page; page-break-before: always;"></div><h1 id="crafting-row-keys"><a class="header" href="#crafting-row-keys">Crafting row keys</a></h1>
 <ul>
 <li><a href="develop_layer/crafting-row-keys.html#row-key">Row key?</a></li>
 <li><a href="develop_layer/crafting-row-keys.html#hand-crafting-row-keys">Hand-crafting row keys</a></li>
@@ -1104,6 +1112,58 @@ fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
 <blockquote>
 <p>If you are wondering about how this integer is generated, I recommend going through this awesome blogpost on <a href="https://activesphere.com/blog/2018/08/05/high-contention-allocator">how high contention allocator works in FoundationDB.</a></p>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="existing-open-source-layers"><a class="header" href="#existing-open-source-layers">Existing open-source layers</a></h1>
+<p>The community has released a number of layers that can be studied, including:</p>
+<ul>
+<li><a href="develop_layer/studiable-layers.html#the-record-layer">the Record-layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#the-document-layer">the Document Layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#the-zookeeper-layer">the Zookeeper Layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#timeseries-layer">TimeSeries layer</a></li>
+</ul>
+<h2 id="the-record-layer"><a class="header" href="#the-record-layer">the Record-layer</a></h2>
+<ul>
+<li><a href="https://github.com/foundationdb/fdb-record-layer">Github repo</a></li>
+<li><a href="https://www.foundationdb.org/files/record-layer-paper.pdf">Academic paper</a></li>
+<li>Videos:
+<ul>
+<li><a href="https://youtu.be/HLE8chgw6LI">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB - Nicholas Schiefer, Apple</a></li>
+<li><a href="https://youtu.be/SvoUHHM9IKU">Using FoundationDB and the FDB Record Layer to Build CloudKit - Scott Gray, Apple</a></li>
+<li><a href="https://youtu.be/_mDIhQ1HLcs">Meta-Data Caching and Record Store Scalability - Alec Grieser, Apple</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="the-document-layer"><a class="header" href="#the-document-layer">the Document Layer</a></h2>
+<ul>
+<li><a href="https://github.com/FoundationDB/fdb-document-layer">Github repo</a></li>
+<li>Videos:
+<ul>
+<li><a href="https://youtu.be/KPqmB13zI9c">FoundationDB Document Layer - Bhaskar Muppana, Apple</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="the-zookeeper-layer"><a class="header" href="#the-zookeeper-layer">the Zookeeper Layer</a></h2>
+<ul>
+<li><a href="https://github.com/pH14/fdb-zk">Github repo</a></li>
+<li>Forum posts:
+<ul>
+<li><a href="https://forums.foundationdb.org/t/fdb-zk-rough-cut-of-zookeeper-api-layer/1278">Fdb-zk: rough cut of Zookeeper API layer</a></li>
+</ul>
+</li>
+<li>Videos:
+<ul>
+<li><a href="https://youtu.be/3FYpf1QMPgQ">A ZooKeeper Layer for FoundationDB - Paul Hemberger, HubSpot</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="timeseries-layer"><a class="header" href="#timeseries-layer">TimeSeries layer</a></h2>
+<ul>
+<li><a href="https://github.com/richardartoul/tsdb-layer">Github repo</a></li>
+<li>Videos:
+<ul>
+<li><a href="https://www.youtube.com/watch?v=W6yQ9Pwgb1A">Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go</a></li>
+</ul>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tips-and-tricks"><a class="header" href="#tips-and-tricks">Tips and tricks</a></h1>
 <ul>
 <li><a href="develop_layer/tips.html#about-the-run-method">About the <code>run</code> method</a></li>
@@ -1156,6 +1216,7 @@ fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
 <p>The metadata version key <code>\xFF/metadataVersion</code> is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.</p>
 <p>It is useful to implement some caching-strategy on a layer. More info on how to use the metadataVersion key can be found <a href="https://forums.foundationdb.org/t/sharing-the-metadataversionkey-for-multiple-tenants/1659">here</a>.</p>
 <p>⚠️ In a transaction, if you update the \xff/metadataVersion key, and then attempt to read it again, I get a “Read or wrote an unreadable key” error (1036) when trying to read again. Context can be found <a href="https://forums.foundationdb.org/t/cannot-commit-transaction-that-reads-the-metadataversion-key-after-changing-it/1833">here</a></p>
+<p>More info about the <code>metadataVersion</code> can be found <a href="https://youtu.be/2HiIgbxtx0c">here</a>.</p>
 <h2 id="the-timekeeper"><a class="header" href="#the-timekeeper">The TimeKeeper</a></h2>
 <p><code>Cluster Controller</code> actor is keeping a map of read version to system clock time, updated every second. Can be accessible by scanning the <code>\xFF\x02/timeKeeper/map/</code>. More info <a href="https://forums.foundationdb.org/t/approximating-a-global-clock-for-a-watchdog-timer-using-versionstamps-readversions-or-the-timekeeper/477">here</a></p>
 <h2 id="special-keys"><a class="header" href="#special-keys">Special keys</a></h2>

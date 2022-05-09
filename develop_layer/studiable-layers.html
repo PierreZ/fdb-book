@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Installing FoundationDB - the FoundationDB Book</title>
+        <title>Existing open-source layers - the FoundationDB Book</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="../meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="../meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="../meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="../meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="../getting_started/installing-fdb.html" class="active"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="../getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="../develop_layer/transactions.html"><strong aria-hidden="true">7.</strong> ACID transactions</a></li><li class="chapter-item expanded "><a href="../develop_layer/crafting-row-keys.html"><strong aria-hidden="true">8.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><a href="../develop_layer/studiable-layers.html"><strong aria-hidden="true">9.</strong> Existing open-source layers</a></li><li class="chapter-item expanded "><a href="../develop_layer/tips.html"><strong aria-hidden="true">10.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: QuiCK</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="../meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="../meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="../meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="../meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="../getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="../getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="../develop_layer/transactions.html"><strong aria-hidden="true">7.</strong> ACID transactions</a></li><li class="chapter-item expanded "><a href="../develop_layer/crafting-row-keys.html"><strong aria-hidden="true">8.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><a href="../develop_layer/studiable-layers.html" class="active"><strong aria-hidden="true">9.</strong> Existing open-source layers</a></li><li class="chapter-item expanded "><a href="../develop_layer/tips.html"><strong aria-hidden="true">10.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: QuiCK</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -137,67 +137,67 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="installing-foundationdb"><a class="header" href="#installing-foundationdb">Installing FoundationDB</a></h1>
+                        <h1 id="existing-open-source-layers"><a class="header" href="#existing-open-source-layers">Existing open-source layers</a></h1>
+<p>The community has released a number of layers that can be studied, including:</p>
 <ul>
-<li><a href="#client-or-server">Client or server?</a>
+<li><a href="#the-record-layer">the Record-layer</a></li>
+<li><a href="#the-document-layer">the Document Layer</a></li>
+<li><a href="#the-zookeeper-layer">the Zookeeper Layer</a></li>
+<li><a href="#timeseries-layer">TimeSeries layer</a></li>
+</ul>
+<h2 id="the-record-layer"><a class="header" href="#the-record-layer">the Record-layer</a></h2>
 <ul>
-<li><a href="#clients">Clients</a></li>
-<li><a href="#server">Server</a></li>
+<li><a href="https://github.com/foundationdb/fdb-record-layer">Github repo</a></li>
+<li><a href="https://www.foundationdb.org/files/record-layer-paper.pdf">Academic paper</a></li>
+<li>Videos:
+<ul>
+<li><a href="https://youtu.be/HLE8chgw6LI">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB - Nicholas Schiefer, Apple</a></li>
+<li><a href="https://youtu.be/SvoUHHM9IKU">Using FoundationDB and the FDB Record Layer to Build CloudKit - Scott Gray, Apple</a></li>
+<li><a href="https://youtu.be/_mDIhQ1HLcs">Meta-Data Caching and Record Store Scalability - Alec Grieser, Apple</a></li>
 </ul>
 </li>
-<li><a href="#the-cluster-file">The cluster file</a></li>
-<li><a href="#-wire-protocol">⚠️ Wire protocol</a></li>
 </ul>
-<p>The official documentation has plenty of docs on how to install FoundationDB:</p>
+<h2 id="the-document-layer"><a class="header" href="#the-document-layer">the Document Layer</a></h2>
 <ul>
-<li><a href="https://apple.github.io/foundationdb/getting-started-linux.html">Getting Started on Linux</a></li>
-<li><a href="https://apple.github.io/foundationdb/getting-started-mac.html">Getting Started on macOS</a></li>
-</ul>
-<h2 id="client-or-server"><a class="header" href="#client-or-server">Client or server?</a></h2>
-<p>In the <a href="https://apple.github.io/foundationdb/downloads.html">Downloads page</a>, you will find reference to two archives:</p>
+<li><a href="https://github.com/FoundationDB/fdb-document-layer">Github repo</a></li>
+<li>Videos:
 <ul>
-<li>clients</li>
-<li>server</li>
+<li><a href="https://youtu.be/KPqmB13zI9c">FoundationDB Document Layer - Bhaskar Muppana, Apple</a></li>
 </ul>
-<h3 id="clients"><a class="header" href="#clients">Clients</a></h3>
-<p>The clients package is required by all bindings(i.e. programming libraries). These are needed files for all bindings:</p>
+</li>
+</ul>
+<h2 id="the-zookeeper-layer"><a class="header" href="#the-zookeeper-layer">the Zookeeper Layer</a></h2>
 <ul>
-<li><code>/usr/lib/libfdb_c.so</code></li>
-<li><code>/usr/include/foundationdb/fdb_c.h</code></li>
-<li><code>/usr/include/foundationdb/fdb_c_options.g.h</code></li>
-</ul>
-<p>You will also find different binaries:</p>
+<li><a href="https://github.com/pH14/fdb-zk">Github repo</a></li>
+<li>Forum posts:
 <ul>
-<li>dr_agent</li>
-<li>fdbbackup</li>
-<li>fdbcli</li>
-<li>fdbdr</li>
-<li>fdbrestore</li>
+<li><a href="https://forums.foundationdb.org/t/fdb-zk-rough-cut-of-zookeeper-api-layer/1278">Fdb-zk: rough cut of Zookeeper API layer</a></li>
 </ul>
-<h3 id="server"><a class="header" href="#server">Server</a></h3>
-<p>The server package is holding FDB's binaries:</p>
+</li>
+<li>Videos:
 <ul>
-<li>fdbmonitor</li>
-<li>fdbserver</li>
+<li><a href="https://youtu.be/3FYpf1QMPgQ">A ZooKeeper Layer for FoundationDB - Paul Hemberger, HubSpot</a></li>
 </ul>
-<p>And a default configuration file for <code>fdbmonitor</code> located at <code>/etc/foundationdb/foundationdb.conf</code>. <code>fdbserver</code> is the main binary, and <code>fdbmonitor</code> is simply a wrapper on top of <code>fdbserver</code>.</p>
-<h2 id="the-cluster-file"><a class="header" href="#the-cluster-file">The cluster file</a></h2>
-<p>Both packages will install a default <a href="https://apple.github.io/foundationdb/administration.html#cluster-files">cluster file</a>:</p>
-<blockquote>
-<p>FoundationDB servers and clients use a cluster file (usually named <code>fdb.cluster</code>) to connect to a cluster. The contents of the cluster file are the same for all processes that connect to the cluster. An <code>fdb.cluster</code> file is created automatically when you install a FoundationDB server and updated automatically when you <a href="https://apple.github.io/foundationdb/configuration.html#configuration-choosing-coordination-servers">change coordination servers</a>. To connect to a cluster from a client machine, you will need access to a copy of the cluster file used by the servers in the cluster.</p>
-</blockquote>
-<h2 id="-wire-protocol"><a class="header" href="#-wire-protocol">⚠️ Wire protocol</a></h2>
-<p>FoundationDB's wire protocol is not compatible between minors releases, i.e. client version 6.2 will <strong>not</strong> be able to communicate with 6.3.X, 6.1.X, and all versions different from 6.3.X.</p>
-<p>On the bindings-side, the client will be <a href="https://forums.foundationdb.org/t/detecting-a-version-mismatch/3055/2">stalling</a>. On the server's logs,  you would see events like <code>ConnectionRejected</code> with a reason <code>IncompatibleProtocolVersion</code>.</p>
+</li>
+</ul>
+<h2 id="timeseries-layer"><a class="header" href="#timeseries-layer">TimeSeries layer</a></h2>
+<ul>
+<li><a href="https://github.com/richardartoul/tsdb-layer">Github repo</a></li>
+<li>Videos:
+<ul>
+<li><a href="https://www.youtube.com/watch?v=W6yQ9Pwgb1A">Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go</a></li>
+</ul>
+</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../meet_fdb/correctess.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../getting_started/fdbcli.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../develop_layer/tips.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -206,10 +206,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../meet_fdb/correctess.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../getting_started/fdbcli.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../develop_layer/tips.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
