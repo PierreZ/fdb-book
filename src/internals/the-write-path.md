@@ -16,7 +16,7 @@ sequenceDiagram
 
     Client->>+Proxy: commit(read_set, write_set)
     Proxy->>Proxy: 1. Get Read Version
-    Proxy->>+Resolver: 2. Resolve(read_version, read_set)
+    Proxy->>+Resolver: 2. Resolve(read_version, read_set, write_set)
     Resolver-->>-Proxy: OK (no conflicts)
     Proxy->>+Log Server: 3. Log(commit_version, write_set)
     Log Server-->>-Proxy: 4. Durable
@@ -32,7 +32,7 @@ sequenceDiagram
 
 1.  **Get Read Version:** When the transaction is ready to be committed, the client library sends it to a **Proxy**. The first thing the Proxy does is request a **Read Version** from the Cluster Controller. This version number establishes the logical point in time at which the transaction's reads occurred.
 
-2.  **Conflict Resolution:** The Proxy sends the transaction's Read Version and its *read set* (the list of keys it read) to the **Resolver**. The Resolver checks if any of the keys in the read set have been written to by another transaction that committed *after* this transaction's Read Version. If a conflict is detected, the Resolver tells the Proxy to reject the transaction, and the client must retry.
+2.  **Conflict Resolution:** The Proxy sends the transaction's Read Version, its *read set* (the list of keys it read), and its *write set* to the **Resolver**. The Resolver checks if any of the keys in the read set have been written to by another transaction that committed *after* this transaction's Read Version. If a conflict is detected, the Resolver tells the Proxy to reject the transaction, and the client must retry.
 
 3.  **Logging for Durability:** If the Resolver finds no conflicts, the Proxy assigns the transaction a **Commit Version** (which will be higher than its Read Version) and sends the transaction's *write set* (the keys and values to be written) to the **Log Servers**.
 

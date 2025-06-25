@@ -39,8 +39,10 @@ To connect to a cluster, your client machine must have a copy of that cluster's 
 
 ## ⚠️ A Critical Note on Versioning
 
-FoundationDB enforces strict compatibility between client and server versions. This is a common source of confusion for new users.
+FoundationDB enforces strict compatibility between the client library and server processes. This is a common source of confusion for new users.
 
-**The Rule:** The client and server **must** have the same major and minor version numbers. For example, a client with version `7.1.x` can only talk to a server with version `7.1.y`. It **cannot** talk to a server running `7.2.z` or `6.3.w`.
+**The Rule:** The installed client library (`libfdb_c`) and the server binaries (`fdbserver`) **must** have the same major and minor version numbers. For example, a client with version `7.1.x` can only talk to a server with version `7.1.y`. It **cannot** talk to a server running `7.2.z` or `6.3.w`.
 
-If you mix versions, your application will fail to connect, often by hanging indefinitely. The server logs will show `ConnectionRejected` errors with the reason `IncompatibleProtocolVersion`. Always ensure your client machines and server cluster are running compatible versions.
+However, you can connect to a cluster with an older version by specifying the API version in your client code. For example, if your client machine has the `7.4.x` libraries installed, you can still connect to a `7.3.z` cluster by calling `fdb.select_api_version(730)` before connecting. This mechanism is particularly useful for facilitating rolling upgrades, allowing clients to be upgraded before the servers.
+
+If you mix incompatible versions without selecting a compatible API version, your application will likely fail to connect, often by hanging indefinitely. The server logs may show `ConnectionRejected` errors with the reason `IncompatibleProtocolVersion`. It's crucial to ensure your client machines and server cluster are running compatible versions, or that you are using `select_api_version` correctly during an upgrade.

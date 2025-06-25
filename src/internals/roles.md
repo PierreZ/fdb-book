@@ -18,20 +18,28 @@ The **Cluster Controller** is the authoritative monitor for the entire cluster. 
 *   Recruiting new processes to take on roles as needed (e.g., if a Log Server fails).
 *   Orchestrating recovery when a process fails.
 
-## The Proxy
+## The Proxies
 
-The **Proxy** (specifically, the Commit Proxy) is the front door for all transactions. When a client commits a transaction, it sends its read and write sets to a Proxy. The Proxy is responsible for:
+FoundationDB splits the traditional role of a proxy into two distinct components: the **GRV Proxy** and the **Commit Proxy**. This separation allows for better scaling and specialization. Clients first interact with a GRV proxy to start a transaction and then with a Commit Proxy to commit it.
 
-1.  Assigning a **Read Version** to incoming transactions.
-2.  Sending the transaction to the Resolver to check for conflicts.
-3.  If the transaction is valid, sending it to the Log Servers to be made durable.
+### The GRV Proxy
+
+The **GRV Proxy** (Get Read Version Proxy) is responsible for one critical task: providing a **Read Version** to a client when it begins a transaction. To do this, the GRV proxy communicates with the Master to get the latest committed version from the transaction system. This ensures that the transaction gets a consistent snapshot view of the database. The `Ratekeeper` process can apply backpressure by slowing down the rate at which GRV Proxies issue read versions, which helps manage cluster load.
+
+### The Commit Proxy
+
+The **Commit Proxy** is the front door for all transaction *commits*. When a client commits a transaction, it sends its read and write sets to a Commit Proxy. The Commit Proxy orchestrates the second half of the transaction lifecycle:
+
+1.  Getting a **Commit Version** from the Master.
+2.  Sending the transaction's read and write sets to the **Resolver** to check for conflicts.
+3.  If the transaction is valid, sending its mutations to the **Log Servers** to be made durable.
 4.  Reporting the final commit status back to the client.
 
-Because proxies are stateless, you can add more of them to the cluster to increase transaction throughput.
+Because both proxy types are stateless, you can add more of them to the cluster to increase both the number of transactions that can be started and the overall commit throughput.
 
 ## The Resolver
 
-The **Resolver** is the component that enforces serializability. During the commit process, the Proxy sends the transaction's read set to the Resolver. The Resolver checks if any of the keys in the read set have been modified by another transaction that has committed since the current transaction's read version was assigned. If a conflict is found, the transaction is rejected, and the client must retry.
+The **Resolver** is the component that enforces serializability. During the commit process, the Commit Proxy sends the transaction's read and write sets to the Resolver. The Resolver checks if any of the keys in the read set have been modified by another transaction that has committed since the current transaction's read version was assigned. If a conflict is found, the transaction is rejected, and the client must retry.
 
 ## The Log Server
 

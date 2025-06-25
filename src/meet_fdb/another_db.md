@@ -83,12 +83,10 @@ flowchart TD
         app("Stateless Application")
 
         subgraph "Stateless Data Layer 1"
-            direction LR
             ql1("Query Language 1") --> dm1("Data Model 1")
         end
 
         subgraph "Stateless Data Layer 2"
-            direction LR
             ql2("Query Language 2") --> dm2("Data Model 2")
         end
 
