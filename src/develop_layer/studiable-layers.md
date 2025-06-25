@@ -1,34 +1,41 @@
-# Existing open-source layers
+# Learning from the Community: Open-Source Layers
 
-The community has released a number of layers that can be studied, including:
+One of the best ways to learn how to build on FoundationDB is to study existing, production-proven layers. A "layer" is simply a library or service that provides a higher-level data model on top of FoundationDB's ordered key-value store. By examining how these layers map their data models to keys and values, you can gain invaluable insights for your own projects.
+
+Here are some of the most prominent open-source layers developed by the FoundationDB community.
 
 <!-- toc -->
 
-## the Record-layer
+## The Record Layer
 
-* [Github repo](https://github.com/foundationdb/fdb-record-layer)
-* [Academic paper](https://www.foundationdb.org/files/record-layer-paper.pdf)
-* Videos:
-  * [FoundationDB Record Layer: Open Source Structured Storage on FoundationDB - Nicholas Schiefer, Apple](https://youtu.be/HLE8chgw6LI)
-  * [Using FoundationDB and the FDB Record Layer to Build CloudKit - Scott Gray, Apple](https://youtu.be/SvoUHHM9IKU)
-  * [Meta-Data Caching and Record Store Scalability - Alec Grieser, Apple](https://youtu.be/_mDIhQ1HLcs)
+The Record Layer provides a structured, record-oriented data store on top of FoundationDB, similar to a traditional relational database. It is used in production at Apple to power CloudKit.
 
-## the Document Layer
+*   **GitHub Repo:** [foundationdb/fdb-record-layer](https://github.com/foundationdb/fdb-record-layer)
+*   **Academic Paper:** [FoundationDB Record Layer](https://www.foundationdb.org/files/record-layer-paper.pdf)
+*   **Key Videos:**
+    *   [FoundationDB Record Layer: Open Source Structured Storage on FoundationDB](https://youtu.be/HLE8chgw6LI) (Nicholas Schiefer, Apple)
+    *   [Using FoundationDB and the FDB Record Layer to Build CloudKit](https://youtu.be/SvoUHHM9IKU) (Scott Gray, Apple)
 
-* [Github repo](https://github.com/FoundationDB/fdb-document-layer)
-* Videos:
-  * [FoundationDB Document Layer - Bhaskar Muppana, Apple](https://youtu.be/KPqmB13zI9c)
+## The Document Layer
 
-## the Zookeeper Layer
+The Document Layer implements a MongoDB®-compatible API, allowing you to store and query JSON documents within FoundationDB.
 
-* [Github repo](https://github.com/pH14/fdb-zk)
-* Forum posts:
-  * [Fdb-zk: rough cut of Zookeeper API layer](https://forums.foundationdb.org/t/fdb-zk-rough-cut-of-zookeeper-api-layer/1278)
-* Videos:
-  * [A ZooKeeper Layer for FoundationDB - Paul Hemberger, HubSpot](https://youtu.be/3FYpf1QMPgQ)
+*   **GitHub Repo:** [FoundationDB/fdb-document-layer](https://github.com/FoundationDB/fdb-document-layer)
+*   **Key Video:**
+    *   [FoundationDB Document Layer](https://youtu.be/KPqmB13zI9c) (Bhaskar Muppana, Apple)
 
-## TimeSeries layer
+## The ZooKeeper Layer
 
-* [Github repo](https://github.com/richardartoul/tsdb-layer)
-* Videos:
-  * [Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go](https://www.youtube.com/watch?v=W6yQ9Pwgb1A)
+This layer implements the Apache ZooKeeper API, providing a distributed coordination service built on FoundationDB.
+
+*   **GitHub Repo:** [pH14/fdb-zk](https://github.com/pH14/fdb-zk)
+*   **Key Video:**
+    *   [A ZooKeeper Layer for FoundationDB](https://youtu.be/3FYpf1QMPgQ) (Paul Hemberger, HubSpot)
+
+## The Time-Series Layer
+
+This is a high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.
+
+*   **GitHub Repo:** [richardartoul/tsdb-layer](https://github.com/richardartoul/tsdb-layer)
+*   **Key Video:**
+    *   [Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go](https://www.youtube.com/watch?v=W6yQ9Pwgb1A)

@@ -1,99 +1,52 @@
-# Everything is a key-value!
+# Modeling on a Key-Value Store
 
 <!-- toc -->
 
-> Ok, so I could store a table-like data in a key-value?
+> "If FoundationDB is just a key-value store, how can it power complex applications?"
 
-Yes, this is exactly the idea. It may seem weird at first, but it is a common pattern among new databases. In this section, we will briefly go over some examples.
+This is the crucial question. The answer lies in a powerful, common architectural pattern: building rich data models on top of a simple, ordered key-value core. By defining a specific way to encode data structures into keys and values, you can represent almost anything, from relational tables to complex documents and graphs.
 
-## Yugabyte
+This is not a new or niche idea. Many of the most successful and scalable modern databases are built using this exact layered architecture. Let's look at a few examples.
 
-From the official [documentation](https://docs.yugabyte.com/latest/architecture/layered-architecture/):
+## The Pattern: A Tale of Two Layers
 
-> YugabyteDB architecture follows a layered design. It is comprised of 2 logical layers as shown in the diagram below:
->
-> * Yugabyte Query Layer
-> 
-> * DocDB distributed document store
+Most modern databases can be conceptually divided into two layers:
 
-Information about key encoding format can be found [here](https://github.com/YugaByte/yugabyte-db/wiki/Low-level-DocDB-key-encoding-format) and [here](https://youtu.be/DAFQcYXK2-o?t=1523).
+1.  **The Storage Layer:** A low-level engine, often a key-value store, responsible for the distributed storage, replication, and transactional integrity of data.
+2.  **The Data Model Layer:** A higher-level component that exposes a rich data model (e.g., SQL, Document, Graph) and translates queries into operations on the underlying storage layer.
 
-## F1 and Spanner from Google
+This separation of concerns allows each layer to do what it does best.
 
-There is a lot of contents about Google's datastores and their evolution.
+## Industry Examples
 
-At first, they built [Megastore](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36971.pdf) on top of BigTable:
+This layered pattern appears again and again in the architecture of leading databases.
 
-> In brief, it provides fully serializable ACID semantics over distant replicas with low enough latencies to support interactive applications.
->
-> We use Google’s Bigtable for scalable fault-tolerant storage within a single datacenter, allowing us to support arbitrary read and write throughput by spreading operations across multiple rows.
+### SQL on Key-Value: Google, CockroachDB, and TiDB
 
-Then, the first version of [Spanner](https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf) appeared:
+Several of the most prominent distributed SQL databases are built on a key-value core.
 
-> Spanner is a scalable, globally-distributed database designed, built, and deployed at Google.
-> 
->  Spanner has evolved from a Bigtable-like versioned key-value store into a temporal multi-version database. Data is stored in schematized semi-relational tables; data is versioned, and each version is automatically timestamped with its commit time
+*   **Google's Spanner and F1:** Google's database journey shows a clear evolution. [Megastore](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36971.pdf) provided ACID semantics on top of the Bigtable key-value store. This evolved into [Spanner](https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf), which started as a key-value store and grew into a full-fledged [relational database](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/acac3b090a577348a7106d09c051c493298ccb1d.pdf). The key insight is that the SQL data model is a layer on top of a scalable, transactional key-value foundation.
 
-Then they added [F1](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/41344.pdf) on top of Spanner:
+*   **CockroachDB:** As described in their architecture documentation, CockroachDB maps all [SQL table and index data](https://www.cockroachlabs.com/blog/sql-in-cockroachdb-mapping-table-data-to-key-value-storage/) directly into its underlying monolithic sorted key-value map.
 
-> F1 is a fault-tolerant globally-distributed OLTP and OLAP database built at Google as the new storage system for Google’s AdWords system. It was designed to replace a sharded MySQL implementation that was not able to meet our growing scalability and reliability requirements.
-> 
-> F1 is built on top of Spanner
+*   **TiDB:** The TiDB ecosystem explicitly separates its components. [TiDB](https://www.vldb.org/pvldb/vol13/p3072-huang.pdf) is the SQL computation layer, while **TiKV** is the distributed, transactional key-value storage layer. Each SQL row is mapped to a key-value pair in TiKV.
 
-And finally, [Spanner itself became an SQL system](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/acac3b090a577348a7106d09c051c493298ccb1d.pdf):
+### Multi-Model Databases: Cosmos DB and YugabyteDB
 
-> Google’s Spanner started out as a key-value store offering multi-row transactions, external consistency, and transparent failover across datacenters. Over the past 7 years it has evolved into a relational database system
+Other databases use this pattern to support multiple data models on a single, unified backend.
 
-It seems it is still organized as layers:
+*   **Azure Cosmos DB:** Microsoft's global-scale database projects multiple data models (Document, Graph, Key-Value) over a [minimalist core data model](http://muratbuffalo.blogspot.com/2018/08/azure-cosmos-db.html). The storage engine itself is agnostic to whether it's storing a document or a graph node.
 
-> Like the lower storage and transactional layers, 
+*   **YugabyteDB:** Follows a similar [layered design](https://docs.yugabyte.com/latest/architecture/layered-architecture/), with a query layer that supports both SQL and Cassandra APIs on top of **DocDB**, its underlying distributed document store, which itself functions as a key-value store.
 
-## TiDB / TiKV
+## The Unbundled Database: FoundationDB
 
-In the titanium stack, TiKV is the storage layer for [TiDB](https://www.vldb.org/pvldb/vol13/p3072-huang.pdf):
+All these examples point to a powerful conclusion: many modern databases are, internally, a specialized data model layer tightly bundled with a general-purpose key-value storage engine.
 
-> It has three core components: a distributed storage layer, a Placement Driver(PD), and a computation engine layer.
-> 
-> The distributed storage layer consists of a row store (TiKV) and a columnar store (TiFlash). Logically, the data stored in TiKV is an ordered key-value map. Each tuple is mapped into a key-value pair. The key is composed of its table ID and row ID, and the value is the actual row data, where the table ID and row ID are unique integers 
+FoundationDB's philosophy is to **unbundle** these two layers. It provides *only* the core storage engine, but it makes that engine more powerful and generic than any of the bundled equivalents. It gives you:
 
-The table codec can be found [here](https://github.com/pingcap/tidb/tree/master/tablecodec).
+*   An ordered key-value store.
+*   Strictly serializable ACID transactions.
+*   Exceptional performance and proven reliability.
 
-## CosmosDB
-
-
-More details can be found [here](http://muratbuffalo.blogspot.com/2018/08/azure-cosmos-db.html):
-
-> Cosmos DB supports and projects multiple data models (documents, graphs, key-value, table, etc.) over a minimalist type system and core data model: the atom-record-sequence (ARS) model.
->
-> Container and item resources are further projected as reified resource types for a specific type of API interface. For example, while using document-oriented APIs, container and item resources are projected as collection and document resources respectively.
-
-The automatic indexing strategy is described [here](http://www.vldb.org/pvldb/vol8/p1668-shukla.pdf).
-
-## CockroachDB
-
-This old [blogpost](https://www.cockroachlabs.com/blog/sql-in-cockroachdb-mapping-table-data-to-key-value-storage/) describes the idea:
-
-> The CockroachDB SQL system is built on top of the internal CockroachDB key-value store and leverages the monolithic sorted key-value map to store all of the SQL table data and indexes.
-
-
-The encoding notes can be found [here](https://github.com/cockroachdb/cockroach/blob/master/docs/tech-notes/encoding.md).
-
-## Dgraph
-
-From the official [documentation](https://dgraph.io/docs/dgraph-overview/#dgraph-architecture):
-
-> Dgraph is a single layer in your tech stack, but inside the inner workings of a Dgraph database instance, there are three distinct entities:
->
-> * Badger - Dgraph’s custom-built key-value store 
-> * Ristretto - Dgraph’s custom-built cache 
-> * Dgraph - the methods and algorithms used to parse DQL (and now GraphQL) and act accordingly
-
-## Examples from layers
-
-### Record-Layer
-
-The [Record-layer](https://foundationdb.github.io/fdb-record-layer/) is using Protobuf to store data. [A single Protobuf message is written across multiple rows](https://github.com/FoundationDB/fdb-record-layer/blob/1715c4dc2dd5565f292003a1f45d87fe14b32ca7/fdb-record-layer-core/src/main/java/com/apple/foundationdb/record/provider/foundationdb/SplitHelper.java#L117). It can be encrypted and compressed.
-
-### Document-layer
-
-The [Document-layer](https://github.com/FoundationDB/fdb-document-layer) is writing a document [across multiple keys](https://github.com/FoundationDB/fdb-document-layer/blob/2250bfb6d3c5bd5007bca39ed92b872f2b0dc4b2/src/ExtUtil.actor.cpp#L77)
+This frees you, the developer, to build *any* data model layer you can imagine. You get the power of a world-class distributed storage engine without being locked into a specific, high-level data model. FoundationDB is the ultimate realization of the layered database architecture.

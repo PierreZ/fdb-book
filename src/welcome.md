@@ -1,18 +1,19 @@
 ![FDB_logo.png](FDB_logo.png)
 
-# The FoundationDB's Book 📖
+# The FoundationDB Book 📖
 
-Welcome to FoundationDB's Book! If you are looking to start writing your own datastore with FoundationDB, or if you are curious about FDB, you have come to the right place.
+Welcome! Whether you're building your own datastore with FoundationDB or are simply curious about its capabilities, you've come to the right place.
 
-🚧 This is currently a work-in-progress, feel free to [contribute](https://github.com/PierreZ/fdb-book) chapters! 🚧
+🚧 This book is a work in progress. We welcome contributions! Feel free to [open a pull request](https://github.com/PierreZ/fdb-book) with your improvements. 🚧
+
+## Who This Book Is For
+
+This book is for developers, architects, and database enthusiasts who want to understand and leverage FoundationDB. It serves as a comprehensive guide, linking to the [official documentation](https://apple.github.io/foundationdb/) and the [community forum](https://forums.foundationdb.org/) when deeper dives are needed.
 
 ## What This Book Covers
 
-This book aims to be a comprehensive, up-to-date guide to use FoundationDB features and libraries, appropriate for beginners and old hands alike.
-
-It is designed as **an entrypoint towards the FoundationDB's community**, with links pointing to the [official documentation](https://apple.github.io/foundationdb/) or the [forum](https://forums.foundationdb.org/).
-
-* The early chapters provide an introduction to FoundationDB, why it may interest you, and what is a layer.
-* The Record-Layer chapter is focusing on the Record-Layer, a Java library to write layers made by Apple.
-* The middle chapters discuss key utilities and features provided by the bindings, and describe best-practises to write layers to maximize performance and scalability.
-* The last chapters are describing core elements of FoundationDB, such as read/write path, or the simulation framework.
+*   **Meet FoundationDB:** We start with an introduction to FoundationDB, exploring what makes it unique and why it might be the right choice for your project.
+*   **Getting Started:** A hands-on guide to installing FoundationDB and interacting with it using the `fdbcli` command-line tool.
+*   **Developing a Layer:** Learn the core concepts of building on FDB, from ACID transactions to best practices for data modeling and key design. We'll also look at existing open-source layers for inspiration.
+*   **FoundationDB's Internals:** Delve into the architecture of FoundationDB, including its read/write paths and powerful simulation framework.
+*   **The Record Layer:** A dedicated look at the Record Layer, a Java library from Apple for building complex data models on FoundationDB.

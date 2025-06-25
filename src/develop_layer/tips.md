@@ -1,80 +1,63 @@
-# Tips and tricks
+# Best Practices and Pitfalls
+
+This chapter provides a collection of best practices, advanced techniques, and common pitfalls to help you build robust, production-ready layers on FoundationDB.
 
 <!-- toc -->
 
-Here's a few tips and tricks that should help you develop a production-ready layer.
+## Transaction Management
 
-## About the `run` method
+### Use Timeouts and Retry Limits
 
-Most bindings are offering a `run` method, that is taking a closure, like this in [Java](https://apple.github.io/foundationdb/javadoc/com/apple/foundationdb/Database.html#run(java.util.function.Function)).
+Most language bindings provide a `run` or `transact` method that automatically handles the retry loop for you. However, to prevent transactions from running indefinitely, it is critical to configure two options:
 
-You should use the `run` method on your bindings, **BUT** you must add some transactionOptions to avoid blocking forever:
+*   **Timeout:** Set a timeout in milliseconds. If the transaction takes longer than this to commit, it will be automatically cancelled. This is a crucial backstop for preventing stuck application threads.
+*   **Retry Limit:** Set a maximum number of retries. This prevents a transaction from retrying endlessly in the case of a persistent conflict or a live-lock scenario.
 
-* **Timeout** Set a timeout in milliseconds which, when elapsed, will cause the transaction automatically to be cancelled.
-* **RetryLimit** Set a maximum number of retries
+These options should be set on every transaction to ensure your application remains stable under load.
 
-it is safe and legal to set these options at the first line of your `run` closure.
+### Set Transaction Priority
 
-## Transaction priority
+FoundationDB supports transaction priorities to help manage workloads.
 
-There is 3 transaction priority in FDB:
+*   **Default:** The standard priority for most latency-sensitive, user-facing operations.
+*   **Batch:** A lower priority for background work, such as data cleanup or analytics. Batch priority transactions will yield to default priority transactions, ensuring that they don't interfere with your main application workload.
+*   **System Immediate:** The highest priority, which can block other transactions. Its use is discouraged outside of low-level administrative tools.
 
-* **Default**,
-* **Batch** Specifies that this transaction should be treated as low priority and that default priority transactions will be processed first. Useful for doing batch work simultaneously with latency-sensitive work
-* **SystemImmediate** Specifies that this transaction should be treated as highest priority and that lower priority transactions should block behind this one. Use is discouraged outside of low-level tools.
+## Observability
 
-## Use transaction Tagging
+### Tag Your Transactions
 
-> FoundationDB provides the ability to add arbitrary byte-string tags to transactions. The cluster can be configured to limit the rate of transactions with certain tags, either automatically in response to tags that are very busy, or manually using the throttle command in fdbcli.
+FoundationDB allows you to add a byte-string **tag** to any transaction. This is an invaluable tool for observability and performance management. You can use tags to identify different types of workloads (e.g., `user_signup`, `post_comment`). The `fdbcli` tool can then be used to monitor the rate of transactions with specific tags and even throttle them if they are causing excessive load.
 
-More info can be found [here](https://apple.github.io/foundationdb/transaction-tagging.html).
+See the official documentation on [Transaction Tagging](https://apple.github.io/foundationdb/transaction-tagging.html) for more details.
 
-## Traces logs
+### Enable Client Trace Logs
 
-By default, clients do not generate trace logs. In order to enable traces from the clients, you must enable on the database-level:
+By default, clients do not generate detailed trace logs. To debug performance issues, you can enable them by setting the `TraceEnable` database option. You can then add a `DebugTransactionIdentifier` to a specific transaction and set the `LogTransaction` option to get detailed, low-level logs about its execution, including all keys and values read and written.
 
-* `TraceEnable` Enables trace output to a file in a directory of the clients choosing
+## Advanced Techniques
 
-You can also enable these optional options:
+### The `metadataVersion` Key
 
-* `TraceFormat` Select the format of the log files. xml (the default) and json are supported.
-* `TraceLogGroup` Sets the ‘LogGroup’ attribute with the specified value for all events in the trace output files. The default log group is ‘default’.
+The special key `\xFF/metadataVersion` is a cluster-wide version counter that can be used to implement client-side caching. Its value is sent to clients with every read version, so reading it does not require a round-trip to a storage server. A layer can watch this key to know when to invalidate a local cache.
 
-Then, on a Transaction-level, you can set these options:
+**Note:** If you write to the `metadataVersion` key, you cannot read it again in the same transaction.
 
-* `DebugTransactionIdentifier` String identifier to be used when tracing or profiling this transaction. The identifier must not exceed 100 characters.
-* `LogTransaction` Enables tracing for this transaction and logs results to the client trace logs. The DEBUG_TRANSACTION_IDENTIFIER option must be set before using this option, and client trace logging must be enabled to get log output.
-* `TransactionLoggingMaxFieldLength` Sets the maximum escaped length of key and value fields to be logged to the trace file via the LOG_TRANSACTION option, after which the field will be truncated. A negative value disables truncation.
+### The `TimeKeeper`
 
-## The `metadataVersion`
+The `Cluster Controller` maintains a map of recent read versions to wall-clock times. This can be accessed by scanning the key range beginning with `\xFF\x02/timeKeeper/map/`. This can be useful for approximating a global clock.
 
-The metadata version key `\xFF/metadataVersion` is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.
+### Special Keys
 
-It is useful to implement some caching-strategy on a layer. More info on how to use the metadataVersion key can be found [here](https://forums.foundationdb.org/t/sharing-the-metadataversionkey-for-multiple-tenants/1659).
+Keys prefixed with `\xFF\xFF` are “special” keys that are materialized on-demand when read. The most common example is `\xFF\xFF/status/json`, which returns a JSON document containing the cluster's status.
 
-⚠️ In a transaction, if you update the \xff/metadataVersion key, and then attempt to read it again, I get a “Read or wrote an unreadable key” error (1036) when trying to read again. Context can be found [here](https://forums.foundationdb.org/t/cannot-commit-transaction-that-reads-the-metadataversion-key-after-changing-it/1833)
+See the official documentation on [Special Keys](https://apple.github.io/foundationdb/special-keys.html) for more details.
 
-More info about the `metadataVersion` can be found [here](https://youtu.be/2HiIgbxtx0c).
+## Common Pitfalls: The Directory Layer
 
-## The TimeKeeper
+The Directory Layer is a powerful tool, but it has several sharp edges that developers must be aware of:
 
-`Cluster Controller` actor is keeping a map of read version to system clock time, updated every second. Can be accessible by scanning the `\xFF\x02/timeKeeper/map/`. More info [here](https://forums.foundationdb.org/t/approximating-a-global-clock-for-a-watchdog-timer-using-versionstamps-readversions-or-the-timekeeper/477)
-
-## Special keys
-
-> Keys starting with the bytes \xff\xff are called “special” keys, and they are materialized when read. \xff\xff/status/json is an example of a special key.
-
-More info can be found [here](https://apple.github.io/foundationdb/special-keys.html)
-
-## Caveats when using directory
-
-* [Mutating a directory multiple times simultaneously in the same transaction is unsafe](https://github.com/apple/foundationdb/issues/895)
-* Opening a path with multiple items will generate many read on the metadata-subspace for every transaction. This can lead to hotspotting the [Directory Layer’s metadata subspace](https://forums.foundationdb.org/t/query-hotspotting-on-directory-layers-metadata-subspace/2487). Also, developing a directory that use the [metadataVersion's key](https://github.com/apple/foundationdb/pull/1213) is not that easy:
-  * [Exhibit A](https://forums.foundationdb.org/t/how-to-safely-add-a-metadata-caching-layer-on-top-of-existing-layers/1809/2?u=pierrez),
-  * [Exhibit B](https://github.com/apple/foundationdb/issues/1415).
-
-* Because on how the prefix is generated, multi-cluster deployments can allocate the same [prefix multiple times](https://forums.foundationdb.org/t/redwood-engine-and-directory-layer/3084/8):
-
-* Redwood Engine is a new storage engine released in FDB-7.0. It has some nice features, including native key-prefix compression. Prefix compression's performance is likely to be [similar to using the Directory](https://youtu.be/5iqKu1pVDvE?t=158). When using the Redwood storage engine the remaining benefit of the Directory becomes the ability to move/rename directories and having smaller keys in network messages (though some of these may eventually use prefix compression).
-
-> I’ll also note that due to caching, the Record Layer can’t really make use of the directory layer’s renaming features (at least not without rethinking cache invalidation). I suspect that if we’d had Redwood and prefix compression when the Record Layer was being originally developed, we’d seriously have considered just relying on prefix compression instead of all of that because that would have significantly simplified cross-cluster data movement (and, if we’re honest, single cluster writes).
+*   **Concurrent Mutations:** Modifying the same directory (e.g., creating two different subdirectories within it) in multiple, concurrent transactions is not safe and can lead to corruption.
+*   **Metadata Hotspots:** Opening a directory with a long path requires one read per path element for every transaction. This can create a hotspot on the directory's internal metadata subspace.
+*   **Multi-Cluster Deployments:** The directory prefix allocator is not safe for multi-cluster deployments and can allocate the same prefix in different clusters, leading to data corruption if the data is ever merged.
+*   **Redwood and Prefix Compression:** The Redwood storage engine (new in 7.0) provides native key-prefix compression. This offers many of the same space-saving benefits as the Directory Layer without the associated complexity and caveats. For new projects, especially those using Redwood, consider whether you can use subspaces with descriptive prefixes directly instead of relying on the Directory Layer.

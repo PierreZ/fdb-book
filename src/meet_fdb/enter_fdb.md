@@ -2,82 +2,80 @@
 
 <!-- toc -->
 
-Let's start by quoting the [official overview](https://apple.github.io/foundationdb/):
+As the [official overview](https://apple.github.io/foundationdb/) puts it:
 
 > FoundationDB is a distributed database designed to handle large volumes of structured data across clusters of commodity servers. It organizes data as an ordered key-value store and employs ACID transactions for all operations. It is especially well-suited for read/write workloads but also has excellent performance for write-intensive workloads.
 
-FoundationDB is an open-source(Apache V2), distributed key-value store written in Flow, an async-first language that targets C++ specially developed for the database. 
+Let's unpack what makes FoundationDB unique.
 
-Like all key-value stores, it looks like an infinite dictionary/map from programming, allowing you to store key and values in bytes. 
+## The Core: An Ordered, Transactional Key-Value Store
 
-Keys are lexicographic order, which means:
+At its heart, FoundationDB is a distributed, open-source (Apache 2.0) key-value store. Think of it as a massive, sorted dictionary where both keys and values are simple byte strings.
 
-* ``'0'`` is sorted before ``'1'``
-* ``'apple'`` is sorted before ``'banana'``
-* ``'apple'`` is sorted before ``'apple123'``
-* keys starting with ``'mytable\'`` are sorted together (e.g. ``'mytable\row1'``, ``'mytable\row2'``, ...)
+The keys are stored in lexicographical order, which means you can efficiently scan ranges of keys. This simple but powerful feature is the basis for building complex data models. For example:
 
-One huge advantage of FDB is that it supports **multi-key strictly serializable transactions**. Let's break-down the words in reverse order:
+*   `'user:alice'` comes before `'user:bob'`
+*   `'user:bob'` comes before `'user:bob:profile'`
+*   All keys prefixed with `'table1:'` are grouped together, allowing you to simulate rows in a table.
 
-* **transactions**: All reads and writes in FoundationDB are accomplished using transactions. These transactions are fully ACID (Atomic, Consistent, Isolated, and Durable) and span across multiple machines with high performance.
-* **Serializable**: this means that the outcome of concurrent transaction is equal to a serial execution.
-* **Strictly**: transactions are strictly ordered
-* **Multi-key**: you can write across regions/shards
+### Multi-Key ACID Transactions
 
-The full list of features is available [here](https://apple.github.io/foundationdb/features.html), and you will also finds a [anti-features list](https://apple.github.io/foundationdb/anti-features.html).
+The most important feature of FoundationDB is its support for **multi-key, strictly serializable transactions**. This is a rare and powerful guarantee for a distributed database.
 
-## FoundationDB as a database
+*   **Transactions:** All operations, including reads and writes, are performed within a transaction. These transactions are fully ACID (Atomic, Consistent, Isolated, and Durable), even across multiple machines.
+*   **Multi-Key:** A single transaction can read and write multiple, unrelated keys, no matter where they are stored in the cluster.
+*   **Strictly Serializable:** This is the strongest isolation level. It ensures that the result of concurrent transactions is equivalent to them running one at a time in some sequential order. This makes writing correct applications dramatically simpler, as you are protected from a wide range of subtle race conditions.
 
-FoundationDB provides amazing performance on commodity hardware, allowing you to support very heavy loads at low cost. The official [performance page](https://apple.github.io/foundationdb/performance.html) is giving us some insights:
+You can find a full list of [features](https://apple.github.io/foundationdb/features.html) and, just as importantly, [anti-features](https://apple.github.io/foundationdb/anti-features.html) in the official documentation.
 
-![fdb_perf](https://apple.github.io/foundationdb/_images/scaling.png)
+## The Powerhouse: Performance and Reliability
 
-> Here, a cluster of commodity hardware scales to 8.2 million operations/sec doing a 90% read and 10% write workload with 16 byte keys and values between 8 and 100 bytes. 
+FoundationDB is not just a theoretical model; it's a battle-tested engine built for performance and reliability on commodity hardware.
 
-You can expect sub-millisecond performance for small reads, without any tuning.
+*   **Performance:** It delivers linear scalability and high performance, often achieving millions of operations per second on a cluster. You can expect sub-millisecond latencies for many workloads without any special tuning.
+*   **Reliability:** It is designed to be fault-tolerant, easy to manage, and simple to grow. Its reliability is backed by an unmatched testing system based on a **deterministic simulation engine**, which we will explore later in this book.
 
-Beside having huge performance, FoundationDB is  easy to **install, grow, manage and fault tolerant**. It has been running in production for years in companies like Apple or Snowflake. Backing FoundationDB up is an unmatched testing system based on a **deterministic simulation engine** that will be described later in the book.
+![FoundationDB Performance Scaling](https://apple.github.io/foundationdb/_images/scaling.png)
+> A cluster of commodity hardware scaling to 8.2 million operations/sec on a 90% read, 10% write workload.
 
-## FoundationDB as a database-framework
+## The Ecosystem: A Foundation for Layers
 
-For developers, FoundationDB can be seen as a **database-framework**: it decouples its data storage technology from its data model, allowing you to write **"layers"**: stateless applications that will use FoundationDB as their storage.
+Because FoundationDB provides such a powerful and reliable core, it can serve as a universal storage engine—a foundation for building other data models. These are called **"layers."**
 
+A layer is a stateless component that maps a high-level data model (like a document, graph, or relational model) to FoundationDB's simple key-value model.
 
 ```mermaid
-flowchart TD
-    fdb(FoundationDB)
-    l1(Layer 1)
-    l2(Layer 2)
-    ln(Layer N)
-    
-    l1 -- uses --> fdb
-    l2 -- uses --> fdb
-    ln -- uses --> fdb
+graph TD
+    subgraph "Your Application"
+        l1("Document Layer")
+        l2("Graph Layer")
+        l3("Queue Layer")
+    end
+
+    subgraph "FoundationDB Cluster"
+        fdb[("Ordered Key-Value Store<br/>ACID Transactions")]
+    end
+
+    l1 -- "stores data in" --> fdb
+    l2 -- "stores data in" --> fdb
+    l3 -- "stores data in" --> fdb
 ```
 
-Each layer can expose high level data models. They can be developed as libraries or stateless services. And because of FDB performance, they are easy to scale.
+This architecture decouples the data model from data storage, allowing developers to focus on building features without reinventing the complexities of a distributed database.
 
-## A brief history of FoundationDB
+## A Brief History
 
-FoundationDB started first as a company in 2009. The FoundationDB Alpha program began in January 2012 and concluded on March 4, 2013 with their public Beta release.
+FoundationDB began as a company in 2009. After a successful beta program, version 1.0 was released in 2013. Apple acquired the company in 2015 and subsequently open-sourced the project under the Apache 2.0 license in 2018, making it available to the wider community.
 
-Their 1.0 version was released for general availability on August 20, 2013. On March 24, 2015 it was reported that Apple has acquired the company.
+## Who Uses FoundationDB?
 
-On April 19, 2018, Apple open sourced the software, releasing it under the Apache 2.0 license.
+FoundationDB is the storage engine behind critical systems at major technology companies, including:
 
-## Who is using FoundationDB?
-
-Many companies are using FDB, including:
-
-* **Apple iCloud**: they are the largest users. Billions of logical databases are stored in FDB (one per user per application). You will find more details about this on the Record-layer chapter.
-* **Snowflake** is storing all their metadatas in FDB,
-* **VMWare** Tanzu (Formerly Wavefront),
-* **IBM** (Apache CouchDB),
-* **eBay**,
-* **Epic Games**,
-* ...
-
+*   **Apple:** A massive-scale deployment for iCloud, where it stores billions of logical databases.
+*   **Snowflake:** Stores all metadata for its cloud data platform.
+*   **VMware:** Used in the Tanzu observability platform.
+*   And many others, including **IBM**, **eBay**, and **Epic Games**.
 
 ## TL;DR
 
-FoundationDB is a scalable, robust, distributed key-value store that you can use as a framework to write your own ~~database~~ layer 🤯
+FoundationDB is a scalable, distributed key-value store with strictly serializable ACID transactions. It's so powerful and reliable that it serves as a universal foundation for building any data model you can imagine.
