@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - the FoundationDB Book</title>
-        <base href="/fdb-book/">
+        <title>The Read Path - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -103,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -138,7 +137,7 @@
                     <h1 class="menu-title">the FoundationDB Book</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/PierreZ/fdb-book" title="Git repository" aria-label="Git repository">
@@ -170,14 +169,54 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="the-read-path"><a class="header" href="#the-read-path">The Read Path</a></h1>
+<ul>
+<li><a href="#the-steps-of-a-read">The Steps of a Read</a></li>
+<li><a href="#key-takeaways">Key Takeaways</a></li>
+</ul>
+<p>FoundationDB's read path is designed to be highly scalable and efficient. Unlike the write path, which is coordinated through a central set of proxies, the read path is almost entirely decentralized. This allows the cluster to serve a massive number of concurrent reads without creating bottlenecks.</p>
+<p>Here is a high-level overview of how a read operation works:</p>
+<pre class="mermaid">sequenceDiagram
+    participant Client
+    participant Proxy
+    participant Storage Server
+
+    Client-&gt;&gt;+Proxy: 1. Get Read Version
+    Proxy--&gt;&gt;-Client: read_version
+    Client-&gt;&gt;Client: 2. Locate Storage Server (from cache)
+    Client-&gt;&gt;+Storage Server: 3. Read(key, read_version)
+    Storage Server--&gt;&gt;-Client: Value
+</pre>
+<h3 id="the-steps-of-a-read"><a class="header" href="#the-steps-of-a-read">The Steps of a Read</a></h3>
+<ol>
+<li>
+<p><strong>Get Read Version:</strong> When a client begins a transaction, the first thing it does is request a <strong>Read Version</strong> from a <strong>Proxy</strong>. This version is a timestamp that represents a consistent, immutable snapshot of the entire database. All reads within the transaction will be served from this snapshot, which is the foundation of FoundationDB's snapshot isolation.</p>
+</li>
+<li>
+<p><strong>Locate the Storage Server:</strong> The client library maintains a local cache that maps key ranges to the <strong>Storage Servers</strong> responsible for them. When the client needs to read a key, it uses this cache to determine which Storage Server to contact. This lookup is extremely fast and does not require a network round-trip.</p>
+</li>
+<li>
+<p><strong>Read from the Storage Server:</strong> The client connects directly to the appropriate Storage Server and requests the value for the key at the transaction's Read Version. The Storage Server uses its in-memory B-tree and on-disk data files to find the correct version of the value and return it to the client.</p>
+</li>
+</ol>
+<h3 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h3>
+<ul>
+<li><strong>Decentralized and Scalable:</strong> Because clients read directly from Storage Servers, read throughput can be scaled horizontally simply by adding more Storage Servers to the cluster.</li>
+<li><strong>Snapshot Isolation:</strong> The use of a Read Version ensures that a transaction sees a perfectly consistent view of the database, even as other transactions are being committed concurrently. Your reads are never "dirty."</li>
+<li><strong>Low Latency:</strong> By caching the mapping of keys to Storage Servers, the client can avoid extra network hops and read data with very low latency.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../internals/the-write-path.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../the-record-layer/what-is-record-layer.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -185,7 +224,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../internals/the-write-path.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../the-record-layer/what-is-record-layer.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -198,17 +243,17 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="mermaid.min.js"></script>
-        <script src="mermaid-init.js"></script>
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
     </div>

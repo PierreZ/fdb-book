@@ -1,14 +1,16 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Crafting row keys - the FoundationDB Book</title>
+        <title>Key Design: Tuples, Subspaces, and Directories - the FoundationDB Book</title>
+
+
         <!-- Custom HTML head -->
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="../favicon.svg">
         <link rel="shortcut icon" href="../favicon.png">
@@ -16,28 +18,46 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
     </head>
     <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
-
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -50,56 +70,66 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
+            sidebar_toggle.checked = sidebar === 'visible';
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="../meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="../meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="../meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="../meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="../getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="../getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="../develop_layer/transactions.html"><strong aria-hidden="true">7.</strong> ACID transactions</a></li><li class="chapter-item expanded "><a href="../develop_layer/crafting-row-keys.html" class="active"><strong aria-hidden="true">8.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><a href="../develop_layer/studiable-layers.html"><strong aria-hidden="true">9.</strong> Existing open-source layers</a></li><li class="chapter-item expanded "><a href="../develop_layer/tips.html"><strong aria-hidden="true">10.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: QuiCK</div></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-<script defer data-domain="pierrez.github.io/fdb-book" src="https://plausible.io/js/plausible.js"></script>                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <script defer data-domain="pierrez.github.io/fdb-book" src="https://plausible.io/js/plausible.js"></script>                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -113,6 +143,7 @@
                         <a href="https://github.com/PierreZ/fdb-book" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -126,8 +157,9 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -137,219 +169,96 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="crafting-row-keys"><a class="header" href="#crafting-row-keys">Crafting row keys</a></h1>
+                        <h1 id="key-design-tuples-subspaces-and-directories"><a class="header" href="#key-design-tuples-subspaces-and-directories">Key Design: Tuples, Subspaces, and Directories</a></h1>
 <ul>
-<li><a href="#row-key">Row key?</a></li>
-<li><a href="#hand-crafting-row-keys">Hand-crafting row keys</a></li>
-<li><a href="#fdbs-abstractions-and-helpers">FDB's abstractions and helpers</a>
-<ul>
-<li><a href="#tuple">Tuple</a></li>
-<li><a href="#subspace">Subspace</a></li>
-<li><a href="#directory">Directory</a></li>
+<li><a href="#the-challenge-hand-crafting-keys">The Challenge: Hand-Crafting Keys</a></li>
+<li><a href="#layer-1-the-tuple">Layer 1: The <code>Tuple</code></a></li>
+<li><a href="#layer-2-the-subspace">Layer 2: The <code>Subspace</code></a></li>
+<li><a href="#layer-3-the-directory">Layer 3: The <code>Directory</code></a></li>
 </ul>
-</li>
-</ul>
-<h2 id="row-key"><a class="header" href="#row-key">Row key?</a></h2>
-<p>When you are using a key/value store, the design of the <code>row key</code> is extremely important, as this will define how well:</p>
-<ul>
-<li>your scans will be optimized,</li>
-<li>your puts will be spread,</li>
-<li>you will avoid <code>hot-spotting</code> a shard/region.</li>
-</ul>
-<p>If you need more information on <code>row keys</code>, I recommend going through these links before moving on:</p>
-<ul>
-<li><a href="https://cloud.google.com/bigtable/docs/schema-design">&quot;Designing your schema&quot; BigTable documentation</a></li>
-<li><a href="https://hbase.apache.org/book.html#rowkey.design">&quot;Rowkey Design&quot; HBase documentation</a></li>
-</ul>
-<h2 id="hand-crafting-row-keys"><a class="header" href="#hand-crafting-row-keys">Hand-crafting row keys</a></h2>
-<p>Most of the time, you will need to craft the <code>row key</code> &quot;by hand&quot;, like this for <a href="https://github.com/senx/warp10-platform/blob/879734d7f63791b487f3e535cd79ac4c23e99377/warp10/src/main/java/io/warp10/continuum/store/Store.java#L1215-L1222">an HBase's app</a>:</p>
-<pre><code class="language-java">// Prefix + classId + labelsId + timestamp
-// 128 bits
-byte[] rowkey = new byte[Constants.HBASE_RAW_DATA_KEY_PREFIX.length + 8 + 8 + 8];
+<p>In a key-value store, the way you structure your keys is one of the most important architectural decisions you will make. Your key schema determines how your data is organized, how efficiently you can query it, and how well your workload will scale. This chapter introduces FoundationDB's powerful, layered abstractions for key management.</p>
+<h2 id="the-challenge-hand-crafting-keys"><a class="header" href="#the-challenge-hand-crafting-keys">The Challenge: Hand-Crafting Keys</a></h2>
+<p>At the lowest level, a key is just a sequence of bytes. In many key-value systems, developers are forced to manually craft these byte arrays, a process that is both tedious and error-prone.</p>
+<p>Consider storing user data. You might decide on a key structure like <code>(user_id, attribute_name)</code>. To implement this, you would need to write code that serializes the <code>user_id</code> (an integer) and the <code>attribute_name</code> (a string) into a single byte array, taking care to handle different data types, lengths, and ordering correctly. This is brittle; a small change in the format can break your application.</p>
+<p>FoundationDB provides a much better way.</p>
+<h2 id="layer-1-the-tuple"><a class="header" href="#layer-1-the-tuple">Layer 1: The <code>Tuple</code></a></h2>
+<p>The most fundamental building block for key design is the <strong>Tuple</strong>. A tuple is an ordered collection of elements of different types (like strings, integers, and UUIDs). The FoundationDB client libraries provide a <code>pack()</code> function that serializes a tuple into a byte string that correctly preserves type and ordering.</p>
+<pre><code class="language-python">import fdb.tuple
 
-System.arraycopy(Constants.HBASE_RAW_DATA_KEY_PREFIX, 0, rowkey, 0, Constants.HBASE_RAW_DATA_KEY_PREFIX.length);
-// Copy classId/labelsId
-System.arraycopy(Longs.toByteArray(msg.getClassId()), 0, rowkey, Constants.HBASE_RAW_DATA_KEY_PREFIX.length, 8);
-System.arraycopy(Longs.toByteArray(msg.getLabelsId()), 0, rowkey, Constants.HBASE_RAW_DATA_KEY_PREFIX.length + 8, 8);
-</code></pre>
-<p>Or maybe you will wrap things in a function <a href="https://github.com/pingcap/tidb/blob/ef57bdbbb04f60a8be744060a99207e08a37514a/tablecodec/tablecodec.go#L80-L86">like this in Go</a>:</p>
-<pre><code class="language-go">// EncodeRowKey encodes the table id and record handle into a kv.Key
-func EncodeRowKey(tableID int64, encodedHandle []byte) kv.Key {
-	buf := make([]byte, 0, prefixLen+len(encodedHandle))
-	buf = appendTableRecordPrefix(buf, tableID)
-	buf = append(buf, encodedHandle...)
-	return buf
-}
-</code></pre>
-<p>Each time, you need to wrap the complexity of converting your objects to a row-key, by creating a buffer and write stuff in it.</p>
-<p>In our Java example, there is an interesting comment:</p>
-<pre><code class="language-java">// Prefix + classId + labelsId + timestamp
-</code></pre>
-<p>If we are replacing some characters, we are not really far from:</p>
-<pre><code class="language-java">// (Prefix, classId, labelsId, timestamp)
-</code></pre>
-<p>Which looks like a <code>Tuple</code>(a collection of values of different types) and this is what FoundationDB is using as an abstraction to create keys 😍</p>
-<h2 id="fdbs-abstractions-and-helpers"><a class="header" href="#fdbs-abstractions-and-helpers">FDB's abstractions and helpers</a></h2>
-<h3 id="tuple"><a class="header" href="#tuple">Tuple</a></h3>
-<p>Instead of crafting bytes by hand, we are <code>packing</code> a Tuple:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// create a Tuple&lt;String, i64&gt; with (&quot;tenant-42&quot;, 1)
-let tuple = (String::from(&quot;tenant-42&quot;), 1);
+# A tuple containing a string and an integer
+user_profile_tuple = ('user', 12345)
 
-// and compute a row-key from the Tuple
-let row_key = foundationdb::tuple::pack::&lt;(String, i64)&gt;(&amp;tuple);
-<span class="boring">}
-</span></code></pre></pre>
-<p>The generated row-key will be readable from any bindings, as it's construction is standardized. Let's print it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// and print-it in hexa
-println!(&quot;{:#04X?}&quot;, row_key);
-<span class="boring">}
-</span></code></pre></pre>
-<pre><code class="language-log">// can be verified with https://www.utf8-chartable.de/unicode-utf8-table.pl
-[
-    0x02,
-    0x74, // t
-    0x65, // e 
-    0x6E, // n
-    0x61, // a
-    0x6E, // n
-    0x74, // t
-    0x2D, // -
-    0x31, // 1
-    0x00, 
-    0x15,
-    0x2A, // 42
-]
-</code></pre>
-<p>As you can see, <code>pack</code> added some extra-characters. There are used to recognized the next type, a bit like when you are encoding/decoding some wire protocols. You can find the relevant documentation <a href="https://github.com/apple/foundationdb/blob/master/design/tuple.md">here</a>.</p>
-<p>Having this kind of standard means that we can easily decompose/<code>unpack</code> it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// retrieve the user and the magic number In a Tuple (String, i64)
-let from_row_key = foundationdb::tuple::unpack::&lt;(String, i64)&gt;(&amp;row_key)?;
+# Pack the tuple into a byte key
+key = fdb.tuple.pack(user_profile_tuple)
 
-println!(&quot;user='{}', magic_number={}&quot;, from_row_key.0, from_row_key.1);
-// user='tenant-42', magic_number=42
-<span class="boring">}
-</span></code></pre></pre>
-<p>Now that we saw <code>Tuples</code>, let's dig in the next abstraction: <code>subspaces</code></p>
-<h3 id="subspace"><a class="header" href="#subspace">Subspace</a></h3>
-<p>When you are working with key-values store, we are often playing with what we call <code>keyspaces</code>, by dedicating a portion of the key to an usage, like this for example:</p>
-<pre><code class="language-text">/users/tenant-1/...
-/users/tenant-2/...
-/users/tenant-3/...
-</code></pre>
-<p>Here, <code>/users/tenant-1/</code> can be view like a prefix where we will put all the relevant keys. Instead of passing a simple prefix, FoundationDB is offering a dedicated structure called a <code>Subspace</code>:</p>
-<blockquote>
-<p>A Subspace represents a well-defined region of keyspace in a FoundationDB database</p>
-</blockquote>
-<blockquote>
-<p>It provides a convenient way to use FoundationDB tuples to define namespaces for different categories of data. The namespace is specified by a prefix tuple which is prepended to all tuples packed by the subspace. When unpacking a key with the subspace, the prefix tuple will be removed from the result.</p>
-</blockquote>
-<p>As you can see, the <code>Subspace</code> is heavily relying on FoundationDB's tuples, as we can <code>pack</code> and <code>unpack</code> it.</p>
-<blockquote>
-<p>As a best practice, API clients should use at least one subspace for application data.</p>
-</blockquote>
-<p>Well, as we have now the tools to handle keyspaces easily, it is now futile to craft keys by hand 🙃 Let's create a subspace!</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span>
-<span class="boring">fn main() {
-</span>// create a subspace from the Tuple (&quot;tenant-1&quot;, 42)
-let subspace = Subspace::from((String::from(&quot;tenant-1&quot;), 42));
+# The result is a byte string suitable for use as a key
+# b'\x02user\x00\x1509'
+print(repr(key))
 
-// let's print the range
-println!(&quot;start: {:#04X?}\n end: {:#04X?}&quot;, subspace.range().0, subspace.range().1);
-<span class="boring">}
-</span></code></pre></pre>
-<p>We can see observe this:</p>
-<pre><code class="language-log">// can be verified with https://www.utf8-chartable.de/unicode-utf8-table.pl
-start: [
-    0x02,
-    0x74, // t
-    0x65, // e 
-    0x6E, // n
-    0x61, // a
-    0x6E, // n
-    0x74, // t
-    0x2D, // -
-    0x31, // 1
-    0x00, 
-    0x15,
-    0x2A, // 42
-    0x00,
-    0x00, // smallest possible byte
-]
-end: [
-    0x02,
-    0x74, // t
-    0x65, // e 
-    0x6E, // n
-    0x61, // a
-    0x6E, // n
-    0x74, // t
-    0x2D, // -
-    0x31, // 1
-    0x00, 
-    0x15,
-    0x2A, // 42
-    0x00,
-    0xFF, // biggest possible byte
-]
+# You can unpack the bytes back into the original tuple
+unpacked_tuple = fdb.tuple.unpack(key)
+assert unpacked_tuple == user_profile_tuple
 </code></pre>
-<p>Which make sens, if we take <code>(&quot;tenant-1&quot;, 42)</code> as a prefix, then the range for this subspace will be between <code>(&quot;tenant-1&quot;, 42, 0x00)</code> and <code>(&quot;tenant-1&quot;, 42, 0xFF)</code></p>
-<h3 id="directory"><a class="header" href="#directory">Directory</a></h3>
-<p>Now that we know our way around <code>Tuples</code> and <code>Subspaces</code>, we can now talk about what I'm working on, which is the <code>Directory</code>. Let's have a look at the relevant <a href="https://apple.github.io/foundationdb/developer-guide.html#directories">documentation</a>:</p>
-<blockquote>
-<p>FoundationDB provides directories (available in each language binding) as a tool for managing related subspaces.</p>
-</blockquote>
-<blockquote>
-<p>Directories are a recommended approach for administering applications. Each application should create or open at least one directory to manage its subspaces.</p>
-</blockquote>
-<p>Okay, let's see the API in Go:</p>
-<pre><code class="language-go">subspace, err := directory.CreateOrOpen(db, []string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;}, nil)
-if err != nil {
-	log.Fatal(err)
-}
+<p>This simple abstraction solves the manual serialization problem. You can think in terms of structured data, and the tuple layer handles the byte-level representation for you. Because the packing format is standardized across all language bindings, a key packed in Python can be unpacked in Go, Java, or any other language.</p>
+<h2 id="layer-2-the-subspace"><a class="header" href="#layer-2-the-subspace">Layer 2: The <code>Subspace</code></a></h2>
+<p>Building on tuples, the next layer of abstraction is the <strong>Subspace</strong>. A subspace is a way to create a dedicated namespace within the database for a particular category of data. It works by defining a prefix tuple that is automatically prepended to all keys packed within that subspace.</p>
+<p>This is a powerful organizational tool. For example, you can create separate subspaces for user data, application settings, and logging events.</p>
+<pre><code class="language-python">import fdb.tuple
 
-fmt.Printf(&quot;%+v\n&quot;, subspace.Bytes())
-// [21 18]
-</code></pre>
-<p>We can see that we have a shorter subspace! The <code>directory</code> allows you to generate some integer that will be bind to a path, like here <code>&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;</code>.</p>
-<p>There are two advantages to this:</p>
-<ul>
-<li>shorter keys,</li>
-<li>cheap metadata operations like <code>List</code> or <code>Move</code>:</li>
-</ul>
-<pre><code class="language-go">// list all tenant in &quot;application&quot;, &quot;my-app&quot;:
-tenants, err := directory.List(db, []string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;})
-if err != nil {
-	log.Fatal(err)
-}
-fmt.Printf(&quot;%+v\n&quot;, tenants)
-// [tenant-42]
+# Create a subspace for storing user profiles
+user_subspace = fdb.Subspace(('users',))
 
-// renaming 'tenant-42' in 'tenant-142'
-// This will NOT move the data, only the metadata is modified
-directorySubspace, err = directory.Move(db, 
-	[]string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;},  // old path
-	[]string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-142&quot;}) // new path
-if err != nil {
-	log.Fatal(err)
-}
-fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
-// still [21 18]
+# Now, keys created within this subspace will be prefixed
+# with the packed representation of ('users',)
+key1 = user_subspace.pack(('alice',))
+key2 = user_subspace.pack(('bob',))
+
+# key1 is now b'\x02users\x00\x02alice\x00'
+# key2 is now b'\x02users\x00\x02bob\x00'
+print(repr(key1))
+print(repr(key2))
+
+# You can also use the subspace to unpack a key,
+# which strips the prefix automatically.
+unpacked = user_subspace.unpack(key1)
+assert unpacked == ('alice',)
 </code></pre>
-<p>The returned object is actually a <code>DirectorySubspace</code>, which implements both <code>Directory</code> and <code>Subspace</code>, which means that you can use it to recreate many directories and subspaces at will 👌</p>
+<p>Subspaces allow you to isolate data and perform range scans over a specific category of information without worrying about colliding with other parts of your keyspace.</p>
+<h2 id="layer-3-the-directory"><a class="header" href="#layer-3-the-directory">Layer 3: The <code>Directory</code></a></h2>
+<p>The highest level of abstraction is the <strong>Directory</strong>. Directories are a tool for managing subspaces. While you can create subspaces with fixed prefixes (like <code>('users',)</code>), directories allow you to create and manage them dynamically.</p>
 <blockquote>
-<p>If you are wondering about how this integer is generated, I recommend going through this awesome blogpost on <a href="https://activesphere.com/blog/2018/08/05/high-contention-allocator">how high contention allocator works in FoundationDB.</a></p>
+<p>Directories are the recommended approach for organizing the keyspace of one or more applications.</p>
 </blockquote>
+<p>A directory allows you to associate a human-readable path (like <code>('users', 'profiles')</code>) with a short, randomly generated integer prefix. This has two major benefits:</p>
+<ol>
+<li><strong>Shorter Keys:</strong> The generated prefix is much shorter than the packed representation of the full path, saving space.</li>
+<li><strong>Schema Management:</strong> You can list, move, and remove directories. Moving a directory is a fast metadata-only change; it doesn't require rewriting all the keys within it.</li>
+</ol>
+<pre><code class="language-python">import fdb
+import fdb.directory
+
+fdb.api_version(710)
+db = fdb.open()
+
+# Create or open a directory at a specific path
+app_dir = fdb.directory.create_or_open(db, ('my-app',))
+
+# Create subspaces within that directory
+users_subspace = app_dir.create_or_open(db, ('users',))
+logs_subspace = app_dir.create_or_open(db, ('logs',))
+
+# The key for the 'users' subspace might be b'\x15\x01', a much
+# shorter prefix than packing the full path.
+print(repr(users_subspace.key()))
+
+# You can now use this subspace as before
+@fdb.transactional
+def set_user(tr, name):
+    tr[users_subspace.pack((name,))] = b'some_profile_data'
+
+set_user(db, 'charlie')
+</code></pre>
+<p>By using these three layers—Tuples for serialization, Subspaces for namespacing, and Directories for management—you can build sophisticated and maintainable data models on top of the simple key-value interface.</p>
 
                     </main>
 
@@ -358,9 +267,11 @@ fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
                             <a rel="prev" href="../develop_layer/transactions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../develop_layer/studiable-layers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+
+                            <a rel="next prefetch" href="../develop_layer/studiable-layers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -370,25 +281,35 @@ fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
                     <a rel="prev" href="../develop_layer/transactions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../develop_layer/studiable-layers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+
+                    <a rel="next prefetch" href="../develop_layer/studiable-layers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
-        <script type="text/javascript">
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script type="text/javascript" src="../mermaid.min.js"></script>
-        <script type="text/javascript" src="../mermaid-init.js"></script>
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
     </body>
 </html>

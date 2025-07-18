@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - the FoundationDB Book</title>
-        <base href="/fdb-book/">
+        <title>The Write Path - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "";
+            const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../toc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -103,7 +102,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -138,7 +137,7 @@
                     <h1 class="menu-title">the FoundationDB Book</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/PierreZ/fdb-book" title="Git repository" aria-label="Git repository">
@@ -170,14 +169,66 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="the-write-path"><a class="header" href="#the-write-path">The Write Path</a></h1>
+<ul>
+<li><a href="#the-steps-of-a-commit">The Steps of a Commit</a></li>
+<li><a href="#the-final-step-data-storage">The Final Step: Data Storage</a></li>
+</ul>
+<p>Understanding the life of a write transaction is key to understanding how FoundationDB provides its powerful guarantees of strict serializability and durability. The process involves a carefully choreographed dance between several cluster roles.</p>
+<p>Let's walk through the journey of a transaction from the moment a client calls <code>commit()</code> to the point where it is safely stored in the database.</p>
+<pre class="mermaid">sequenceDiagram
+    participant Client
+    participant Proxy
+    participant Resolver
+    participant Log Server
+    participant Storage Server
+
+    Client-&gt;&gt;+Proxy: commit(read_set, write_set)
+    Proxy-&gt;&gt;Proxy: 1. Get Read Version
+    Proxy-&gt;&gt;+Resolver: 2. Resolve(read_version, read_set, write_set)
+    Resolver--&gt;&gt;-Proxy: OK (no conflicts)
+    Proxy-&gt;&gt;+Log Server: 3. Log(commit_version, write_set)
+    Log Server--&gt;&gt;-Proxy: 4. Durable
+    Proxy--&gt;&gt;-Client: 5. Commit Successful
+    loop Later
+        Storage Server-&gt;&gt;+Log Server: Pull mutations
+        Log Server--&gt;&gt;-Storage Server: Mutations
+        Storage Server-&gt;&gt;Storage Server: Apply to B-Tree
+    end
+</pre>
+<h3 id="the-steps-of-a-commit"><a class="header" href="#the-steps-of-a-commit">The Steps of a Commit</a></h3>
+<ol>
+<li>
+<p><strong>Get Read Version:</strong> When the transaction is ready to be committed, the client library sends it to a <strong>Proxy</strong>. The first thing the Proxy does is request a <strong>Read Version</strong> from the Cluster Controller. This version number establishes the logical point in time at which the transaction's reads occurred.</p>
+</li>
+<li>
+<p><strong>Conflict Resolution:</strong> The Proxy sends the transaction's Read Version, its <em>read set</em> (the list of keys it read), and its <em>write set</em> to the <strong>Resolver</strong>. The Resolver checks if any of the keys in the read set have been written to by another transaction that committed <em>after</em> this transaction's Read Version. If a conflict is detected, the Resolver tells the Proxy to reject the transaction, and the client must retry.</p>
+</li>
+<li>
+<p><strong>Logging for Durability:</strong> If the Resolver finds no conflicts, the Proxy assigns the transaction a <strong>Commit Version</strong> (which will be higher than its Read Version) and sends the transaction's <em>write set</em> (the keys and values to be written) to the <strong>Log Servers</strong>.</p>
+</li>
+<li>
+<p><strong>Durable Commit:</strong> The Log Servers write the transaction's mutations to their durable, on-disk transaction logs. Once a quorum of Log Servers has confirmed that the data is safely on disk, they respond to the Proxy. At this point, the transaction is considered <strong>durable</strong>. Even if the entire cluster lost power, the transaction would be recovered.</p>
+</li>
+<li>
+<p><strong>Success!</strong> The Proxy, having received confirmation from the Log Servers, reports back to the client that the commit was successful.</p>
+</li>
+</ol>
+<h3 id="the-final-step-data-storage"><a class="header" href="#the-final-step-data-storage">The Final Step: Data Storage</a></h3>
+<p>Notice that the <strong>Storage Servers</strong> were not involved in the critical commit path. This is a key design decision that makes commits extremely fast.</p>
+<p>After the transaction is durable, the Storage Servers will eventually pull the new data from the Log Servers and apply the mutations to their own on-disk B-trees. This process happens asynchronously in the background and does not block new incoming transactions. This separation of the transaction log from the primary data store is a pattern known as Command Query Responsibility Segregation (CQRS) and is fundamental to FoundationDB's performance.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../internals/roles.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../internals/the-read-path.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -185,7 +236,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../internals/roles.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../internals/the-read-path.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -198,17 +255,17 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="mermaid.min.js"></script>
-        <script src="mermaid-init.js"></script>
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
     </div>

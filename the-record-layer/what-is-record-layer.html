@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Best Practices and Pitfalls - the FoundationDB Book</title>
+        <title>What is the Record-layer? - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -169,78 +169,73 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="best-practices-and-pitfalls"><a class="header" href="#best-practices-and-pitfalls">Best Practices and Pitfalls</a></h1>
-<p>This chapter provides a collection of best practices, advanced techniques, and common pitfalls to help you build robust, production-ready layers on FoundationDB.</p>
+                        <h1 id="what-is-the-record-layer"><a class="header" href="#what-is-the-record-layer">What is the Record Layer?</a></h1>
+<p>The FoundationDB Record Layer is an open-source library that provides a record-oriented data store with semantics similar to a relational database, implemented on top of FoundationDB. Think of it as a "middle layer" that provides common database-like features, making it easier to build complex, scalable applications on FDB.</p>
+<p>It was created to solve the common and difficult challenges that arise when building a structured data layer on top of a key-value store, such as schema management, indexing, and query execution, especially in a multi-tenant environment.</p>
+<h2 id="core-design-principles"><a class="header" href="#core-design-principles">Core Design Principles</a></h2>
+<p>The Record Layer is built around a few core principles:</p>
 <ul>
-<li><a href="#transaction-management">Transaction Management</a>
-<ul>
-<li><a href="#use-timeouts-and-retry-limits">Use Timeouts and Retry Limits</a></li>
-<li><a href="#set-transaction-priority">Set Transaction Priority</a></li>
-</ul>
+<li>
+<p><strong>Structured, Schematized Data</strong>: It stores structured records using Google's <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a>. This provides a robust way to define a schema and evolve it over time.</p>
 </li>
-<li><a href="#observability">Observability</a>
-<ul>
-<li><a href="#tag-your-transactions">Tag Your Transactions</a></li>
-<li><a href="#enable-client-trace-logs">Enable Client Trace Logs</a></li>
-</ul>
+<li>
+<p><strong>Stateless Architecture</strong>: The layer itself is completely stateless. All state is stored in FoundationDB or returned to the client (e.g., as a <code>continuation</code>). This simplifies scaling and operation, as any server can handle any request.</p>
 </li>
-<li><a href="#advanced-techniques">Advanced Techniques</a>
-<ul>
-<li><a href="#the-metadataversion-key">The <code>metadataVersion</code> Key</a></li>
-<li><a href="#the-timekeeper">The <code>TimeKeeper</code></a></li>
-<li><a href="#special-keys">Special Keys</a></li>
-</ul>
+<li>
+<p><strong>Streaming Queries</strong>: The Record Layer is designed for a streaming model. For example, it only supports ordered queries (like SQL's <code>ORDER BY</code>) if there is an index that can produce the data in the requested order. This avoids large, stateful in-memory operations and makes performance predictable, favoring fast OLTP workloads over analytical OLAP queries.</p>
 </li>
-<li><a href="#common-pitfalls-the-directory-layer">Common Pitfalls: The Directory Layer</a></li>
+<li>
+<p><strong>Extensibility</strong>: The layer is highly extensible. Clients can define their own custom index types, index maintainers, and query planner rules, allowing them to tailor the database's behavior to their specific needs.</p>
+</li>
 </ul>
-<h2 id="transaction-management"><a class="header" href="#transaction-management">Transaction Management</a></h2>
-<h3 id="use-timeouts-and-retry-limits"><a class="header" href="#use-timeouts-and-retry-limits">Use Timeouts and Retry Limits</a></h3>
-<p>Most language bindings provide a <code>run</code> or <code>transact</code> method that automatically handles the retry loop for you. However, to prevent transactions from running indefinitely, it is critical to configure two options:</p>
+<h2 id="the-record-store-a-logical-database"><a class="header" href="#the-record-store-a-logical-database">The "Record Store": A Logical Database</a></h2>
+<p>A key abstraction in the Record Layer is the <strong>Record Store</strong>. A Record Store is a logical, self-contained database that holds all of a tenant's records, indexes, and metadata. This entire logical database is stored within a single, contiguous key-space in FoundationDB, called a <strong>subspace</strong>.</p>
+<p>This design is a perfect fit for multi-tenant applications. For example, Apple's CloudKit uses this model to provide a distinct logical database for every application on every user's device—billions of independent databases in total. Because a Record Store is just a range of keys, it can be easily moved between FDB clusters for load balancing.</p>
+<h2 id="key-technical-features"><a class="header" href="#key-technical-features">Key Technical Features</a></h2>
+<p>The Record Layer abstracts away several complex engineering problems by leveraging FoundationDB's core features.</p>
+<h3 id="key-expressions-for-flexible-indexing"><a class="header" href="#key-expressions-for-flexible-indexing">Key Expressions for Flexible Indexing</a></h3>
+<p>Indexes are defined using <strong>key expressions</strong>, which are functions that specify how to extract data from a record to form an index key. Key expressions can be simple (e.g., a single field's value) or complex. They can:</p>
 <ul>
-<li><strong>Timeout:</strong> Set a timeout in milliseconds. If the transaction takes longer than this to commit, it will be automatically cancelled. This is a crucial backstop for preventing stuck application threads.</li>
-<li><strong>Retry Limit:</strong> Set a maximum number of retries. This prevents a transaction from retrying endlessly in the case of a persistent conflict or a live-lock scenario.</li>
+<li><strong>Concatenate</strong> multiple fields together.</li>
+<li><strong>Fan out</strong> by creating multiple index entries from a single record, such as indexing each element in a repeated field (a list).</li>
+<li><strong>Nest</strong> to index fields within a sub-record.</li>
 </ul>
-<p>These options should be set on every transaction to ensure your application remains stable under load.</p>
-<h3 id="set-transaction-priority"><a class="header" href="#set-transaction-priority">Set Transaction Priority</a></h3>
-<p>FoundationDB supports transaction priorities to help manage workloads.</p>
+<p>This provides a powerful and flexible way to create indexes on highly structured, nested data.</p>
+<h3 id="online-index-building"><a class="header" href="#online-index-building">Online Index Building</a></h3>
+<p>Building an index on a large, live dataset is a hard problem. The Record Layer's online indexer handles this gracefully. When a new index is added, it transitions through several states:</p>
+<ol>
+<li><strong>Write-only</strong>: The index is maintained for all new and updated records, but it cannot yet be used for queries.</li>
+<li><strong>Building</strong>: A background process scans all existing records in batches, adding their corresponding entries to the index. This process is transactional, fault-tolerant, and resumable.</li>
+<li><strong>Readable</strong>: Once the background build is complete, the index is marked as readable and can be used by the query planner.</li>
+</ol>
+<h3 id="advanced-index-types"><a class="header" href="#advanced-index-types">Advanced Index Types</a></h3>
+<p>The Record Layer includes several powerful, built-in index types:</p>
 <ul>
-<li><strong>Default:</strong> The standard priority for most latency-sensitive, user-facing operations.</li>
-<li><strong>Batch:</strong> A lower priority for background work, such as data cleanup or analytics. Batch priority transactions will yield to default priority transactions, ensuring that they don't interfere with your main application workload.</li>
-<li><strong>System Immediate:</strong> The highest priority, which can block other transactions. Its use is discouraged outside of low-level administrative tools.</li>
+<li><strong>VALUE</strong>: A standard index that maps the value from a key expression to the record's primary key.</li>
+<li><strong>ATOMIC</strong>: An index that uses FoundationDB's atomic mutations to maintain aggregate statistics without transaction conflicts. This is used for <code>SUM</code>, <code>COUNT</code>, <code>MAX</code>, and <code>MIN</code> indexes.</li>
+<li><strong>VERSION</strong>: An index on the commit version of a record. This creates a conflict-free, totally-ordered change log, which is ideal for synchronization. The version is a unique 12-byte value: 10 bytes from the FDB commit version and 2 bytes from a transaction-local counter in the Record Layer.</li>
+<li><strong>RANK</strong>: An index that can answer questions like, "what is the Nth record in a given order?" or "what is the rank of this specific record?"</li>
+<li><strong>TEXT</strong>: A full-text index for searching for words or phrases within a text field.</li>
 </ul>
-<h2 id="observability"><a class="header" href="#observability">Observability</a></h2>
-<h3 id="tag-your-transactions"><a class="header" href="#tag-your-transactions">Tag Your Transactions</a></h3>
-<p>FoundationDB allows you to add a byte-string <strong>tag</strong> to any transaction. This is an invaluable tool for observability and performance management. You can use tags to identify different types of workloads (e.g., <code>user_signup</code>, <code>post_comment</code>). The <code>fdbcli</code> tool can then be used to monitor the rate of transactions with specific tags and even throttle them if they are causing excessive load.</p>
-<p>See the official documentation on <a href="https://apple.github.io/foundationdb/transaction-tagging.html">Transaction Tagging</a> for more details.</p>
-<h3 id="enable-client-trace-logs"><a class="header" href="#enable-client-trace-logs">Enable Client Trace Logs</a></h3>
-<p>By default, clients do not generate detailed trace logs. To debug performance issues, you can enable them by setting the <code>TraceEnable</code> database option. You can then add a <code>DebugTransactionIdentifier</code> to a specific transaction and set the <code>LogTransaction</code> option to get detailed, low-level logs about its execution, including all keys and values read and written.</p>
-<h2 id="advanced-techniques"><a class="header" href="#advanced-techniques">Advanced Techniques</a></h2>
-<h3 id="the-metadataversion-key"><a class="header" href="#the-metadataversion-key">The <code>metadataVersion</code> Key</a></h3>
-<p>The special key <code>\xFF/metadataVersion</code> is a cluster-wide version counter that can be used to implement client-side caching. Its value is sent to clients with every read version, so reading it does not require a round-trip to a storage server. A layer can watch this key to know when to invalidate a local cache.</p>
-<p><strong>Note:</strong> If you write to the <code>metadataVersion</code> key, you cannot read it again in the same transaction.</p>
-<h3 id="the-timekeeper"><a class="header" href="#the-timekeeper">The <code>TimeKeeper</code></a></h3>
-<p>The <code>Cluster Controller</code> maintains a map of recent read versions to wall-clock times. This can be accessed by scanning the key range beginning with <code>\xFF\x02/timeKeeper/map/</code>. This can be useful for approximating a global clock.</p>
-<h3 id="special-keys"><a class="header" href="#special-keys">Special Keys</a></h3>
-<p>Keys prefixed with <code>\xFF\xFF</code> are “special” keys that are materialized on-demand when read. The most common example is <code>\xFF\xFF/status/json</code>, which returns a JSON document containing the cluster's status.</p>
-<p>See the official documentation on <a href="https://apple.github.io/foundationdb/special-keys.html">Special Keys</a> for more details.</p>
-<h2 id="common-pitfalls-the-directory-layer"><a class="header" href="#common-pitfalls-the-directory-layer">Common Pitfalls: The Directory Layer</a></h2>
-<p>The Directory Layer is a powerful tool, but it has several sharp edges that developers must be aware of:</p>
+<h3 id="query-continuations-for-resource-control"><a class="header" href="#query-continuations-for-resource-control">Query Continuations for Resource Control</a></h3>
+<p>To prevent any single request from consuming too many resources, all long-running operations are pausable. When a query hits a predefined limit (e.g., number of records scanned or time elapsed), it stops and returns the results it has found so far, along with an opaque <strong>continuation</strong>.</p>
+<p>This continuation captures the exact state of the query. The client can pass it back in a new request to resume the query exactly where it left off. This makes the system highly scalable and resilient, as it allows for fine-grained control over resource usage.</p>
+<h2 id="further-reading"><a class="header" href="#further-reading">Further Reading</a></h2>
 <ul>
-<li><strong>Concurrent Mutations:</strong> Modifying the same directory (e.g., creating two different subdirectories within it) in multiple, concurrent transactions is not safe and can lead to corruption.</li>
-<li><strong>Metadata Hotspots:</strong> Opening a directory with a long path requires one read per path element for every transaction. This can create a hotspot on the directory's internal metadata subspace.</li>
-<li><strong>Multi-Cluster Deployments:</strong> The directory prefix allocator is not safe for multi-cluster deployments and can allocate the same prefix in different clusters, leading to data corruption if the data is ever merged.</li>
-<li><strong>Redwood and Prefix Compression:</strong> The Redwood storage engine (new in 7.0) provides native key-prefix compression. This offers many of the same space-saving benefits as the Directory Layer without the associated complexity and caveats. For new projects, especially those using Redwood, consider whether you can use subspaces with descriptive prefixes directly instead of relying on the Directory Layer.</li>
+<li><strong>Paper</strong>: <a href="https://www.foundationdb.org/files/record-layer-paper.pdf">FoundationDB Record Layer: A Multi-Tenant Structured Datastore</a> (SIGMOD '19)</li>
+<li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=SvoUHHM9IKU">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB</a> (FDB Summit 2018)</li>
+<li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=HLE8chgw6LI">Using FoundationDB and the FDB Record Layer to Build CloudKit</a> (FDB Summit 2018)</li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../develop_layer/studiable-layers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../internals/the-read-path.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../internals/roles.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../the-record-layer/quick.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -250,11 +245,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../develop_layer/studiable-layers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../internals/the-read-path.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../internals/roles.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../the-record-layer/quick.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

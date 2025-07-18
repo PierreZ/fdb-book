@@ -1,15 +1,17 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>the FoundationDB Book</title>
-        <meta name="robots" content="noindex" />
+        <meta name="robots" content="noindex">
+
+
         <!-- Custom HTML head -->
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -17,28 +19,46 @@
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
         <link rel="stylesheet" href="css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
     </head>
     <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
-
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -51,56 +71,66 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
+            sidebar_toggle.checked = sidebar === 'visible';
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="develop_layer/transactions.html"><strong aria-hidden="true">7.</strong> ACID transactions</a></li><li class="chapter-item expanded "><a href="develop_layer/crafting-row-keys.html"><strong aria-hidden="true">8.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><a href="develop_layer/studiable-layers.html"><strong aria-hidden="true">9.</strong> Existing open-source layers</a></li><li class="chapter-item expanded "><a href="develop_layer/tips.html"><strong aria-hidden="true">10.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: QuiCK</div></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-<script defer data-domain="pierrez.github.io/fdb-book" src="https://plausible.io/js/plausible.js"></script>                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <script defer data-domain="pierrez.github.io/fdb-book" src="https://plausible.io/js/plausible.js"></script>                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -114,6 +144,7 @@
                         <a href="https://github.com/PierreZ/fdb-book" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -127,8 +158,9 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -139,551 +171,365 @@
                 <div id="content" class="content">
                     <main>
                         <p><img src="FDB_logo.png" alt="FDB_logo.png" /></p>
-<h1 id="the-foundationdbs-book-"><a class="header" href="#the-foundationdbs-book-">The FoundationDB's Book 📖</a></h1>
-<p>Welcome to FoundationDB's Book! If you are looking to start writing your own datastore with FoundationDB, or if you are curious about FDB, you have come to the right place.</p>
-<p>🚧 This is currently a work-in-progress, feel free to <a href="https://github.com/PierreZ/fdb-book">contribute</a> chapters! 🚧</p>
+<h1 id="the-foundationdb-book-"><a class="header" href="#the-foundationdb-book-">The FoundationDB Book 📖</a></h1>
+<p>Welcome! Whether you're building your own datastore with FoundationDB or are simply curious about its capabilities, you've come to the right place.</p>
+<p>🚧 This book is a work in progress. We welcome contributions! Feel free to <a href="https://github.com/PierreZ/fdb-book">open a pull request</a> with your improvements. 🚧</p>
+<h2 id="who-this-book-is-for"><a class="header" href="#who-this-book-is-for">Who This Book Is For</a></h2>
+<p>This book is for developers, architects, and database enthusiasts who want to understand and leverage FoundationDB. It serves as a comprehensive guide, linking to the <a href="https://apple.github.io/foundationdb/">official documentation</a> and the <a href="https://forums.foundationdb.org/">community forum</a> when deeper dives are needed.</p>
 <h2 id="what-this-book-covers"><a class="header" href="#what-this-book-covers">What This Book Covers</a></h2>
-<p>This book aims to be a comprehensive, up-to-date guide to use FoundationDB features and libraries, appropriate for beginners and old hands alike.</p>
-<p>It is designed as <strong>an entrypoint towards the FoundationDB's community</strong>, with links pointing to the <a href="https://apple.github.io/foundationdb/">official documentation</a> or the <a href="https://forums.foundationdb.org/">forum</a>.</p>
 <ul>
-<li>The early chapters provide an introduction to FoundationDB, why it may interest you, and what is a layer.</li>
-<li>The Record-Layer chapter is focusing on the Record-Layer, a Java library to write layers made by Apple.</li>
-<li>The middle chapters discuss key utilities and features provided by the bindings, and describe best-practises to write layers to maximize performance and scalability.</li>
-<li>The last chapters are describing core elements of FoundationDB, such as read/write path, or the simulation framework.</li>
+<li><strong>Meet FoundationDB:</strong> We start with an introduction to FoundationDB, exploring what makes it unique and why it might be the right choice for your project.</li>
+<li><strong>Getting Started:</strong> A hands-on guide to installing FoundationDB and interacting with it using the <code>fdbcli</code> command-line tool.</li>
+<li><strong>Developing a Layer:</strong> Learn the core concepts of building on FDB, from ACID transactions to best practices for data modeling and key design. We'll also look at existing open-source layers for inspiration.</li>
+<li><strong>FoundationDB's Internals:</strong> Delve into the architecture of FoundationDB, including its read/write paths and powerful simulation framework.</li>
+<li><strong>The Record Layer:</strong> A dedicated look at the Record Layer, a Java library from Apple for building complex data models on FoundationDB.</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="yet-another-database"><a class="header" href="#yet-another-database">Yet another database?</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="yet-another-database"><a class="header" href="#yet-another-database">Yet Another Database?</a></h1>
 <ul>
-<li><a href="meet_fdb/another_db.html#how-to-choose-a-database">How to choose a database?</a></li>
-<li><a href="meet_fdb/another_db.html#stateless-applications">Stateless applications</a></li>
-<li><a href="meet_fdb/another_db.html#datastores-architecture">Datastore's architecture</a></li>
-<li><a href="meet_fdb/another_db.html#sharing-the-storage-engine-">Sharing the storage engine 🤔</a></li>
-<li><a href="meet_fdb/another_db.html#requirements-for-such-a-storage-engine">Requirements for such a storage engine</a></li>
+<li><a href="meet_fdb/another_db.html#how-are-databases-different">How Are Databases Different?</a></li>
+<li><a href="meet_fdb/another_db.html#the-rise-of-polyglot-persistence">The Rise of Polyglot Persistence</a></li>
+<li><a href="meet_fdb/another_db.html#the-anatomy-of-a-datastore">The Anatomy of a Datastore</a></li>
+<li><a href="meet_fdb/another_db.html#the-case-for-a-shared-storage-engine">The Case for a Shared Storage Engine</a></li>
+<li><a href="meet_fdb/another_db.html#requirements-for-a-universal-storage-engine">Requirements for a Universal Storage Engine</a></li>
 </ul>
 <blockquote>
-<p>Another database? There is so many of them 😑</p>
+<p>"Another database? There are so many of them!"</p>
 </blockquote>
-<p>You are right, we are living in the golden age of data, and as such, we have many options to store our data.</p>
-<p>According to the <a href="https://dbdb.io/">Database of Databases</a>, you can choose between <strong>795 database management systems</strong>. Yes, you read it right, almost 800 different databases to compare 😱</p>
-<h2 id="how-to-choose-a-database"><a class="header" href="#how-to-choose-a-database">How to choose a database?</a></h2>
-<p>If you click on the <a href="https://dbdb.io/browse">Browse button</a>, you will be able to go through the different criteria:</p>
+<p>You're right. We live in a golden age of data, which means we have a dizzying number of options for storing it.</p>
+<p>According to the <a href="https://dbdb.io/">Database of Databases</a>, there are nearly <strong>800 different database management systems</strong> to choose from. This abundance of choice can be overwhelming.</p>
+<h2 id="how-are-databases-different"><a class="header" href="#how-are-databases-different">How Are Databases Different?</a></h2>
+<p>When choosing a database, engineers evaluate them against a long list of criteria. This leads to a wide variety of <strong>specialized datastores</strong>, each optimized for a different purpose. Key differentiators include:</p>
 <ul>
-<li>is it open-source or not?</li>
-<li>is it an embedded/single-node/distributed database?</li>
-<li>What is the query language?</li>
-<li>is it suited for <a href="https://en.wikipedia.org/wiki/Online_transaction_processing">OTLP</a> or <a href="https://en.wikipedia.org/wiki/Online_analytical_processing">OLAP</a> workloads?</li>
-<li>What is the data model?</li>
-<li>What is the scalability limits?</li>
-<li>Is it transactional?</li>
-<li>Is there indexes?</li>
-<li>Is it a row-oriented storage, or maybe columnar?</li>
-<li>is there stored procedures and materialized views?</li>
-<li>and so on.</li>
+<li><strong>Data Model:</strong> Is it a document, column-family, key-value, graph, or relational database?</li>
+<li><strong>Workload:</strong> Is it designed for transactional (OLTP) or analytical (OLAP) workloads?</li>
+<li><strong>Architecture:</strong> Is it embedded, single-node, or distributed?</li>
+<li><strong>Transactions:</strong> Does it support ACID transactions?</li>
+<li><strong>Query Language:</strong> Does it use SQL or a proprietary language?</li>
+<li><strong>Scalability:</strong> What are its performance limits?</li>
+<li><strong>Licensing:</strong> Is it open-source?</li>
+<li><strong>Features:</strong> Does it offer secondary indexes, stored procedures, or materialized views?</li>
 </ul>
-<p>That's a lot of criteria! But that means we also have a big number of possible combinations, each one creating a potential new database. This is why we have <strong>specialized datastores</strong> like:</p>
-<ul>
-<li>document</li>
-<li>column </li>
-<li>key-value</li>
-<li>graph </li>
-<li>indexing</li>
-<li>messaging</li>
-<li>and others!</li>
-</ul>
-<h2 id="stateless-applications"><a class="header" href="#stateless-applications">Stateless applications</a></h2>
-<p>This variety of specialized datastore is allowing developers to have multiple datastores as <strong>requirements</strong> for a single infrastructure.</p>
-<blockquote>
-<p>Alice: &quot;Hey Bob, what do you need for your next project?&quot;</p>
-<p>Bob: &quot;Mmmmh, I will need an SQL database and a messaging systems 🤔&quot;.</p>
-</blockquote>
-<p>Storing data is hard, so we are using them as <strong>durable</strong> strongholds for our data, while making our applications mostly <strong>stateless</strong>.</p>
-<p>So, Bob's architecture looks like this:</p>
+<h2 id="the-rise-of-polyglot-persistence"><a class="header" href="#the-rise-of-polyglot-persistence">The Rise of Polyglot Persistence</a></h2>
+<p>This variety of specialized datastores leads developers to use multiple databases in a single application—a pattern sometimes called "polyglot persistence."</p>
+<p>For example, a project might require both a relational database for transactional data and a dedicated search index for text search.</p>
+<p>Because managing state is complex, a common architectural pattern is to build <strong>stateless applications</strong> that delegate the complexity of data storage to these specialized, stateful databases.</p>
+<p>A typical architecture might look like this:</p>
 <pre class="mermaid">flowchart TD
-    id1(Bob's stateless applications)
-    id2(datastore 1)
-    id3(datastore 2)
-    
-    id1 -- uses --&gt; id2
-    id1 -- uses --&gt; id3
+    app(&quot;Stateless Application&quot;)
+    db1(&quot;Datastore 1 (e.g., PostgreSQL)&quot;)
+    db2(&quot;Datastore 2 (e.g., Elasticsearch)&quot;)
+
+    app -- uses --&gt; db1
+    app -- uses --&gt; db2
 </pre>
-<h2 id="datastores-architecture"><a class="header" href="#datastores-architecture">Datastore's architecture</a></h2>
-<p>We said earlier that there is a lot of criteria to choose a database, but we can narrow to 3: </p>
+<h2 id="the-anatomy-of-a-datastore"><a class="header" href="#the-anatomy-of-a-datastore">The Anatomy of a Datastore</a></h2>
+<p>While databases differ in many ways, we can simplify their architecture into three core components:</p>
 <ul>
-<li>What is the <strong>Query language</strong>,</li>
-<li>What is the <strong>data model</strong>,</li>
-<li>What is the <strong>Storage Engine</strong>.</li>
+<li>The <strong>Query Language:</strong> The interface for interacting with the data.</li>
+<li>The <strong>Data Model:</strong> The way the data is structured and presented (e.g., relational, document).</li>
+<li>The <strong>Storage Engine:</strong> The underlying component responsible for durably storing and retrieving data on disk.</li>
 </ul>
-<p>For example, PostgreSQL is exposing relational data through the SQL language and storing files on a single node. </p>
-<p>Let's update the flowchart:</p>
+<p>For example, PostgreSQL exposes a relational data model via the SQL query language, all running on a storage engine designed for a single node.</p>
+<p>Let's update our diagram to show this breakdown:</p>
 <pre class="mermaid">flowchart TD
-    id1(Bob's stateless applications)
-    ql1(Query Language 1)
-    ql2(Query Language 2)
-    dm1(Data Model 1)
-    dm2(Data Model 2)
-    se1(Storage Engine 1)
-    se2(Storage Engine 2)
-    
-    id1 -- uses --&gt; ql1 
-    ql1 -- to access data as --&gt; dm1
-    dm1 -- which are stored in --&gt; se1
-    id1 -- uses --&gt; ql2
-    ql2 -- to access data as --&gt; dm2
-    dm2 -- which are stored in --&gt; se2
+    subgraph &quot;System Architecture&quot;
+        app(&quot;Stateless Application&quot;)
+
+        subgraph &quot;Datastore 1&quot;
+            ql1(&quot;Query Language 1&quot;) --&gt; dm1(&quot;Data Model 1&quot;) --&gt; se1(&quot;Storage Engine 1&quot;)
+        end
+
+        subgraph &quot;Datastore 2&quot;
+            ql2(&quot;Query Language 2&quot;) --&gt; dm2(&quot;Data Model 2&quot;) --&gt; se2(&quot;Storage Engine 2&quot;)
+        end
+
+        app -- &quot;uses&quot; --&gt; ql1
+        app -- &quot;uses&quot; --&gt; ql2
+    end
 </pre>
-<p>Document databases, column-oriented, row-oriented, JSON, key-value, etc. all make sense in the right context, and often different parts of an application call for different choices. That means we cannot mutualize the Query language and the data models. What's left is the <strong>storage engine</strong>.</p>
-<h2 id="sharing-the-storage-engine-"><a class="header" href="#sharing-the-storage-engine-">Sharing the storage engine 🤔</a></h2>
-<p>Let's mutualize the storage Engine!</p>
+<p>While the query language and data model are often specialized for a particular use case, what if we could consolidate the storage layer?</p>
+<h2 id="the-case-for-a-shared-storage-engine"><a class="header" href="#the-case-for-a-shared-storage-engine">The Case for a Shared Storage Engine</a></h2>
+<p>Let's imagine we could use a single, powerful storage engine for all our data models.</p>
 <pre class="mermaid">flowchart TD
-    id1(Bob's stateless applications)
-    ql1(Query Language 1)
-    ql2(Query Language 2)
-    dm1(Data Model 1)
-    dm2(Data Model 2)
-    se(Shared storage Engine)
-    
-    id1 -- uses --&gt; ql1 
-    ql1 -- to access data as --&gt; dm1
-    dm1 -- which are stored in --&gt; se
-    id1 -- uses --&gt; ql2
-    ql2 -- to access data as --&gt; dm2
-    dm2 -- which are stored in --&gt; se
+    subgraph &quot;System Architecture&quot;
+        app(&quot;Stateless Application&quot;)
+
+        subgraph &quot;Stateless Data Layer 1&quot;
+            ql1(&quot;Query Language 1&quot;) --&gt; dm1(&quot;Data Model 1&quot;)
+        end
+
+        subgraph &quot;Stateless Data Layer 2&quot;
+            ql2(&quot;Query Language 2&quot;) --&gt; dm2(&quot;Data Model 2&quot;)
+        end
+
+        se(&quot;Shared Storage Engine&quot;)
+
+        app -- &quot;uses&quot; --&gt; ql1
+        app -- &quot;uses&quot; --&gt; ql2
+
+        dm1 -- &quot;stores data in&quot; --&gt; se
+        dm2 -- &quot;stores data in&quot; --&gt; se
+    end
 </pre>
-<p>This design has some great advantages:</p>
+<p>This design has powerful advantages:</p>
 <ul>
-<li>the storage engine <em>only need to focus</em> on storage,</li>
-<li>any components above the storage Engine <strong>has become stateless</strong>.</li>
+<li><strong>Operational Simplicity:</strong> We only need to manage, scale, and back up one underlying storage system.</li>
+<li><strong>Stateless Components:</strong> The layers that provide the data models and query languages can themselves become stateless, simplifying their development and deployment.</li>
 </ul>
-<p>That could work, but if we have put a lot of contraints on the storage engine, let's talk about what we require. </p>
-<h2 id="requirements-for-such-a-storage-engine"><a class="header" href="#requirements-for-such-a-storage-engine">Requirements for such a storage engine</a></h2>
-<p>So, we know have a storage engines that needs to handle multiple types of data. To be cloud-Native, the storage engine needs to be:</p>
+<p>However, this places a heavy burden on the shared storage engine. What would it need to provide?</p>
+<h2 id="requirements-for-a-universal-storage-engine"><a class="header" href="#requirements-for-a-universal-storage-engine">Requirements for a Universal Storage Engine</a></h2>
+<p>To be a viable foundation for modern, cloud-native applications, such an engine must be:</p>
 <ul>
-<li>fault tolerant,</li>
-<li>scalable,</li>
-<li>highly available.</li>
+<li><strong>Scalable, Fault-Tolerant, and Highly Available:</strong> It must handle growing workloads and survive hardware failures without downtime.</li>
+<li><strong>Transactional:</strong> It must provide strong consistency guarantees (like ACID) to allow developers to reason about their data correctly.</li>
+<li><strong>Unopinionated:</strong> It should impose a minimal, flexible data model (like an ordered key-value store) to support various data structures on top.</li>
 </ul>
-<p>while providing:</p>
-<ul>
-<li>strong semantics,</li>
-<li>flexible data models.</li>
-</ul>
-<p>Now the question is: <strong>can we design such a storage engine?</strong> The answer is <strong>yes</strong>, and it is called FoundationDB.</p>
+<p>Can such a storage engine exist? <strong>Yes.</strong> It's called FoundationDB.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="enter-foundationdb"><a class="header" href="#enter-foundationdb">Enter FoundationDB</a></h1>
 <ul>
-<li><a href="meet_fdb/enter_fdb.html#foundationdb-as-a-database">FoundationDB as a database</a></li>
-<li><a href="meet_fdb/enter_fdb.html#foundationdb-as-a-database-framework">FoundationDB as a database-framework</a></li>
-<li><a href="meet_fdb/enter_fdb.html#a-brief-history-of-foundationdb">A brief history of FoundationDB</a></li>
-<li><a href="meet_fdb/enter_fdb.html#who-is-using-foundationdb">Who is using FoundationDB?</a></li>
+<li><a href="meet_fdb/enter_fdb.html#the-core-an-ordered-transactional-key-value-store">The Core: An Ordered, Transactional Key-Value Store</a>
+<ul>
+<li><a href="meet_fdb/enter_fdb.html#multi-key-acid-transactions">Multi-Key ACID Transactions</a></li>
+</ul>
+</li>
+<li><a href="meet_fdb/enter_fdb.html#the-powerhouse-performance-and-reliability">The Powerhouse: Performance and Reliability</a></li>
+<li><a href="meet_fdb/enter_fdb.html#the-ecosystem-a-foundation-for-layers">The Ecosystem: A Foundation for Layers</a></li>
+<li><a href="meet_fdb/enter_fdb.html#a-brief-history">A Brief History</a></li>
+<li><a href="meet_fdb/enter_fdb.html#who-uses-foundationdb">Who Uses FoundationDB?</a></li>
 <li><a href="meet_fdb/enter_fdb.html#tldr">TL;DR</a></li>
 </ul>
-<p>Let's start by quoting the <a href="https://apple.github.io/foundationdb/">official overview</a>:</p>
+<p>As the <a href="https://apple.github.io/foundationdb/">official overview</a> puts it:</p>
 <blockquote>
 <p>FoundationDB is a distributed database designed to handle large volumes of structured data across clusters of commodity servers. It organizes data as an ordered key-value store and employs ACID transactions for all operations. It is especially well-suited for read/write workloads but also has excellent performance for write-intensive workloads.</p>
 </blockquote>
-<p>FoundationDB is an open-source(Apache V2), distributed key-value store written in Flow, an async-first language that targets C++ specially developed for the database. </p>
-<p>Like all key-value stores, it looks like an infinite dictionary/map from programming, allowing you to store key and values in bytes. </p>
-<p>Keys are lexicographic order, which means:</p>
+<p>Let's unpack what makes FoundationDB unique.</p>
+<h2 id="the-core-an-ordered-transactional-key-value-store"><a class="header" href="#the-core-an-ordered-transactional-key-value-store">The Core: An Ordered, Transactional Key-Value Store</a></h2>
+<p>At its heart, FoundationDB is a distributed, open-source (Apache 2.0) key-value store. Think of it as a massive, sorted dictionary where both keys and values are simple byte strings.</p>
+<p>The keys are stored in lexicographical order, which means you can efficiently scan ranges of keys. This simple but powerful feature is the basis for building complex data models. For example:</p>
 <ul>
-<li><code>'0'</code> is sorted before <code>'1'</code></li>
-<li><code>'apple'</code> is sorted before <code>'banana'</code></li>
-<li><code>'apple'</code> is sorted before <code>'apple123'</code></li>
-<li>keys starting with <code>'mytable\'</code> are sorted together (e.g. <code>'mytable\row1'</code>, <code>'mytable\row2'</code>, ...)</li>
+<li><code>'user:alice'</code> comes before <code>'user:bob'</code></li>
+<li><code>'user:bob'</code> comes before <code>'user:bob:profile'</code></li>
+<li>All keys prefixed with <code>'table1:'</code> are grouped together, allowing you to simulate rows in a table.</li>
 </ul>
-<p>One huge advantage of FDB is that it supports <strong>multi-key strictly serializable transactions</strong>. Let's break-down the words in reverse order:</p>
+<h3 id="multi-key-acid-transactions"><a class="header" href="#multi-key-acid-transactions">Multi-Key ACID Transactions</a></h3>
+<p>The most important feature of FoundationDB is its support for <strong>multi-key, strictly serializable transactions</strong>. This is a rare and powerful guarantee for a distributed database.</p>
 <ul>
-<li><strong>transactions</strong>: All reads and writes in FoundationDB are accomplished using transactions. These transactions are fully ACID (Atomic, Consistent, Isolated, and Durable) and span across multiple machines with high performance.</li>
-<li><strong>Serializable</strong>: this means that the outcome of concurrent transaction is equal to a serial execution.</li>
-<li><strong>Strictly</strong>: transactions are strictly ordered</li>
-<li><strong>Multi-key</strong>: you can write across regions/shards</li>
+<li><strong>Transactions:</strong> All operations, including reads and writes, are performed within a transaction. These transactions are fully ACID (Atomic, Consistent, Isolated, and Durable), even across multiple machines.</li>
+<li><strong>Multi-Key:</strong> A single transaction can read and write multiple, unrelated keys, no matter where they are stored in the cluster.</li>
+<li><strong>Strictly Serializable:</strong> This is the strongest isolation level. It ensures that the result of concurrent transactions is equivalent to them running one at a time in some sequential order. This makes writing correct applications dramatically simpler, as you are protected from a wide range of subtle race conditions.</li>
 </ul>
-<p>The full list of features is available <a href="https://apple.github.io/foundationdb/features.html">here</a>, and you will also finds a <a href="https://apple.github.io/foundationdb/anti-features.html">anti-features list</a>.</p>
-<h2 id="foundationdb-as-a-database"><a class="header" href="#foundationdb-as-a-database">FoundationDB as a database</a></h2>
-<p>FoundationDB provides amazing performance on commodity hardware, allowing you to support very heavy loads at low cost. The official <a href="https://apple.github.io/foundationdb/performance.html">performance page</a> is giving us some insights:</p>
-<p><img src="https://apple.github.io/foundationdb/_images/scaling.png" alt="fdb_perf" /></p>
+<p>You can find a full list of <a href="https://apple.github.io/foundationdb/features.html">features</a> and, just as importantly, <a href="https://apple.github.io/foundationdb/anti-features.html">anti-features</a> in the official documentation.</p>
+<h2 id="the-powerhouse-performance-and-reliability"><a class="header" href="#the-powerhouse-performance-and-reliability">The Powerhouse: Performance and Reliability</a></h2>
+<p>FoundationDB is not just a theoretical model; it's a battle-tested engine built for performance and reliability on commodity hardware.</p>
+<ul>
+<li><strong>Performance:</strong> It delivers linear scalability and high performance, often achieving millions of operations per second on a cluster. You can expect sub-millisecond latencies for many workloads without any special tuning.</li>
+<li><strong>Reliability:</strong> It is designed to be fault-tolerant, easy to manage, and simple to grow. Its reliability is backed by an unmatched testing system based on a <strong>deterministic simulation engine</strong>, which we will explore later in this book.</li>
+</ul>
+<p><img src="https://apple.github.io/foundationdb/_images/scaling.png" alt="FoundationDB Performance Scaling" /></p>
 <blockquote>
-<p>Here, a cluster of commodity hardware scales to 8.2 million operations/sec doing a 90% read and 10% write workload with 16 byte keys and values between 8 and 100 bytes. </p>
+<p>A cluster of commodity hardware scaling to 8.2 million operations/sec on a 90% read, 10% write workload.</p>
 </blockquote>
-<p>You can expect sub-millisecond performance for small reads, without any tuning.</p>
-<p>Beside having huge performance, FoundationDB is  easy to <strong>install, grow, manage and fault tolerant</strong>. It has been running in production for years in companies like Apple or Snowflake. Backing FoundationDB up is an unmatched testing system based on a <strong>deterministic simulation engine</strong> that will be described later in the book.</p>
-<h2 id="foundationdb-as-a-database-framework"><a class="header" href="#foundationdb-as-a-database-framework">FoundationDB as a database-framework</a></h2>
-<p>For developers, FoundationDB can be seen as a <strong>database-framework</strong>: it decouples its data storage technology from its data model, allowing you to write <strong>&quot;layers&quot;</strong>: stateless applications that will use FoundationDB as their storage.</p>
-<pre class="mermaid">flowchart TD
-    fdb(FoundationDB)
-    l1(Layer 1)
-    l2(Layer 2)
-    ln(Layer N)
-    
-    l1 -- uses --&gt; fdb
-    l2 -- uses --&gt; fdb
-    ln -- uses --&gt; fdb
+<h2 id="the-ecosystem-a-foundation-for-layers"><a class="header" href="#the-ecosystem-a-foundation-for-layers">The Ecosystem: A Foundation for Layers</a></h2>
+<p>Because FoundationDB provides such a powerful and reliable core, it can serve as a universal storage engine—a foundation for building other data models. These are called <strong>"layers."</strong></p>
+<p>A layer is a stateless component that maps a high-level data model (like a document, graph, or relational model) to FoundationDB's simple key-value model.</p>
+<pre class="mermaid">graph TD
+    subgraph &quot;Your Application&quot;
+        l1(&quot;Document Layer&quot;)
+        l2(&quot;Graph Layer&quot;)
+        l3(&quot;Queue Layer&quot;)
+    end
+
+    subgraph &quot;FoundationDB Cluster&quot;
+        fdb[(&quot;Ordered Key-Value Store&lt;br/&gt;ACID Transactions&quot;)]
+    end
+
+    l1 -- &quot;stores data in&quot; --&gt; fdb
+    l2 -- &quot;stores data in&quot; --&gt; fdb
+    l3 -- &quot;stores data in&quot; --&gt; fdb
 </pre>
-<p>Each layer can expose high level data models. They can be developed as libraries or stateless services. And because of FDB performance, they are easy to scale.</p>
-<h2 id="a-brief-history-of-foundationdb"><a class="header" href="#a-brief-history-of-foundationdb">A brief history of FoundationDB</a></h2>
-<p>FoundationDB started first as a company in 2009. The FoundationDB Alpha program began in January 2012 and concluded on March 4, 2013 with their public Beta release.</p>
-<p>Their 1.0 version was released for general availability on August 20, 2013. On March 24, 2015 it was reported that Apple has acquired the company.</p>
-<p>On April 19, 2018, Apple open sourced the software, releasing it under the Apache 2.0 license.</p>
-<h2 id="who-is-using-foundationdb"><a class="header" href="#who-is-using-foundationdb">Who is using FoundationDB?</a></h2>
-<p>Many companies are using FDB, including:</p>
+<p>This architecture decouples the data model from data storage, allowing developers to focus on building features without reinventing the complexities of a distributed database.</p>
+<h2 id="a-brief-history"><a class="header" href="#a-brief-history">A Brief History</a></h2>
+<p>FoundationDB began as a company in 2009. After a successful beta program, version 1.0 was released in 2013. Apple acquired the company in 2015 and subsequently open-sourced the project under the Apache 2.0 license in 2018, making it available to the wider community.</p>
+<h2 id="who-uses-foundationdb"><a class="header" href="#who-uses-foundationdb">Who Uses FoundationDB?</a></h2>
+<p>FoundationDB is the storage engine behind critical systems at major technology companies, including:</p>
 <ul>
-<li><strong>Apple iCloud</strong>: they are the largest users. Billions of logical databases are stored in FDB (one per user per application). You will find more details about this on the Record-layer chapter.</li>
-<li><strong>Snowflake</strong> is storing all their metadatas in FDB,</li>
-<li><strong>VMWare</strong> Tanzu (Formerly Wavefront),</li>
-<li><strong>IBM</strong> (Apache CouchDB),</li>
-<li><strong>eBay</strong>,</li>
-<li><strong>Epic Games</strong>,</li>
-<li>...</li>
+<li><strong>Apple:</strong> A massive-scale deployment for iCloud, where it stores billions of logical databases.</li>
+<li><strong>Snowflake:</strong> Stores all metadata for its cloud data platform.</li>
+<li><strong>VMware:</strong> Used in the Tanzu observability platform.</li>
+<li>And many others, including <strong>IBM</strong>, <strong>eBay</strong>, and <strong>Epic Games</strong>.</li>
 </ul>
 <h2 id="tldr"><a class="header" href="#tldr">TL;DR</a></h2>
-<p>FoundationDB is a scalable, robust, distributed key-value store that you can use as a framework to write your own <del>database</del> layer 🤯</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="everything-is-a-key-value"><a class="header" href="#everything-is-a-key-value">Everything is a key-value!</a></h1>
+<p>FoundationDB is a scalable, distributed key-value store with strictly serializable ACID transactions. It's so powerful and reliable that it serves as a universal foundation for building any data model you can imagine.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="modeling-on-a-key-value-store"><a class="header" href="#modeling-on-a-key-value-store">Modeling on a Key-Value Store</a></h1>
 <ul>
-<li><a href="meet_fdb/everything_is_kv.html#yugabyte">Yugabyte</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#f1-and-spanner-from-google">F1 and Spanner from Google</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#tidb--tikv">TiDB / TiKV</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#cosmosdb">CosmosDB</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#cockroachdb">CockroachDB</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#dgraph">Dgraph</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#examples-from-layers">Examples from layers</a>
+<li><a href="meet_fdb/everything_is_kv.html#the-pattern-a-tale-of-two-layers">The Pattern: A Tale of Two Layers</a></li>
+<li><a href="meet_fdb/everything_is_kv.html#industry-examples">Industry Examples</a>
 <ul>
-<li><a href="meet_fdb/everything_is_kv.html#record-layer">Record-Layer</a></li>
-<li><a href="meet_fdb/everything_is_kv.html#document-layer">Document-layer</a></li>
+<li><a href="meet_fdb/everything_is_kv.html#sql-on-key-value-google-cockroachdb-and-tidb">SQL on Key-Value: Google, CockroachDB, and TiDB</a></li>
+<li><a href="meet_fdb/everything_is_kv.html#multi-model-databases-cosmos-db-and-yugabytedb">Multi-Model Databases: Cosmos DB and YugabyteDB</a></li>
 </ul>
 </li>
+<li><a href="meet_fdb/everything_is_kv.html#the-unbundled-database-foundationdb">The Unbundled Database: FoundationDB</a></li>
 </ul>
 <blockquote>
-<p>Ok, so I could store a table-like data in a key-value?</p>
+<p>"If FoundationDB is just a key-value store, how can it power complex applications?"</p>
 </blockquote>
-<p>Yes, this is exactly the idea. It may seem weird at first, but it is a common pattern among new databases. In this section, we will briefly go over some examples.</p>
-<h2 id="yugabyte"><a class="header" href="#yugabyte">Yugabyte</a></h2>
-<p>From the official <a href="https://docs.yugabyte.com/latest/architecture/layered-architecture/">documentation</a>:</p>
-<blockquote>
-<p>YugabyteDB architecture follows a layered design. It is comprised of 2 logical layers as shown in the diagram below:</p>
+<p>This is the crucial question. The answer lies in a powerful, common architectural pattern: building rich data models on top of a simple, ordered key-value core. By defining a specific way to encode data structures into keys and values, you can represent almost anything, from relational tables to complex documents and graphs.</p>
+<p>This is not a new or niche idea. Many of the most successful and scalable modern databases are built using this exact layered architecture. Let's look at a few examples.</p>
+<h2 id="the-pattern-a-tale-of-two-layers"><a class="header" href="#the-pattern-a-tale-of-two-layers">The Pattern: A Tale of Two Layers</a></h2>
+<p>Most modern databases can be conceptually divided into two layers:</p>
+<ol>
+<li><strong>The Storage Layer:</strong> A low-level engine, often a key-value store, responsible for the distributed storage, replication, and transactional integrity of data.</li>
+<li><strong>The Data Model Layer:</strong> A higher-level component that exposes a rich data model (e.g., SQL, Document, Graph) and translates queries into operations on the underlying storage layer.</li>
+</ol>
+<p>This separation of concerns allows each layer to do what it does best.</p>
+<h2 id="industry-examples"><a class="header" href="#industry-examples">Industry Examples</a></h2>
+<p>This layered pattern appears again and again in the architecture of leading databases.</p>
+<h3 id="sql-on-key-value-google-cockroachdb-and-tidb"><a class="header" href="#sql-on-key-value-google-cockroachdb-and-tidb">SQL on Key-Value: Google, CockroachDB, and TiDB</a></h3>
+<p>Several of the most prominent distributed SQL databases are built on a key-value core.</p>
 <ul>
 <li>
-<p>Yugabyte Query Layer</p>
+<p><strong>Google's Spanner and F1:</strong> Google's database journey shows a clear evolution. <a href="https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36971.pdf">Megastore</a> provided ACID semantics on top of the Bigtable key-value store. This evolved into <a href="https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf">Spanner</a>, which started as a key-value store and grew into a full-fledged <a href="https://storage.googleapis.com/pub-tools-public-publication-data/pdf/acac3b090a577348a7106d09c051c493298ccb1d.pdf">relational database</a>. The key insight is that the SQL data model is a layer on top of a scalable, transactional key-value foundation.</p>
 </li>
 <li>
-<p>DocDB distributed document store</p>
+<p><strong>CockroachDB:</strong> As described in their architecture documentation, CockroachDB maps all <a href="https://www.cockroachlabs.com/blog/sql-in-cockroachdb-mapping-table-data-to-key-value-storage/">SQL table and index data</a> directly into its underlying monolithic sorted key-value map.</p>
+</li>
+<li>
+<p><strong>TiDB:</strong> The TiDB ecosystem explicitly separates its components. <a href="https://www.vldb.org/pvldb/vol13/p3072-huang.pdf">TiDB</a> is the SQL computation layer, while <strong>TiKV</strong> is the distributed, transactional key-value storage layer. Each SQL row is mapped to a key-value pair in TiKV.</p>
 </li>
 </ul>
-</blockquote>
-<p>Information about key encoding format can be found <a href="https://github.com/YugaByte/yugabyte-db/wiki/Low-level-DocDB-key-encoding-format">here</a> and <a href="https://youtu.be/DAFQcYXK2-o?t=1523">here</a>.</p>
-<h2 id="f1-and-spanner-from-google"><a class="header" href="#f1-and-spanner-from-google">F1 and Spanner from Google</a></h2>
-<p>There is a lot of contents about Google's datastores and their evolution.</p>
-<p>At first, they built <a href="https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/36971.pdf">Megastore</a> on top of BigTable:</p>
-<blockquote>
-<p>In brief, it provides fully serializable ACID semantics over distant replicas with low enough latencies to support interactive applications.</p>
-<p>We use Google’s Bigtable for scalable fault-tolerant storage within a single datacenter, allowing us to support arbitrary read and write throughput by spreading operations across multiple rows.</p>
-</blockquote>
-<p>Then, the first version of <a href="https://www.usenix.org/system/files/conference/osdi12/osdi12-final-16.pdf">Spanner</a> appeared:</p>
-<blockquote>
-<p>Spanner is a scalable, globally-distributed database designed, built, and deployed at Google.</p>
-<p>Spanner has evolved from a Bigtable-like versioned key-value store into a temporal multi-version database. Data is stored in schematized semi-relational tables; data is versioned, and each version is automatically timestamped with its commit time</p>
-</blockquote>
-<p>Then they added <a href="https://storage.googleapis.com/pub-tools-public-publication-data/pdf/41344.pdf">F1</a> on top of Spanner:</p>
-<blockquote>
-<p>F1 is a fault-tolerant globally-distributed OLTP and OLAP database built at Google as the new storage system for Google’s AdWords system. It was designed to replace a sharded MySQL implementation that was not able to meet our growing scalability and reliability requirements.</p>
-<p>F1 is built on top of Spanner</p>
-</blockquote>
-<p>And finally, <a href="https://storage.googleapis.com/pub-tools-public-publication-data/pdf/acac3b090a577348a7106d09c051c493298ccb1d.pdf">Spanner itself became an SQL system</a>:</p>
-<blockquote>
-<p>Google’s Spanner started out as a key-value store offering multi-row transactions, external consistency, and transparent failover across datacenters. Over the past 7 years it has evolved into a relational database system</p>
-</blockquote>
-<p>It seems it is still organized as layers:</p>
-<blockquote>
-<p>Like the lower storage and transactional layers, </p>
-</blockquote>
-<h2 id="tidb--tikv"><a class="header" href="#tidb--tikv">TiDB / TiKV</a></h2>
-<p>In the titanium stack, TiKV is the storage layer for <a href="https://www.vldb.org/pvldb/vol13/p3072-huang.pdf">TiDB</a>:</p>
-<blockquote>
-<p>It has three core components: a distributed storage layer, a Placement Driver(PD), and a computation engine layer.</p>
-<p>The distributed storage layer consists of a row store (TiKV) and a columnar store (TiFlash). Logically, the data stored in TiKV is an ordered key-value map. Each tuple is mapped into a key-value pair. The key is composed of its table ID and row ID, and the value is the actual row data, where the table ID and row ID are unique integers </p>
-</blockquote>
-<p>The table codec can be found <a href="https://github.com/pingcap/tidb/tree/master/tablecodec">here</a>.</p>
-<h2 id="cosmosdb"><a class="header" href="#cosmosdb">CosmosDB</a></h2>
-<p>More details can be found <a href="http://muratbuffalo.blogspot.com/2018/08/azure-cosmos-db.html">here</a>:</p>
-<blockquote>
-<p>Cosmos DB supports and projects multiple data models (documents, graphs, key-value, table, etc.) over a minimalist type system and core data model: the atom-record-sequence (ARS) model.</p>
-<p>Container and item resources are further projected as reified resource types for a specific type of API interface. For example, while using document-oriented APIs, container and item resources are projected as collection and document resources respectively.</p>
-</blockquote>
-<p>The automatic indexing strategy is described <a href="http://www.vldb.org/pvldb/vol8/p1668-shukla.pdf">here</a>.</p>
-<h2 id="cockroachdb"><a class="header" href="#cockroachdb">CockroachDB</a></h2>
-<p>This old <a href="https://www.cockroachlabs.com/blog/sql-in-cockroachdb-mapping-table-data-to-key-value-storage/">blogpost</a> describes the idea:</p>
-<blockquote>
-<p>The CockroachDB SQL system is built on top of the internal CockroachDB key-value store and leverages the monolithic sorted key-value map to store all of the SQL table data and indexes.</p>
-</blockquote>
-<p>The encoding notes can be found <a href="https://github.com/cockroachdb/cockroach/blob/master/docs/tech-notes/encoding.md">here</a>.</p>
-<h2 id="dgraph"><a class="header" href="#dgraph">Dgraph</a></h2>
-<p>From the official <a href="https://dgraph.io/docs/dgraph-overview/#dgraph-architecture">documentation</a>:</p>
-<blockquote>
-<p>Dgraph is a single layer in your tech stack, but inside the inner workings of a Dgraph database instance, there are three distinct entities:</p>
+<h3 id="multi-model-databases-cosmos-db-and-yugabytedb"><a class="header" href="#multi-model-databases-cosmos-db-and-yugabytedb">Multi-Model Databases: Cosmos DB and YugabyteDB</a></h3>
+<p>Other databases use this pattern to support multiple data models on a single, unified backend.</p>
 <ul>
-<li>Badger - Dgraph’s custom-built key-value store </li>
-<li>Ristretto - Dgraph’s custom-built cache </li>
-<li>Dgraph - the methods and algorithms used to parse DQL (and now GraphQL) and act accordingly</li>
+<li>
+<p><strong>Azure Cosmos DB:</strong> Microsoft's global-scale database projects multiple data models (Document, Graph, Key-Value) over a <a href="http://muratbuffalo.blogspot.com/2018/08/azure-cosmos-db.html">minimalist core data model</a>. The storage engine itself is agnostic to whether it's storing a document or a graph node.</p>
+</li>
+<li>
+<p><strong>YugabyteDB:</strong> Follows a similar <a href="https://docs.yugabyte.com/latest/architecture/layered-architecture/">layered design</a>, with a query layer that supports both SQL and Cassandra APIs on top of <strong>DocDB</strong>, its underlying distributed document store, which itself functions as a key-value store.</p>
+</li>
 </ul>
-</blockquote>
-<h2 id="examples-from-layers"><a class="header" href="#examples-from-layers">Examples from layers</a></h2>
-<h3 id="record-layer"><a class="header" href="#record-layer">Record-Layer</a></h3>
-<p>The <a href="https://foundationdb.github.io/fdb-record-layer/">Record-layer</a> is using Protobuf to store data. <a href="https://github.com/FoundationDB/fdb-record-layer/blob/1715c4dc2dd5565f292003a1f45d87fe14b32ca7/fdb-record-layer-core/src/main/java/com/apple/foundationdb/record/provider/foundationdb/SplitHelper.java#L117">A single Protobuf message is written across multiple rows</a>. It can be encrypted and compressed.</p>
-<h3 id="document-layer"><a class="header" href="#document-layer">Document-layer</a></h3>
-<p>The <a href="https://github.com/FoundationDB/fdb-document-layer">Document-layer</a> is writing a document <a href="https://github.com/FoundationDB/fdb-document-layer/blob/2250bfb6d3c5bd5007bca39ed92b872f2b0dc4b2/src/ExtUtil.actor.cpp#L77">across multiple keys</a></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="correct-and-robust-choose-both"><a class="header" href="#correct-and-robust-choose-both">Correct and robust, choose both</a></h1>
+<h2 id="the-unbundled-database-foundationdb"><a class="header" href="#the-unbundled-database-foundationdb">The Unbundled Database: FoundationDB</a></h2>
+<p>All these examples point to a powerful conclusion: many modern databases are, internally, a specialized data model layer tightly bundled with a general-purpose key-value storage engine.</p>
+<p>FoundationDB's philosophy is to <strong>unbundle</strong> these two layers. It provides <em>only</em> the core storage engine, but it makes that engine more powerful and generic than any of the bundled equivalents. It gives you:</p>
 <ul>
-<li><a href="meet_fdb/correctess.html#jepsen">Jepsen</a></li>
-<li><a href="meet_fdb/correctess.html#flow-programming-language">Flow programming language</a></li>
-<li><a href="meet_fdb/correctess.html#simulation-driven-development">Simulation-Driven development</a></li>
-<li><a href="meet_fdb/correctess.html#cooperating-with-the-simulation-framework-with-buggify">Cooperating with the simulation framework with Buggify</a></li>
-<li><a href="meet_fdb/correctess.html#implications-for-ci">Implications for CI</a></li>
-<li><a href="meet_fdb/correctess.html#tldr">TL;DR</a></li>
+<li>An ordered key-value store.</li>
+<li>Strictly serializable ACID transactions.</li>
+<li>Exceptional performance and proven reliability.</li>
 </ul>
-<p>FoundationDB is famously known in the distributed system's community for the simulation framework they developed, unmatched in the industry. In this section, we will go through why FoundationDB is one of the most robust distributed database available.</p>
-<h2 id="jepsen"><a class="header" href="#jepsen">Jepsen</a></h2>
-<p>First, let's introduce <a href="http://jepsen.io/">Jepsen</a>:</p>
+<p>This frees you, the developer, to build <em>any</em> data model layer you can imagine. You get the power of a world-class distributed storage engine without being locked into a specific, high-level data model. FoundationDB is the ultimate realization of the layered database architecture.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="a-culture-of-correctness"><a class="header" href="#a-culture-of-correctness">A Culture of Correctness</a></h1>
+<ul>
+<li><a href="meet_fdb/correctness.html#the-foundation-flow">The Foundation: Flow</a></li>
+<li><a href="meet_fdb/correctness.html#the-engine-deterministic-simulation">The Engine: Deterministic Simulation</a></li>
+<li><a href="meet_fdb/correctness.html#the-fuel-generative-testing-and-buggify">The Fuel: Generative Testing and Buggify</a></li>
+<li><a href="meet_fdb/correctness.html#the-result-confidence-at-scale">The Result: Confidence at Scale</a></li>
+</ul>
+<p>Distributed systems are notoriously difficult to build correctly. The number of possible states, race conditions, and failure modes is astronomical. While tools like <a href="http://jepsen.io/">Jepsen</a> have become an industry standard for validating the claims of distributed databases, FoundationDB's approach to correctness goes much deeper. It is built on a philosophy of <strong>simulation-driven development</strong> that is unmatched in the industry.</p>
+<p>This chapter explores the layers of this testing strategy, which has allowed FoundationDB to achieve its legendary stability.</p>
+<h2 id="the-foundation-flow"><a class="header" href="#the-foundation-flow">The Foundation: Flow</a></h2>
+<p>The story of FoundationDB's correctness begins with its programming language: <strong>Flow</strong>. Developed in the first weeks of the project, Flow is a C++ extension that brings actor-based concurrency to the language. As the engineering team explains:</p>
 <blockquote>
-<p>Jepsen is an effort to improve the safety of distributed databases, queues, consensus systems, etc. We maintain an open source software library for systems testing, as well as blog posts and conference talks exploring particular systems’ failure modes. In each analysis we explore whether the system lives up to its documentation’s claims, file new bugs, and suggest recommendations for operators.</p>
+<p>We’d need efficient asynchronous communicating processes like in Erlang... but we’d also need the raw speed, I/O efficiency, and control of C++. To meet these challenges, we developed... Flow, a new programming language that brings actor-based concurrency to C++11.</p>
 </blockquote>
-<blockquote>
-<p>Jepsen pushes vendors to make accurate claims and test their software rigorously, helps users choose databases and queues that fit their needs, and teaches engineers how to evaluate distributed systems correctness for themselves.</p>
-</blockquote>
-<p>Jepsen is now a standard for testing databases, but there is no FoundationDB analysis:</p>
-<p><img src="meet_fdb/img/aphyr.png" alt="aphyr" /></p>
-<h2 id="flow-programming-language"><a class="header" href="#flow-programming-language">Flow programming language</a></h2>
-<p>Let's dive in the testing part of FoundationDB, starting with Flow. let's quote the <a href="https://apple.github.io/foundationdb/engineering.html">Engineering page</a>:</p>
-<blockquote>
-<p>FoundationDB began with ambitious goals for both high performance per node and scalability. We knew that to achieve these goals we would face serious engineering challenges that would require tool breakthroughs. We’d need efficient asynchronous communicating processes like in Erlang or the Async in .NET, but we’d also need the raw speed, I/O efficiency, and control of C++. To meet these challenges, we developed several new tools, the most important of which is <strong>Flow</strong>, a new programming language that brings actor-based concurrency to C++11.</p>
-</blockquote>
-<p>Flow is more of a <strong>stateful distributed system framework</strong> than an asynchronous library. It takes a number of highly opinionated stances on how the overall distributed system should be written, and isn’t trying to be a widely reusable building block.</p>
-<blockquote>
-<p>Flow adds about 10 keywords to C++11 and is technically a trans-compiler: the Flow compiler reads Flow code and compiles it down to raw C++11, which is then compiled to a native binary with a traditional toolchain.</p>
-</blockquote>
-<p>Flow was developed before FDB, as stated in this <a href="https://news.ycombinator.com/item?id=5319163">2013's post</a>:</p>
-<blockquote>
-<p>FoundationDB founder here. Flow sounds crazy. What hubris to think that you need a new programming language for your project? Three years later: Best decision we ever made.</p>
-</blockquote>
-<blockquote>
-<p>We knew this was going to be a long project so we invested heavily in tools at the beginning. The first two weeks of FoundationDB were building this new programming language to give us the speed of C++ with high level tools for actor-model concurrency. But, the real magic is how Flow enables us to use our real code to do deterministic simulations of a cluster in a single thread. We have a white paper upcoming on this.</p>
-</blockquote>
-<blockquote>
-<p>We've had quite a bit of interest in Flow over the years and I've given several talks on it at meetups/conferences. We've always thought about open-sourcing it... It's not as elegant as some other actor-model languages like Scala or Erlang (see: C++) but it's nice and fast at run-time and really helps productivity vs. writing callbacks, etc.</p>
-</blockquote>
-<blockquote>
-<p>(Fun fact: We've only ever found two bugs in Flow. After the first, we decided that we never wanted a bug again in our programming language. So, we built a program in Python that generates random Flow code and independently-executes it to validate Flow's behavior. This fuzz tester found one more bug, and we've never found another.)</p>
-</blockquote>
-<p>A very good overview of Flow is available <a href="https://apple.github.io/foundationdb/flow.html">here</a> and some details <a href="https://forums.foundationdb.org/t/why-was-flow-developed/1711/3">here</a>.</p>
-<h2 id="simulation-driven-development"><a class="header" href="#simulation-driven-development">Simulation-Driven development</a></h2>
-<p>One of Flow’s most important job is enabling <strong>Simulation</strong>:</p>
-<blockquote>
-<p>We wanted FoundationDB to survive failures of machines, networks, disks, clocks, racks, data centers, file systems, etc., so we created a simulation framework closely tied to Flow. By replacing physical interfaces with shims, replacing the main epoll-based run loop with a time-based simulation, and running multiple logical processes as concurrent Flow Actors, Simulation is able to conduct a deterministic simulation of an entire FoundationDB cluster within a single-thread! Even better, we are able to execute this simulation in a deterministic way, enabling us to reproduce problems and add instrumentation ex post facto. This incredible capability enabled us to build FoundationDB exclusively in simulation for the first 18 months and ensure exceptional fault tolerance long before it sent its first real network packet. For a database with as strong a contract as the FoundationDB, testing is crucial, and over the years we have run the equivalent of a trillion CPU-hours of simulated stress testing.</p>
-</blockquote>
-<p>A good overview of the simulation can be found <a href="https://apple.github.io/foundationdb/testing.html">here</a>. </p>
-<p>You can also have a look at those two awesome talk:</p>
+<p>Flow isn't just a convenience; it's the critical enabler for the entire testing strategy. By controlling the scheduling of actors and abstracting away I/O, Flow makes it possible to run a deterministic simulation of an entire FoundationDB cluster in a single thread.</p>
+<h2 id="the-engine-deterministic-simulation"><a class="header" href="#the-engine-deterministic-simulation">The Engine: Deterministic Simulation</a></h2>
+<p>This leads to the crown jewel of the testing suite: the simulation framework. For the first 18 months of its development, FoundationDB never sent a single packet over a real network. It was built and tested entirely in simulation.</p>
+<p>How does it work?</p>
+<ul>
+<li><strong>Single-Threaded Execution:</strong> The entire cluster—every logical process, client, and server—runs as a set of actors within a single OS thread.</li>
+<li><strong>Simulated Interfaces:</strong> All external communication, including network, disk, and time, is replaced with a deterministic, in-memory simulation. The network is not reliable; it can be partitioned, delayed, and reordered by the simulator.</li>
+<li><strong>Perfect Reproducibility:</strong> Because the simulation is single-threaded and the inputs are controlled by a random seed, any test run is perfectly deterministic. If a test fails with a specific seed, a developer can reproduce the <em>exact</em> sequence of events that led to the failure, down to the scheduling of individual actors.</li>
+</ul>
+<p>This allows for a level of testing that is impossible with traditional methods. The team has run the equivalent of a <strong>trillion CPU-hours</strong> of simulated stress testing, exploring state spaces that would be impossible to cover in the real world.</p>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/4fFDFbi3toc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/fFSPwJFXVlw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<p>Simulation has been made possible by combining:</p>
-<ul>
-<li>Single-threaded pseudo-concurrency,</li>
-<li>Simulated implementation of all external communication,</li>
-<li>determinism.</li>
-</ul>
-<p>Here's an example of a <a href="https://github.com/apple/foundationdb/blob/master/tests/slow/SwizzledCycleTest.toml">testfile</a>:</p>
-<pre><code class="language-toml">[[test]]
-testTitle = 'SwizzledCycleTest'
-
-    # Goal of the test
-    [[test.workload]]
-    testName = 'Cycle'
-    transactionsPerSecond = 5000.0
-    testDuration = 30.0
-    expectedRate = 0.01
-
-    # What will be done concurrently to prevent the goal
-
-    # random clogging
-    [[test.workload]]
-    testName = 'RandomClogging'
-    testDuration = 30.0
-    swizzle = 1
-
-    # reboot machines
-    [[test.workload]]
-    testName = 'Attrition'
-    machinesToKill = 10
-    machinesToLeave = 3
-    reboot = true
-    testDuration = 30.0
-
-    [[test.workload]]
-    testName = 'Attrition'
-    machinesToKill = 10
-    machinesToLeave = 3
-    reboot = true
-    testDuration = 30.0
-    
-    # Change configuration to trigger a coordination changes
-    [[test.workload]]
-    testName = 'ChangeConfig'
-    maxDelayBeforeChange = 30.0
-    coordinators = 'auto'
-</code></pre>
-<p>The test is splitted into two parts:</p>
-<ul>
-<li>
-<p><strong>The goal</strong>, for example doing transaction pointing to another with thousands of transactions per sec and there should be only 0.01% of success.</p>
-</li>
-<li>
-<p><strong>What will be done to try to prevent the test to succeed</strong>. In this example it will <strong>at the same time</strong>:</p>
-<ul>
-<li>do random clogging. Which means that <strong>network connections will be stopped</strong> (preventing actors to send and receive packets). Swizzle flag means that a subset of network connections will be stopped and bring back in reverse order, 😳</li>
-<li>will <strong>poweroff/reboot machines</strong> (attritions) pseudo-randomly while keeping a minimal of three machines, 🤯</li>
-<li><strong>change configuration</strong>, which means a coordination changes through multi-paxos for the whole cluster. 😱</li>
-</ul>
-</li>
-</ul>
-<p>Keep in mind that all these failures will appears <strong>at the same time!</strong> Do you think that your current <strong>datastore has gone through the same test on a daily basis?</strong> <a href="https://github.com/etcd-io/etcd/pull/11308">I think not</a>.</p>
-<p>Everything is seed-driven, which means that if a faulty seed is found, you can reproduce the bug locally. For example, if the seed <code>1094093328</code> is in error, you can just run <code>./fdbserver -r simulation -f ./SwizzledCycleTest.toml -b on -s 1094093328</code>:</p>
-<script id="asciicast-aYxsjrHRuQLQiHuMVaNWYLAxo" src="https://asciinema.org/a/aYxsjrHRuQLQiHuMVaNWYLAxo.js" async></script>
-<p>Everything is deterministic, from the errors, how much time RPCs will take, and even which actor is scheduled.</p>
-<h2 id="cooperating-with-the-simulation-framework-with-buggify"><a class="header" href="#cooperating-with-the-simulation-framework-with-buggify">Cooperating with the simulation framework with Buggify</a></h2>
-<p>Having a simulation framework is not enough, and one important aspects of the simulation is called Buggify. It is well explained in <a href="https://transactional.blog/simulation/buggify.html">this blogpost</a>:</p>
+<h2 id="the-fuel-generative-testing-and-buggify"><a class="header" href="#the-fuel-generative-testing-and-buggify">The Fuel: Generative Testing and Buggify</a></h2>
+<p>Deterministic simulation is necessary, but not sufficient. As one engineer put it:</p>
 <blockquote>
-<p>A deterministic simulation framework with random fault injection provides a testing framework that can find bugs. However, the question is how quickly? If validating the correctness of a network protocol or storage engine, then network or disk fault injection alone would be sufficient to give a high degree of confidence in correctness. The types of dangerous conditions that the code must correctly handle, such as network instability or disk corruption, exactly match what the simulator directly produces.</p>
-<p>How FoundationDB does this is with the BUGGIFY macro. BUGGIFY exists to bias the simulator towards doing dangerous, bug-finding things. It is the main tool that differentiates FDB’s simulation testing from other black box solutions. Instead of writing FoundationDB and then trying to validated it against a separate blackbox testing solution afterwards, FoundationDB was written to explicitly cooperate with the simulator by instrumenting its code with descriptions of how to cause failures in each component of the system.</p>
-<p>BUGGIFY has the following rules:</p>
-<ul>
-<li>
-<p>BUGGIFY only ever evaluates to true when run in simulation.</p>
-</li>
-<li>
-<p>The first time each BUGGIFY use is evaluated, it is either enabled or disabled for the entire simulation run.</p>
-</li>
-<li>
-<p>Enabled uses of BUGGIFY have a 25% chance of evaluating to true (or custom, e.g. BUGGIFY_WITH_PROB(0.001) == 0.1% chance).</p>
-</li>
-</ul>
+<p>The reason why people write tests is because human beings are astonishingly bad at thinking through all the possible branches of control flow... that very fact means that we're unable to write tests to cover all the things that we actually need to cover.</p>
 </blockquote>
-<p><code>BUGGIFY</code> is allowing FDB developers to inject <a href="https://github.com/apple/foundationdb/blob/07e531947765696c3d0e80703967dd5da420fb28/fdbserver/TLogServer.actor.cpp#L1252-L1256">deterministic delays</a>:</p>
-<pre><code class="language-cpp">	if (!self-&gt;spillOrder.size()) {
-		wait(delay(BUGGIFY ? SERVER_KNOBS-&gt;BUGGIFY_TLOG_STORAGE_MIN_UPDATE_INTERVAL
-		                   : SERVER_KNOBS-&gt;TLOG_STORAGE_MIN_UPDATE_INTERVAL,
-		           TaskPriority::UpdateStorage));
-		return Void();
-	}
-
-</code></pre>
-<p>Or failures like <a href="https://github.com/apple/foundationdb/blob/main/fdbrpc/FlowTransport.actor.cpp#L1021-L1027">bitsFlip</a> on RPC calls:</p>
-<pre><code class="language-cpp">if (g_network-&gt;isSimulated() &amp;&amp;
-			g_network-&gt;now() - g_simulator.lastConnectionFailure &gt; g_simulator.connectionFailuresDisableDuration &amp;&amp;
-			BUGGIFY_WITH_PROB(0.0001)) {
-				g_simulator.lastConnectionFailure = g_network-&gt;now();
-				isBuggifyEnabled = true;
-				TraceEvent(SevInfo, &quot;BitsFlip&quot;).log();
-				int flipBits = 32 - (int)floor(log2(deterministicRandom()-&gt;randomUInt32()));
-
-				uint32_t firstFlipByteLocation = deterministicRandom()-&gt;randomUInt32() % packetLen;
-</code></pre>
-<h2 id="implications-for-ci"><a class="header" href="#implications-for-ci">Implications for CI</a></h2>
-<p>Having such a powerful testing environment means that every FDB developer can concentrate on the code, and CI will try to brute-force your code. This has two major consequences:</p>
+<p>Instead of trying to write specific tests for every scenario, the FoundationDB team built a system for <strong>generating new and interesting tests</strong>. A test in FoundationDB is not a simple unit test; it's a combination of a <strong>workload</strong> (the goal) and a set of <strong>chaos agents</strong> (things trying to break the goal).</p>
+<p>For example, a test might specify a workload of 5,000 transactions per second while simultaneously:</p>
 <ul>
-<li>Typically run 100k simulation tests for each PR before reviewing(500 cores for about two hours)</li>
-<li>Critical code require millions of correctness tests.</li>
+<li><strong>Clogging the network:</strong> Randomly stopping and reordering network packets.</li>
+<li><strong>Killing machines:</strong> Randomly rebooting virtual servers.</li>
+<li><strong>Changing the configuration:</strong> Forcing the cluster to re-elect its coordinators.</li>
 </ul>
-<h2 id="tldr-1"><a class="header" href="#tldr-1">TL;DR</a></h2>
+<p>To make this even more powerful, developers use a macro called <code>BUGGIFY</code>. This macro allows them to explicitly cooperate with the simulator by instrumenting the code with potential failure points. For example, a developer can wrap a piece of code in <code>BUGGIFY</code> to tell the simulator, "This is an interesting place to inject a 10-second delay, but only 1% of the time."</p>
+<p>This allows the simulation to explore not just external failures (like network partitions) but also internal, heisenbug-like conditions in a controlled and deterministic way.</p>
+<h2 id="the-result-confidence-at-scale"><a class="header" href="#the-result-confidence-at-scale">The Result: Confidence at Scale</a></h2>
+<p>The implications of this approach are profound:</p>
+<ul>
+<li><strong>CI as a Brute-Force Weapon:</strong> Every pull request is subjected to hundreds of thousands of simulation tests, running on hundreds of cores for hours, before a human even begins a code review.</li>
+<li><strong>Focus on Invention, Not Regression:</strong> Developers can focus on building new features, confident that the CI system will relentlessly probe their code for correctness against a chaotic world of failures.</li>
+</ul>
+<p>As the original team said, "It seems unlikely that we would have been able to build FoundationDB without this technology." It is this deep, foundational commitment to correctness that makes FoundationDB one of the most robust and trustworthy databases in the world.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<ul>
+<li><a href="getting_started/installation.html#do-i-need-the-client-or-the-server">Do I Need the Client or the Server?</a>
+<ul>
+<li><a href="getting_started/installation.html#the-server-package">The Server Package</a></li>
+<li><a href="getting_started/installation.html#the-client-package">The Client Package</a></li>
+</ul>
+</li>
+<li><a href="getting_started/installation.html#the-cluster-file-your-key-to-the-cluster">The Cluster File: Your Key to the Cluster</a></li>
+<li><a href="getting_started/installation.html#-a-critical-note-on-versioning">⚠️ A Critical Note on Versioning</a></li>
+</ul>
+<p>This chapter guides you through setting up FoundationDB. While the official documentation provides detailed, platform-specific instructions, this guide will help you understand the components and make the right choices for your setup.</p>
+<ul>
+<li><a href="https://apple.github.io/foundationdb/getting-started-linux.html">Official Docs: Getting Started on Linux</a></li>
+<li><a href="https://apple.github.io/foundationdb/getting-started-mac.html">Official Docs: Getting Started on macOS</a></li>
+</ul>
+<h2 id="do-i-need-the-client-or-the-server"><a class="header" href="#do-i-need-the-client-or-the-server">Do I Need the Client or the Server?</a></h2>
+<p>The first step is to decide which package you need from the <a href="https://apple.github.io/foundationdb/downloads.html">Downloads page</a>.</p>
+<h3 id="the-server-package"><a class="header" href="#the-server-package">The Server Package</a></h3>
+<p>Install the <strong>server</strong> package if you want to run a FoundationDB database cluster on a machine. This is for you if you are:</p>
+<ul>
+<li>Setting up a new development environment on your local machine.</li>
+<li>Provisioning a server to be part of a production cluster.</li>
+</ul>
+<p>This package contains the core <code>fdbserver</code> binary, which runs the database, and <code>fdbmonitor</code>, which manages the server process.</p>
+<h3 id="the-client-package"><a class="header" href="#the-client-package">The Client Package</a></h3>
+<p>Install the <strong>client</strong> package if a machine only needs to connect to an <em>existing</em> FoundationDB cluster. This is for you if you are:</p>
+<ul>
+<li>Building an application that uses a FoundationDB binding (e.g., in Python, Go, or Java).</li>
+<li>Using command-line tools like <code>fdbcli</code> to administer a remote cluster.</li>
+</ul>
+<p>This package provides the necessary C libraries (<code>libfdb_c.so</code>) that all language bindings depend on, as well as several administrative tools.</p>
+<h2 id="the-cluster-file-your-key-to-the-cluster"><a class="header" href="#the-cluster-file-your-key-to-the-cluster">The Cluster File: Your Key to the Cluster</a></h2>
+<p>Whether you install the client or the server, you will get a <strong>cluster file</strong> (e.g., <code>/etc/foundationdb/fdb.cluster</code>). This small text file is critically important:</p>
 <blockquote>
-<p>&quot;Simulation’s success has surpassed our expectation and has been vital to our engineering team.&quot;</p>
-<p>&quot;It seems unlikely that we would have been able to build FoundationDB without this technology.&quot;</p>
+<p>The cluster file contains the IP addresses and ports of the coordination servers. It's how any client or server finds and connects to the database.</p>
 </blockquote>
-<p>We can also quote <a href="https://youtu.be/fFSPwJFXVlw">Will Wilson</a>:</p>
-<blockquote>
-<p>The reason why people write tests is because human beings are astonishingly bad at thinking through all the possible branches of control flow that a program could take.</p>
-<p>But that very fact means that we're unable to write tests to cover all the things that we actually need to cover, like because if we could, if we were smart enough, or had the right kind of brain to write all the tests we needed to write, then we would have just written the code correctly in the first place.</p>
-<p>I think this is like really scary and really true, and the implications is that tests can be useful for turning up regressions, but almost completely useless for telling you about unknown unknowns.</p>
-<p>I think this is the real secret sauce behind what FoundationDB did, it's not so much the deterministic simulation although that was a very important part of it. It was that whenever we had a new piece of functionality, we didn't say &quot;how can I write some tests to cover this?&quot;. It was more like &quot;how can I write a system that will forever be generating new and interesting tests?&quot;</p>
-</blockquote>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="installing-foundationdb"><a class="header" href="#installing-foundationdb">Installing FoundationDB</a></h1>
+<p>To connect to a cluster, your client machine must have a copy of that cluster's <code>fdb.cluster</code> file. When you set up a new server, one is created for you. When you set up a client to talk to an existing cluster, you must copy the file from the cluster to your client machine.</p>
+<h2 id="-a-critical-note-on-versioning"><a class="header" href="#-a-critical-note-on-versioning">⚠️ A Critical Note on Versioning</a></h2>
+<p>FoundationDB enforces strict compatibility between the client library and server processes. This is a common source of confusion for new users.</p>
+<p><strong>The Rule:</strong> The installed client library (<code>libfdb_c</code>) and the server binaries (<code>fdbserver</code>) <strong>must</strong> have the same major and minor version numbers. For example, a client with version <code>7.1.x</code> can only talk to a server with version <code>7.1.y</code>. It <strong>cannot</strong> talk to a server running <code>7.2.z</code> or <code>6.3.w</code>.</p>
+<p>However, you can connect to a cluster with an older version by specifying the API version in your client code. For example, if your client machine has the <code>7.4.x</code> libraries installed, you can still connect to a <code>7.3.z</code> cluster by calling <code>fdb.select_api_version(730)</code> before connecting. This mechanism is particularly useful for facilitating rolling upgrades, allowing clients to be upgraded before the servers.</p>
+<p>If you mix incompatible versions without selecting a compatible API version, your application will likely fail to connect, often by hanging indefinitely. The server logs may show <code>ConnectionRejected</code> errors with the reason <code>IncompatibleProtocolVersion</code>. It's crucial to ensure your client machines and server cluster are running compatible versions, or that you are using <code>select_api_version</code> correctly during an upgrade.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-fdbcli-command-line-interface"><a class="header" href="#the-fdbcli-command-line-interface">The <code>fdbcli</code> Command-Line Interface</a></h1>
 <ul>
-<li><a href="getting_started/installing-fdb.html#client-or-server">Client or server?</a>
-<ul>
-<li><a href="getting_started/installing-fdb.html#clients">Clients</a></li>
-<li><a href="getting_started/installing-fdb.html#server">Server</a></li>
+<li><a href="getting_started/fdbcli.html#your-first-cluster-a-local-sandbox">Your First Cluster: A Local Sandbox</a></li>
+<li><a href="getting_started/fdbcli.html#creating-the-database">Creating the Database</a></li>
+<li><a href="getting_started/fdbcli.html#reading-and-writing-data">Reading and Writing Data</a></li>
 </ul>
-</li>
-<li><a href="getting_started/installing-fdb.html#the-cluster-file">The cluster file</a></li>
-<li><a href="getting_started/installing-fdb.html#-wire-protocol">⚠️ Wire protocol</a></li>
-</ul>
-<p>The official documentation has plenty of docs on how to install FoundationDB:</p>
-<ul>
-<li><a href="https://apple.github.io/foundationdb/getting-started-linux.html">Getting Started on Linux</a></li>
-<li><a href="https://apple.github.io/foundationdb/getting-started-mac.html">Getting Started on macOS</a></li>
-</ul>
-<h2 id="client-or-server"><a class="header" href="#client-or-server">Client or server?</a></h2>
-<p>In the <a href="https://apple.github.io/foundationdb/downloads.html">Downloads page</a>, you will find reference to two archives:</p>
-<ul>
-<li>clients</li>
-<li>server</li>
-</ul>
-<h3 id="clients"><a class="header" href="#clients">Clients</a></h3>
-<p>The clients package is required by all bindings(i.e. programming libraries). These are needed files for all bindings:</p>
-<ul>
-<li><code>/usr/lib/libfdb_c.so</code></li>
-<li><code>/usr/include/foundationdb/fdb_c.h</code></li>
-<li><code>/usr/include/foundationdb/fdb_c_options.g.h</code></li>
-</ul>
-<p>You will also find different binaries:</p>
-<ul>
-<li>dr_agent</li>
-<li>fdbbackup</li>
-<li>fdbcli</li>
-<li>fdbdr</li>
-<li>fdbrestore</li>
-</ul>
-<h3 id="server"><a class="header" href="#server">Server</a></h3>
-<p>The server package is holding FDB's binaries:</p>
-<ul>
-<li>fdbmonitor</li>
-<li>fdbserver</li>
-</ul>
-<p>And a default configuration file for <code>fdbmonitor</code> located at <code>/etc/foundationdb/foundationdb.conf</code>. <code>fdbserver</code> is the main binary, and <code>fdbmonitor</code> is simply a wrapper on top of <code>fdbserver</code>.</p>
-<h2 id="the-cluster-file"><a class="header" href="#the-cluster-file">The cluster file</a></h2>
-<p>Both packages will install a default <a href="https://apple.github.io/foundationdb/administration.html#cluster-files">cluster file</a>:</p>
-<blockquote>
-<p>FoundationDB servers and clients use a cluster file (usually named <code>fdb.cluster</code>) to connect to a cluster. The contents of the cluster file are the same for all processes that connect to the cluster. An <code>fdb.cluster</code> file is created automatically when you install a FoundationDB server and updated automatically when you <a href="https://apple.github.io/foundationdb/configuration.html#configuration-choosing-coordination-servers">change coordination servers</a>. To connect to a cluster from a client machine, you will need access to a copy of the cluster file used by the servers in the cluster.</p>
-</blockquote>
-<h2 id="-wire-protocol"><a class="header" href="#-wire-protocol">⚠️ Wire protocol</a></h2>
-<p>FoundationDB's wire protocol is not compatible between minors releases, i.e. client version 6.2 will <strong>not</strong> be able to communicate with 6.3.X, 6.1.X, and all versions different from 6.3.X.</p>
-<p>On the bindings-side, the client will be <a href="https://forums.foundationdb.org/t/detecting-a-version-mismatch/3055/2">stalling</a>. On the server's logs,  you would see events like <code>ConnectionRejected</code> with a reason <code>IncompatibleProtocolVersion</code>.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="playing-with-fdbcli"><a class="header" href="#playing-with-fdbcli">Playing with fdbcli</a></h1>
-<ul>
-<li><a href="getting_started/fdbcli.html#setting-up-foundationdb-with-docker">Setting up FoundationDB with Docker</a></li>
-<li><a href="getting_started/fdbcli.html#fdbcli"><code>fdbcli</code>?</a></li>
-<li><a href="getting_started/fdbcli.html#start-the-shell">Start the shell</a></li>
-<li><a href="getting_started/fdbcli.html#useful-commands">Useful commands</a>
-<ul>
-<li><a href="getting_started/fdbcli.html#status">Status</a></li>
-<li><a href="getting_started/fdbcli.html#create-a-new-database">Create a new database</a></li>
-<li><a href="getting_started/fdbcli.html#insert-keys">Insert keys</a></li>
-<li><a href="getting_started/fdbcli.html#scan-keys">scan keys</a></li>
-<li><a href="getting_started/fdbcli.html#help">Help</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="setting-up-foundationdb-with-docker"><a class="header" href="#setting-up-foundationdb-with-docker">Setting up FoundationDB with Docker</a></h2>
-<pre><code class="language-shell">docker run --name fdb -d -p 4500:4500 --rm foundationdb/foundationdb:6.3.23
+<p><code>fdbcli</code> is the primary tool for administering and interacting with your FoundationDB cluster. This chapter will walk you through the basics of using it to create a database and perform fundamental key-value operations.</p>
+<h2 id="your-first-cluster-a-local-sandbox"><a class="header" href="#your-first-cluster-a-local-sandbox">Your First Cluster: A Local Sandbox</a></h2>
+<p>The easiest way to get started is to run a local FoundationDB server using Docker. This command will start a container with FoundationDB, publish its port, and name it <code>fdb</code> for easy access.</p>
+<pre><code class="language-shell">docker run --name fdb -d -p 4500:4500 --rm foundationdb/foundationdb:7.1.25
 </code></pre>
-<h2 id="fdbcli"><a class="header" href="#fdbcli"><code>fdbcli</code>?</a></h2>
-<p><code>fdbcli</code> is a command-line interface that can be used to administrate your FDB cluster.</p>
-<h2 id="start-the-shell"><a class="header" href="#start-the-shell">Start the shell</a></h2>
-<pre><code class="language-shell">docker exec -ti fdb fdbcli
-
-docker exec -ti fdb fdbcli                                                 
-Using cluster file `/var/fdb/fdb.cluster'.
+<p>Now, you can connect to the running container and start the CLI:</p>
+<pre><code class="language-shell">docker exec -it fdb fdbcli
+</code></pre>
+<p>You'll be greeted with a welcome message and a warning:</p>
+<pre><code>Using cluster file '/var/fdb/fdb.cluster'.
 
 The database is unavailable; type `status' for more information.
 
 Welcome to the fdbcli. For help, type `help'.
+fdb&gt; 
 </code></pre>
-<h2 id="useful-commands"><a class="header" href="#useful-commands">Useful commands</a></h2>
-<h3 id="status"><a class="header" href="#status">Status</a></h3>
-<p><code>status</code> is one of the most useful command. It will display a human-readable report:</p>
+<h2 id="creating-the-database"><a class="header" href="#creating-the-database">Creating the Database</a></h2>
+<p>The database is unavailable because we haven't configured it yet. The <code>status</code> command provides a detailed report on the cluster's health. Let's see what it says:</p>
 <pre><code class="language-shell">fdb&gt; status
 
 Using cluster file `/var/fdb/fdb.cluster'.
@@ -695,589 +541,602 @@ no database has been created.
   172.17.0.2:4500  (reachable)
 
 Unable to locate the data distributor worker.
-
-Unable to locate the ratekeeper worker.
 </code></pre>
-<h3 id="create-a-new-database"><a class="header" href="#create-a-new-database">Create a new database</a></h3>
-<p>As our container is brand-new, we need to create a database.</p>
+<p>The message is clear: "no database has been created." Let's fix that. The <code>configure</code> command sets up the database with a specific redundancy mode and storage engine. For a local sandbox, <code>single</code> redundancy and the <code>memory</code> storage engine are perfect.</p>
 <pre><code class="language-shell">fdb&gt; configure new single memory
 Database created
 </code></pre>
-<p>A few elements to notes:</p>
-<ul>
-<li>running this will nuke your database,</li>
-<li><code>single</code> is the <a href="https://apple.github.io/foundationdb/configuration.html#choosing-a-redundancy-mode">redundancy mode</a>,</li>
-<li><code>memory</code> is the <a href="https://apple.github.io/foundationdb/configuration.html#configuring-the-storage-subsystem">storage subsystem</a>.</li>
-</ul>
-<p>Then we can run the <code>status</code> command:</p>
-<pre><code class="language-shell">fdb&gt; help status
-
-status [minimal|details|json]
-
-Get the status of a FoundationDB cluster.
-
-If the cluster is down, this command will print a diagnostic which may be useful
-in figuring out what is wrong. If the cluster is running, this command will
-print cluster statistics.
-
-Specifying `minimal' will provide a minimal description of the status of your
-database.
-
-Specifying `details' will provide load information for individual workers.
-
-Specifying `json' will provide status information in a machine readable JSON
-format.
-</code></pre>
+<p><strong>Warning:</strong> Running <code>configure new</code> on an existing cluster will destroy all of its data. It is only safe to use on a brand-new cluster.</p>
+<p>Now, if we check the status again, we'll see a healthy, fully-operational cluster.</p>
 <pre><code class="language-shell">fdb&gt; status
-
-Using cluster file `/var/fdb/fdb.cluster'.
 
 Configuration:
   Redundancy mode        - single
-  Storage engine         - memory-2
+  Storage engine         - memory
   Coordinators           - 1
-  Usable Regions         - 1
 
 Cluster:
   FoundationDB processes - 1
-  Zones                  - 1
   Machines               - 1
-  Memory availability    - 8.0 GB per process on machine with least available
-  Fault Tolerance        - 0 machines
-  Server time            - 02/10/22 12:57:50
 
 Data:
   Replication health     - Healthy
   Moving data            - 0.000 GB
-  Sum of key-value sizes - 0 MB
-  Disk space used        - 105 MB
 
-Operating space:
-  Storage server         - 1.0 GB free on most full server
-  Log server             - 1555.9 GB free on most full server
-
-Workload:
-  Read rate              - 7 Hz
-  Write rate             - 0 Hz
-  Transactions started   - 3 Hz
-  Transactions committed - 0 Hz
-  Conflict rate          - 0 Hz
-
-Backup and DR:
-  Running backups        - 0
-  Running DRs            - 0
-
-Client time: 02/10/22 12:57:50
+...
 </code></pre>
-<h3 id="insert-keys"><a class="header" href="#insert-keys">Insert keys</a></h3>
-<pre><code class="language-shell">fdb&gt; help writemode 
-
-writemode &lt;on|off&gt;
-
-Enables or disables sets and clears.
-
-Setting or clearing keys from the CLI is not recommended.
+<h2 id="reading-and-writing-data"><a class="header" href="#reading-and-writing-data">Reading and Writing Data</a></h2>
+<p>Now for the fun part. <code>fdbcli</code> allows you to perform transactional reads and writes directly from the command line. Let's try to <code>get</code> a key that doesn't exist yet.</p>
+<pre><code class="language-shell">fdb&gt; get mykey
+`mykey' not found
 </code></pre>
-<pre><code class="language-shell">fdb&gt; help set
-
-set &lt;KEY&gt; &lt;VALUE&gt;
-
-Set a value for a given key.
-
-If KEY is not already present in the database, it will be created.
-
-For information on escaping keys and values, type `help escaping'.
+<p>As expected, nothing is there. Let's <code>set</code> a value.</p>
+<pre><code class="language-shell">fdb&gt; set mykey "hello world"
+Committed.
 </code></pre>
-<pre><code class="language-shell"># we first need to set writemode
-
-fdb&gt; writemode on
-fdb&gt; set hello world
-Committed (1442988082)
+<p>Now, if we <code>get</code> it again, we see our value. Notice that we use quotes because our value contains a space.</p>
+<pre><code class="language-shell">fdb&gt; get mykey
+`mykey' is `hello world'
 </code></pre>
-<p><code>1442988082</code> is the commitVersion or versionStamp.</p>
-<h3 id="scan-keys"><a class="header" href="#scan-keys">scan keys</a></h3>
-<pre><code class="language-shell">fdb&gt; help getrange
+<p>We can also store multiple keys and retrieve them with <code>getrange</code>.</p>
+<pre><code class="language-shell">fdb&gt; set key1 value1
+Committed.
+fdb&gt; set key2 value2
+Committed.
+fdb&gt; set key3 value3
+Committed.
 
-getrange &lt;BEGINKEY&gt; [ENDKEY] [LIMIT]
+fdb&gt; getrange key1 key4
 
-Fetch key/value pairs in a range of keys.
-
-Displays up to LIMIT keys and values for keys between BEGINKEY (inclusive) and
-ENDKEY (exclusive). If ENDKEY is omitted, then the range will include all keys
-starting with BEGINKEY. LIMIT defaults to 25 if omitted.
-
-For information on escaping keys, type `help escaping'
+Range limited to 25 keys
+`key1' is `value1'
+`key2' is `value2'
+`key3' is `value3'
 </code></pre>
-<pre><code class="language-shell">fdb&gt; getrange \x00 \xfe 10
+<p>Finally, we can remove a key using <code>clear</code>.</p>
+<pre><code class="language-shell">fdb&gt; clear mykey
+Committed.
 
-Range limited to 10 keys
-`hello' is `world'
+fdb&gt; get mykey
+`mykey' not found
 </code></pre>
-<h3 id="help"><a class="header" href="#help">Help</a></h3>
-<pre><code class="language-shell">fdb&gt; help
-
-List of commands:
-
- advanceversion:
-      Force the cluster to recover at the specified version
- begin:
-      begin a new transaction
- clear:
-      clear a key from the database
- clearrange:
-      clear a range of keys from the database
- commit:
-      commit the current transaction
- configure:
-      change the database configuration
- consistencycheck:
-      permits or prevents consistency checking
- coordinators:
-      change cluster coordinators or description
- exclude:
-      exclude servers from the database
- exit:
-      exit the CLI
- fileconfigure:
-      change the database configuration from a file
- force_recovery_with_data_loss:
-      Force the database to recover into DCID
- get:
-      fetch the value for a given key
- getrange:
-      fetch key/value pairs in a range of keys
- getrangekeys:
-      fetch keys in a range of keys
- getversion:
-      Fetch the current read version
- help:
-      get help about a topic or command
- include:
-      permit previously-excluded servers to rejoin the database
- kill:
-      attempts to kill one or more processes in the cluster
- lock:
-      lock the database with a randomly generated lockUID
- maintenance:
-      mark a zone for maintenance
- option:
-      enables or disables an option
- profile:
-      namespace for all the profiling-related commands.
- reset:
-      reset the current transaction
- rollback:
-      rolls back the current transaction
- set:
-      set a value for a given key
- setclass:
-      change the class of a process
- sleep:
-      sleep for a period of time
- status:
-      get the status of a FoundationDB cluster
- suspend:
-      attempts to suspend one or more processes in the cluster
- throttle:
-      view and control throttled tags
- triggerddteaminfolog:
-      trigger the data distributor teams logging
- unlock:
-      unlock the database with the provided lockUID
- writemode:
-      enables or disables sets and clears
-
-For information on a specific command, type `help &lt;command&gt;'.
-For information on escaping keys and values, type `help escaping'.
-For information on available options, type `help options'.
-</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="transactions"><a class="header" href="#transactions">Transactions</a></h1>
+<p>This is just a small sample of what <code>fdbcli</code> can do. You can use the <code>help</code> command to see a full list of commands or <code>help &lt;command&gt;</code> for details on a specific one.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="core-concept-transactions"><a class="header" href="#core-concept-transactions">Core Concept: Transactions</a></h1>
 <ul>
-<li><a href="develop_layer/transactions.html#how-transactions-works-in-foundationdb">How transactions works in FoundationDB?</a></li>
-<li><a href="develop_layer/transactions.html#avoiding-conflicts">Avoiding conflicts</a></li>
+<li><a href="develop_layer/transactions.html#strictly-serializable-acid-transactions">Strictly Serializable ACID Transactions</a></li>
+<li><a href="develop_layer/transactions.html#the-transactional-pattern-read-write-commit">The Transactional Pattern: Read, Write, Commit</a></li>
+<li><a href="develop_layer/transactions.html#conflict-resolution-the-retry-loop">Conflict Resolution: The Retry Loop</a></li>
 </ul>
-<h2 id="how-transactions-works-in-foundationdb"><a class="header" href="#how-transactions-works-in-foundationdb">How transactions works in FoundationDB?</a></h2>
-<p>TODO</p>
-<h2 id="avoiding-conflicts"><a class="header" href="#avoiding-conflicts">Avoiding conflicts</a></h2>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/2HiIgbxtx0c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><div style="break-before: page; page-break-before: always;"></div><h1 id="crafting-row-keys"><a class="header" href="#crafting-row-keys">Crafting row keys</a></h1>
+<p>Transactions are the heart of FoundationDB. They are the mechanism that allows you to build complex, multi-key operations while guaranteeing the database remains consistent. FoundationDB provides some of the strongest transactional guarantees in the industry, and understanding how they work is the key to building reliable layers.</p>
+<h2 id="strictly-serializable-acid-transactions"><a class="header" href="#strictly-serializable-acid-transactions">Strictly Serializable ACID Transactions</a></h2>
+<p>FoundationDB offers fully <strong>ACID</strong> (Atomicity, Consistency, Isolation, Durability) transactions. But it goes a step further by providing the strongest isolation level: <strong>strict serializability</strong>. This means that transactions behave as if they were executed one at a time, in some sequential order. You are completely insulated from the complexities of concurrent operations; you can write your code as if you are the only person using the database.</p>
+<h2 id="the-transactional-pattern-read-write-commit"><a class="header" href="#the-transactional-pattern-read-write-commit">The Transactional Pattern: Read, Write, Commit</a></h2>
+<p>Working with a transaction in FoundationDB follows a simple but powerful pattern:</p>
+<ol>
+<li><strong>Create a transaction object.</strong></li>
+<li><strong>Read from the database.</strong> You can read one or more keys. FoundationDB remembers which keys you've read (your <em>read set</em>).</li>
+<li><strong>Write to the database.</strong> You can write one or more keys. These writes are buffered locally in the transaction object (your <em>write set</em>).</li>
+<li><strong>Commit the transaction.</strong> The client sends the transaction (its read and write sets) to the cluster for validation.</li>
+</ol>
+<p>This is an <strong>optimistic</strong> concurrency model. The database <em>optimistically</em> assumes that your transaction will not conflict with others. The check only happens at the very end, during the commit phase.</p>
+<h2 id="conflict-resolution-the-retry-loop"><a class="header" href="#conflict-resolution-the-retry-loop">Conflict Resolution: The Retry Loop</a></h2>
+<p>What happens if another transaction commits a change to a key you <em>read</em> before your own transaction commits? This is a <strong>conflict</strong>. When the cluster detects a conflict, it will reject your transaction with a retryable error.</p>
+<p>This is not a failure; it's a core part of the design. Your application code is expected to catch this error and simply retry the entire transaction from the beginning. This is known as the <strong>transactional retry loop</strong>.</p>
+<p>Here is a pseudo-code example of this fundamental pattern:</p>
+<pre><code class="language-python"># A simplified view of the FDB transaction pattern
+def transfer_funds(db, from_acct, to_acct, amount):
+    # The retry loop is handled for you by the @transactional decorator
+    # in most language bindings.
+    @fdb.transactional
+    def _do_transfer(tr):
+        # 1. Read the current balances
+        from_balance = tr[from_acct].wait()
+        to_balance = tr[to_acct].wait()
+
+        # If we read a null value, the account doesn't exist
+        if from_balance is None or to_balance is None:
+            raise Exception("Account not found")
+
+        from_balance = int.from_bytes(from_balance, 'big')
+        to_balance = int.from_bytes(to_balance, 'big')
+
+        # 2. Perform local logic
+        if from_balance &lt; amount:
+            raise Exception("Insufficient funds")
+
+        # 3. Write the new balances to the local transaction buffer
+        tr[from_acct] = (from_balance - amount).to_bytes(8, 'big')
+        tr[to_acct] = (to_balance + amount).to_bytes(8, 'big')
+
+        # 4. The commit happens automatically when the function returns
+
+    # Execute the transaction
+    _do_transfer(db)
+</code></pre>
+<p>If another transaction modifies <code>from_acct</code> or <code>to_acct</code> after our transaction has read them but before it has committed, the commit will fail. The <code>@transactional</code> decorator will automatically catch the error and re-run the <code>_do_transfer</code> function from the beginning. This simple, powerful loop ensures that your logic always runs on a consistent snapshot of the database.</p>
+<p>For a deeper dive into how to avoid conflicts and design your data models for high-contention workloads, this talk is an excellent resource:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2HiIgbxtx0c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><div style="break-before: page; page-break-before: always;"></div><h1 id="key-design-tuples-subspaces-and-directories"><a class="header" href="#key-design-tuples-subspaces-and-directories">Key Design: Tuples, Subspaces, and Directories</a></h1>
 <ul>
-<li><a href="develop_layer/crafting-row-keys.html#row-key">Row key?</a></li>
-<li><a href="develop_layer/crafting-row-keys.html#hand-crafting-row-keys">Hand-crafting row keys</a></li>
-<li><a href="develop_layer/crafting-row-keys.html#fdbs-abstractions-and-helpers">FDB's abstractions and helpers</a>
+<li><a href="develop_layer/crafting-row-keys.html#the-challenge-hand-crafting-keys">The Challenge: Hand-Crafting Keys</a></li>
+<li><a href="develop_layer/crafting-row-keys.html#layer-1-the-tuple">Layer 1: The <code>Tuple</code></a></li>
+<li><a href="develop_layer/crafting-row-keys.html#layer-2-the-subspace">Layer 2: The <code>Subspace</code></a></li>
+<li><a href="develop_layer/crafting-row-keys.html#layer-3-the-directory">Layer 3: The <code>Directory</code></a></li>
+</ul>
+<p>In a key-value store, the way you structure your keys is one of the most important architectural decisions you will make. Your key schema determines how your data is organized, how efficiently you can query it, and how well your workload will scale. This chapter introduces FoundationDB's powerful, layered abstractions for key management.</p>
+<h2 id="the-challenge-hand-crafting-keys"><a class="header" href="#the-challenge-hand-crafting-keys">The Challenge: Hand-Crafting Keys</a></h2>
+<p>At the lowest level, a key is just a sequence of bytes. In many key-value systems, developers are forced to manually craft these byte arrays, a process that is both tedious and error-prone.</p>
+<p>Consider storing user data. You might decide on a key structure like <code>(user_id, attribute_name)</code>. To implement this, you would need to write code that serializes the <code>user_id</code> (an integer) and the <code>attribute_name</code> (a string) into a single byte array, taking care to handle different data types, lengths, and ordering correctly. This is brittle; a small change in the format can break your application.</p>
+<p>FoundationDB provides a much better way.</p>
+<h2 id="layer-1-the-tuple"><a class="header" href="#layer-1-the-tuple">Layer 1: The <code>Tuple</code></a></h2>
+<p>The most fundamental building block for key design is the <strong>Tuple</strong>. A tuple is an ordered collection of elements of different types (like strings, integers, and UUIDs). The FoundationDB client libraries provide a <code>pack()</code> function that serializes a tuple into a byte string that correctly preserves type and ordering.</p>
+<pre><code class="language-python">import fdb.tuple
+
+# A tuple containing a string and an integer
+user_profile_tuple = ('user', 12345)
+
+# Pack the tuple into a byte key
+key = fdb.tuple.pack(user_profile_tuple)
+
+# The result is a byte string suitable for use as a key
+# b'\x02user\x00\x1509'
+print(repr(key))
+
+# You can unpack the bytes back into the original tuple
+unpacked_tuple = fdb.tuple.unpack(key)
+assert unpacked_tuple == user_profile_tuple
+</code></pre>
+<p>This simple abstraction solves the manual serialization problem. You can think in terms of structured data, and the tuple layer handles the byte-level representation for you. Because the packing format is standardized across all language bindings, a key packed in Python can be unpacked in Go, Java, or any other language.</p>
+<h2 id="layer-2-the-subspace"><a class="header" href="#layer-2-the-subspace">Layer 2: The <code>Subspace</code></a></h2>
+<p>Building on tuples, the next layer of abstraction is the <strong>Subspace</strong>. A subspace is a way to create a dedicated namespace within the database for a particular category of data. It works by defining a prefix tuple that is automatically prepended to all keys packed within that subspace.</p>
+<p>This is a powerful organizational tool. For example, you can create separate subspaces for user data, application settings, and logging events.</p>
+<pre><code class="language-python">import fdb.tuple
+
+# Create a subspace for storing user profiles
+user_subspace = fdb.Subspace(('users',))
+
+# Now, keys created within this subspace will be prefixed
+# with the packed representation of ('users',)
+key1 = user_subspace.pack(('alice',))
+key2 = user_subspace.pack(('bob',))
+
+# key1 is now b'\x02users\x00\x02alice\x00'
+# key2 is now b'\x02users\x00\x02bob\x00'
+print(repr(key1))
+print(repr(key2))
+
+# You can also use the subspace to unpack a key,
+# which strips the prefix automatically.
+unpacked = user_subspace.unpack(key1)
+assert unpacked == ('alice',)
+</code></pre>
+<p>Subspaces allow you to isolate data and perform range scans over a specific category of information without worrying about colliding with other parts of your keyspace.</p>
+<h2 id="layer-3-the-directory"><a class="header" href="#layer-3-the-directory">Layer 3: The <code>Directory</code></a></h2>
+<p>The highest level of abstraction is the <strong>Directory</strong>. Directories are a tool for managing subspaces. While you can create subspaces with fixed prefixes (like <code>('users',)</code>), directories allow you to create and manage them dynamically.</p>
+<blockquote>
+<p>Directories are the recommended approach for organizing the keyspace of one or more applications.</p>
+</blockquote>
+<p>A directory allows you to associate a human-readable path (like <code>('users', 'profiles')</code>) with a short, randomly generated integer prefix. This has two major benefits:</p>
+<ol>
+<li><strong>Shorter Keys:</strong> The generated prefix is much shorter than the packed representation of the full path, saving space.</li>
+<li><strong>Schema Management:</strong> You can list, move, and remove directories. Moving a directory is a fast metadata-only change; it doesn't require rewriting all the keys within it.</li>
+</ol>
+<pre><code class="language-python">import fdb
+import fdb.directory
+
+fdb.api_version(710)
+db = fdb.open()
+
+# Create or open a directory at a specific path
+app_dir = fdb.directory.create_or_open(db, ('my-app',))
+
+# Create subspaces within that directory
+users_subspace = app_dir.create_or_open(db, ('users',))
+logs_subspace = app_dir.create_or_open(db, ('logs',))
+
+# The key for the 'users' subspace might be b'\x15\x01', a much
+# shorter prefix than packing the full path.
+print(repr(users_subspace.key()))
+
+# You can now use this subspace as before
+@fdb.transactional
+def set_user(tr, name):
+    tr[users_subspace.pack((name,))] = b'some_profile_data'
+
+set_user(db, 'charlie')
+</code></pre>
+<p>By using these three layers—Tuples for serialization, Subspaces for namespacing, and Directories for management—you can build sophisticated and maintainable data models on top of the simple key-value interface.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="learning-from-the-community-open-source-layers"><a class="header" href="#learning-from-the-community-open-source-layers">Learning from the Community: Open-Source Layers</a></h1>
+<p>One of the best ways to learn how to build on FoundationDB is to study existing, production-proven layers. A "layer" is simply a library or service that provides a higher-level data model on top of FoundationDB's ordered key-value store. By examining how these layers map their data models to keys and values, you can gain invaluable insights for your own projects.</p>
+<p>Here are some of the most prominent open-source layers developed by the FoundationDB community.</p>
 <ul>
-<li><a href="develop_layer/crafting-row-keys.html#tuple">Tuple</a></li>
-<li><a href="develop_layer/crafting-row-keys.html#subspace">Subspace</a></li>
-<li><a href="develop_layer/crafting-row-keys.html#directory">Directory</a></li>
+<li><a href="develop_layer/studiable-layers.html#the-record-layer">The Record Layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#the-document-layer">The Document Layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#the-zookeeper-layer">The ZooKeeper Layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#the-time-series-layer">The Time-Series Layer</a></li>
+</ul>
+<h2 id="the-record-layer"><a class="header" href="#the-record-layer">The Record Layer</a></h2>
+<p>The Record Layer provides a structured, record-oriented data store on top of FoundationDB, similar to a traditional relational database. It is used in production at Apple to power CloudKit.</p>
+<ul>
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/foundationdb/fdb-record-layer">foundationdb/fdb-record-layer</a></li>
+<li><strong>Academic Paper:</strong> <a href="https://www.foundationdb.org/files/record-layer-paper.pdf">FoundationDB Record Layer</a></li>
+<li><strong>Key Videos:</strong>
+<ul>
+<li><a href="https://youtu.be/HLE8chgw6LI">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB</a> (Nicholas Schiefer, Apple)</li>
+<li><a href="https://youtu.be/SvoUHHM9IKU">Using FoundationDB and the FDB Record Layer to Build CloudKit</a> (Scott Gray, Apple)</li>
 </ul>
 </li>
 </ul>
-<h2 id="row-key"><a class="header" href="#row-key">Row key?</a></h2>
-<p>When you are using a key/value store, the design of the <code>row key</code> is extremely important, as this will define how well:</p>
+<h2 id="the-document-layer"><a class="header" href="#the-document-layer">The Document Layer</a></h2>
+<p>The Document Layer implements a MongoDB®-compatible API, allowing you to store and query JSON documents within FoundationDB.</p>
 <ul>
-<li>your scans will be optimized,</li>
-<li>your puts will be spread,</li>
-<li>you will avoid <code>hot-spotting</code> a shard/region.</li>
-</ul>
-<p>If you need more information on <code>row keys</code>, I recommend going through these links before moving on:</p>
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/FoundationDB/fdb-document-layer">FoundationDB/fdb-document-layer</a></li>
+<li><strong>Key Video:</strong>
 <ul>
-<li><a href="https://cloud.google.com/bigtable/docs/schema-design">&quot;Designing your schema&quot; BigTable documentation</a></li>
-<li><a href="https://hbase.apache.org/book.html#rowkey.design">&quot;Rowkey Design&quot; HBase documentation</a></li>
-</ul>
-<h2 id="hand-crafting-row-keys"><a class="header" href="#hand-crafting-row-keys">Hand-crafting row keys</a></h2>
-<p>Most of the time, you will need to craft the <code>row key</code> &quot;by hand&quot;, like this for <a href="https://github.com/senx/warp10-platform/blob/879734d7f63791b487f3e535cd79ac4c23e99377/warp10/src/main/java/io/warp10/continuum/store/Store.java#L1215-L1222">an HBase's app</a>:</p>
-<pre><code class="language-java">// Prefix + classId + labelsId + timestamp
-// 128 bits
-byte[] rowkey = new byte[Constants.HBASE_RAW_DATA_KEY_PREFIX.length + 8 + 8 + 8];
-
-System.arraycopy(Constants.HBASE_RAW_DATA_KEY_PREFIX, 0, rowkey, 0, Constants.HBASE_RAW_DATA_KEY_PREFIX.length);
-// Copy classId/labelsId
-System.arraycopy(Longs.toByteArray(msg.getClassId()), 0, rowkey, Constants.HBASE_RAW_DATA_KEY_PREFIX.length, 8);
-System.arraycopy(Longs.toByteArray(msg.getLabelsId()), 0, rowkey, Constants.HBASE_RAW_DATA_KEY_PREFIX.length + 8, 8);
-</code></pre>
-<p>Or maybe you will wrap things in a function <a href="https://github.com/pingcap/tidb/blob/ef57bdbbb04f60a8be744060a99207e08a37514a/tablecodec/tablecodec.go#L80-L86">like this in Go</a>:</p>
-<pre><code class="language-go">// EncodeRowKey encodes the table id and record handle into a kv.Key
-func EncodeRowKey(tableID int64, encodedHandle []byte) kv.Key {
-	buf := make([]byte, 0, prefixLen+len(encodedHandle))
-	buf = appendTableRecordPrefix(buf, tableID)
-	buf = append(buf, encodedHandle...)
-	return buf
-}
-</code></pre>
-<p>Each time, you need to wrap the complexity of converting your objects to a row-key, by creating a buffer and write stuff in it.</p>
-<p>In our Java example, there is an interesting comment:</p>
-<pre><code class="language-java">// Prefix + classId + labelsId + timestamp
-</code></pre>
-<p>If we are replacing some characters, we are not really far from:</p>
-<pre><code class="language-java">// (Prefix, classId, labelsId, timestamp)
-</code></pre>
-<p>Which looks like a <code>Tuple</code>(a collection of values of different types) and this is what FoundationDB is using as an abstraction to create keys 😍</p>
-<h2 id="fdbs-abstractions-and-helpers"><a class="header" href="#fdbs-abstractions-and-helpers">FDB's abstractions and helpers</a></h2>
-<h3 id="tuple"><a class="header" href="#tuple">Tuple</a></h3>
-<p>Instead of crafting bytes by hand, we are <code>packing</code> a Tuple:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// create a Tuple&lt;String, i64&gt; with (&quot;tenant-42&quot;, 1)
-let tuple = (String::from(&quot;tenant-42&quot;), 1);
-
-// and compute a row-key from the Tuple
-let row_key = foundationdb::tuple::pack::&lt;(String, i64)&gt;(&amp;tuple);
-<span class="boring">}
-</span></code></pre></pre>
-<p>The generated row-key will be readable from any bindings, as it's construction is standardized. Let's print it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// and print-it in hexa
-println!(&quot;{:#04X?}&quot;, row_key);
-<span class="boring">}
-</span></code></pre></pre>
-<pre><code class="language-log">// can be verified with https://www.utf8-chartable.de/unicode-utf8-table.pl
-[
-    0x02,
-    0x74, // t
-    0x65, // e 
-    0x6E, // n
-    0x61, // a
-    0x6E, // n
-    0x74, // t
-    0x2D, // -
-    0x31, // 1
-    0x00, 
-    0x15,
-    0x2A, // 42
-]
-</code></pre>
-<p>As you can see, <code>pack</code> added some extra-characters. There are used to recognized the next type, a bit like when you are encoding/decoding some wire protocols. You can find the relevant documentation <a href="https://github.com/apple/foundationdb/blob/master/design/tuple.md">here</a>.</p>
-<p>Having this kind of standard means that we can easily decompose/<code>unpack</code> it:</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// retrieve the user and the magic number In a Tuple (String, i64)
-let from_row_key = foundationdb::tuple::unpack::&lt;(String, i64)&gt;(&amp;row_key)?;
-
-println!(&quot;user='{}', magic_number={}&quot;, from_row_key.0, from_row_key.1);
-// user='tenant-42', magic_number=42
-<span class="boring">}
-</span></code></pre></pre>
-<p>Now that we saw <code>Tuples</code>, let's dig in the next abstraction: <code>subspaces</code></p>
-<h3 id="subspace"><a class="header" href="#subspace">Subspace</a></h3>
-<p>When you are working with key-values store, we are often playing with what we call <code>keyspaces</code>, by dedicating a portion of the key to an usage, like this for example:</p>
-<pre><code class="language-text">/users/tenant-1/...
-/users/tenant-2/...
-/users/tenant-3/...
-</code></pre>
-<p>Here, <code>/users/tenant-1/</code> can be view like a prefix where we will put all the relevant keys. Instead of passing a simple prefix, FoundationDB is offering a dedicated structure called a <code>Subspace</code>:</p>
-<blockquote>
-<p>A Subspace represents a well-defined region of keyspace in a FoundationDB database</p>
-</blockquote>
-<blockquote>
-<p>It provides a convenient way to use FoundationDB tuples to define namespaces for different categories of data. The namespace is specified by a prefix tuple which is prepended to all tuples packed by the subspace. When unpacking a key with the subspace, the prefix tuple will be removed from the result.</p>
-</blockquote>
-<p>As you can see, the <code>Subspace</code> is heavily relying on FoundationDB's tuples, as we can <code>pack</code> and <code>unpack</code> it.</p>
-<blockquote>
-<p>As a best practice, API clients should use at least one subspace for application data.</p>
-</blockquote>
-<p>Well, as we have now the tools to handle keyspaces easily, it is now futile to craft keys by hand 🙃 Let's create a subspace!</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
-</span>
-<span class="boring">fn main() {
-</span>// create a subspace from the Tuple (&quot;tenant-1&quot;, 42)
-let subspace = Subspace::from((String::from(&quot;tenant-1&quot;), 42));
-
-// let's print the range
-println!(&quot;start: {:#04X?}\n end: {:#04X?}&quot;, subspace.range().0, subspace.range().1);
-<span class="boring">}
-</span></code></pre></pre>
-<p>We can see observe this:</p>
-<pre><code class="language-log">// can be verified with https://www.utf8-chartable.de/unicode-utf8-table.pl
-start: [
-    0x02,
-    0x74, // t
-    0x65, // e 
-    0x6E, // n
-    0x61, // a
-    0x6E, // n
-    0x74, // t
-    0x2D, // -
-    0x31, // 1
-    0x00, 
-    0x15,
-    0x2A, // 42
-    0x00,
-    0x00, // smallest possible byte
-]
-end: [
-    0x02,
-    0x74, // t
-    0x65, // e 
-    0x6E, // n
-    0x61, // a
-    0x6E, // n
-    0x74, // t
-    0x2D, // -
-    0x31, // 1
-    0x00, 
-    0x15,
-    0x2A, // 42
-    0x00,
-    0xFF, // biggest possible byte
-]
-</code></pre>
-<p>Which make sens, if we take <code>(&quot;tenant-1&quot;, 42)</code> as a prefix, then the range for this subspace will be between <code>(&quot;tenant-1&quot;, 42, 0x00)</code> and <code>(&quot;tenant-1&quot;, 42, 0xFF)</code></p>
-<h3 id="directory"><a class="header" href="#directory">Directory</a></h3>
-<p>Now that we know our way around <code>Tuples</code> and <code>Subspaces</code>, we can now talk about what I'm working on, which is the <code>Directory</code>. Let's have a look at the relevant <a href="https://apple.github.io/foundationdb/developer-guide.html#directories">documentation</a>:</p>
-<blockquote>
-<p>FoundationDB provides directories (available in each language binding) as a tool for managing related subspaces.</p>
-</blockquote>
-<blockquote>
-<p>Directories are a recommended approach for administering applications. Each application should create or open at least one directory to manage its subspaces.</p>
-</blockquote>
-<p>Okay, let's see the API in Go:</p>
-<pre><code class="language-go">subspace, err := directory.CreateOrOpen(db, []string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;}, nil)
-if err != nil {
-	log.Fatal(err)
-}
-
-fmt.Printf(&quot;%+v\n&quot;, subspace.Bytes())
-// [21 18]
-</code></pre>
-<p>We can see that we have a shorter subspace! The <code>directory</code> allows you to generate some integer that will be bind to a path, like here <code>&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;</code>.</p>
-<p>There are two advantages to this:</p>
-<ul>
-<li>shorter keys,</li>
-<li>cheap metadata operations like <code>List</code> or <code>Move</code>:</li>
-</ul>
-<pre><code class="language-go">// list all tenant in &quot;application&quot;, &quot;my-app&quot;:
-tenants, err := directory.List(db, []string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;})
-if err != nil {
-	log.Fatal(err)
-}
-fmt.Printf(&quot;%+v\n&quot;, tenants)
-// [tenant-42]
-
-// renaming 'tenant-42' in 'tenant-142'
-// This will NOT move the data, only the metadata is modified
-directorySubspace, err = directory.Move(db, 
-	[]string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-42&quot;},  // old path
-	[]string{&quot;application&quot;, &quot;my-app&quot;, &quot;tenant&quot;, &quot;tenant-142&quot;}) // new path
-if err != nil {
-	log.Fatal(err)
-}
-fmt.Printf(&quot;%+v\n&quot;, directorySubspace.Bytes())
-// still [21 18]
-</code></pre>
-<p>The returned object is actually a <code>DirectorySubspace</code>, which implements both <code>Directory</code> and <code>Subspace</code>, which means that you can use it to recreate many directories and subspaces at will 👌</p>
-<blockquote>
-<p>If you are wondering about how this integer is generated, I recommend going through this awesome blogpost on <a href="https://activesphere.com/blog/2018/08/05/high-contention-allocator">how high contention allocator works in FoundationDB.</a></p>
-</blockquote>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="existing-open-source-layers"><a class="header" href="#existing-open-source-layers">Existing open-source layers</a></h1>
-<p>The community has released a number of layers that can be studied, including:</p>
-<ul>
-<li><a href="develop_layer/studiable-layers.html#the-record-layer">the Record-layer</a></li>
-<li><a href="develop_layer/studiable-layers.html#the-document-layer">the Document Layer</a></li>
-<li><a href="develop_layer/studiable-layers.html#the-zookeeper-layer">the Zookeeper Layer</a></li>
-<li><a href="develop_layer/studiable-layers.html#timeseries-layer">TimeSeries layer</a></li>
-</ul>
-<h2 id="the-record-layer"><a class="header" href="#the-record-layer">the Record-layer</a></h2>
-<ul>
-<li><a href="https://github.com/foundationdb/fdb-record-layer">Github repo</a></li>
-<li><a href="https://www.foundationdb.org/files/record-layer-paper.pdf">Academic paper</a></li>
-<li>Videos:
-<ul>
-<li><a href="https://youtu.be/HLE8chgw6LI">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB - Nicholas Schiefer, Apple</a></li>
-<li><a href="https://youtu.be/SvoUHHM9IKU">Using FoundationDB and the FDB Record Layer to Build CloudKit - Scott Gray, Apple</a></li>
-<li><a href="https://youtu.be/_mDIhQ1HLcs">Meta-Data Caching and Record Store Scalability - Alec Grieser, Apple</a></li>
+<li><a href="https://youtu.be/KPqmB13zI9c">FoundationDB Document Layer</a> (Bhaskar Muppana, Apple)</li>
 </ul>
 </li>
 </ul>
-<h2 id="the-document-layer"><a class="header" href="#the-document-layer">the Document Layer</a></h2>
+<h2 id="the-zookeeper-layer"><a class="header" href="#the-zookeeper-layer">The ZooKeeper Layer</a></h2>
+<p>This layer implements the Apache ZooKeeper API, providing a distributed coordination service built on FoundationDB.</p>
 <ul>
-<li><a href="https://github.com/FoundationDB/fdb-document-layer">Github repo</a></li>
-<li>Videos:
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/pH14/fdb-zk">pH14/fdb-zk</a></li>
+<li><strong>Key Video:</strong>
 <ul>
-<li><a href="https://youtu.be/KPqmB13zI9c">FoundationDB Document Layer - Bhaskar Muppana, Apple</a></li>
+<li><a href="https://youtu.be/3FYpf1QMPgQ">A ZooKeeper Layer for FoundationDB</a> (Paul Hemberger, HubSpot)</li>
 </ul>
 </li>
 </ul>
-<h2 id="the-zookeeper-layer"><a class="header" href="#the-zookeeper-layer">the Zookeeper Layer</a></h2>
+<h2 id="the-time-series-layer"><a class="header" href="#the-time-series-layer">The Time-Series Layer</a></h2>
+<p>This is a high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.</p>
 <ul>
-<li><a href="https://github.com/pH14/fdb-zk">Github repo</a></li>
-<li>Forum posts:
-<ul>
-<li><a href="https://forums.foundationdb.org/t/fdb-zk-rough-cut-of-zookeeper-api-layer/1278">Fdb-zk: rough cut of Zookeeper API layer</a></li>
-</ul>
-</li>
-<li>Videos:
-<ul>
-<li><a href="https://youtu.be/3FYpf1QMPgQ">A ZooKeeper Layer for FoundationDB - Paul Hemberger, HubSpot</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="timeseries-layer"><a class="header" href="#timeseries-layer">TimeSeries layer</a></h2>
-<ul>
-<li><a href="https://github.com/richardartoul/tsdb-layer">Github repo</a></li>
-<li>Videos:
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/richardartoul/tsdb-layer">richardartoul/tsdb-layer</a></li>
+<li><strong>Key Video:</strong>
 <ul>
 <li><a href="https://www.youtube.com/watch?v=W6yQ9Pwgb1A">Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go</a></li>
 </ul>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="tips-and-tricks"><a class="header" href="#tips-and-tricks">Tips and tricks</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="best-practices-and-pitfalls"><a class="header" href="#best-practices-and-pitfalls">Best Practices and Pitfalls</a></h1>
+<p>This chapter provides a collection of best practices, advanced techniques, and common pitfalls to help you build robust, production-ready layers on FoundationDB.</p>
 <ul>
-<li><a href="develop_layer/tips.html#about-the-run-method">About the <code>run</code> method</a></li>
-<li><a href="develop_layer/tips.html#transaction-priority">Transaction priority</a></li>
-<li><a href="develop_layer/tips.html#use-transaction-tagging">Use transaction Tagging</a></li>
-<li><a href="develop_layer/tips.html#traces-logs">Traces logs</a></li>
-<li><a href="develop_layer/tips.html#the-metadataversion">The <code>metadataVersion</code></a></li>
-<li><a href="develop_layer/tips.html#the-timekeeper">The TimeKeeper</a></li>
-<li><a href="develop_layer/tips.html#special-keys">Special keys</a></li>
-<li><a href="develop_layer/tips.html#caveats-when-using-directory">Caveats when using directory</a></li>
-</ul>
-<p>Here's a few tips and tricks that should help you develop a production-ready layer.</p>
-<h2 id="about-the-run-method"><a class="header" href="#about-the-run-method">About the <code>run</code> method</a></h2>
-<p>Most bindings are offering a <code>run</code> method, that is taking a closure, like this in <a href="https://apple.github.io/foundationdb/javadoc/com/apple/foundationdb/Database.html#run(java.util.function.Function)">Java</a>.</p>
-<p>You should use the <code>run</code> method on your bindings, <strong>BUT</strong> you must add some transactionOptions to avoid blocking forever:</p>
+<li><a href="develop_layer/tips.html#transaction-management">Transaction Management</a>
 <ul>
-<li><strong>Timeout</strong> Set a timeout in milliseconds which, when elapsed, will cause the transaction automatically to be cancelled.</li>
-<li><strong>RetryLimit</strong> Set a maximum number of retries</li>
-</ul>
-<p>it is safe and legal to set these options at the first line of your <code>run</code> closure.</p>
-<h2 id="transaction-priority"><a class="header" href="#transaction-priority">Transaction priority</a></h2>
-<p>There is 3 transaction priority in FDB:</p>
-<ul>
-<li><strong>Default</strong>,</li>
-<li><strong>Batch</strong> Specifies that this transaction should be treated as low priority and that default priority transactions will be processed first. Useful for doing batch work simultaneously with latency-sensitive work</li>
-<li><strong>SystemImmediate</strong> Specifies that this transaction should be treated as highest priority and that lower priority transactions should block behind this one. Use is discouraged outside of low-level tools.</li>
-</ul>
-<h2 id="use-transaction-tagging"><a class="header" href="#use-transaction-tagging">Use transaction Tagging</a></h2>
-<blockquote>
-<p>FoundationDB provides the ability to add arbitrary byte-string tags to transactions. The cluster can be configured to limit the rate of transactions with certain tags, either automatically in response to tags that are very busy, or manually using the throttle command in fdbcli.</p>
-</blockquote>
-<p>More info can be found <a href="https://apple.github.io/foundationdb/transaction-tagging.html">here</a>.</p>
-<h2 id="traces-logs"><a class="header" href="#traces-logs">Traces logs</a></h2>
-<p>By default, clients do not generate trace logs. In order to enable traces from the clients, you must enable on the database-level:</p>
-<ul>
-<li><code>TraceEnable</code> Enables trace output to a file in a directory of the clients choosing</li>
-</ul>
-<p>You can also enable these optional options:</p>
-<ul>
-<li><code>TraceFormat</code> Select the format of the log files. xml (the default) and json are supported.</li>
-<li><code>TraceLogGroup</code> Sets the ‘LogGroup’ attribute with the specified value for all events in the trace output files. The default log group is ‘default’.</li>
-</ul>
-<p>Then, on a Transaction-level, you can set these options:</p>
-<ul>
-<li><code>DebugTransactionIdentifier</code> String identifier to be used when tracing or profiling this transaction. The identifier must not exceed 100 characters.</li>
-<li><code>LogTransaction</code> Enables tracing for this transaction and logs results to the client trace logs. The DEBUG_TRANSACTION_IDENTIFIER option must be set before using this option, and client trace logging must be enabled to get log output.</li>
-<li><code>TransactionLoggingMaxFieldLength</code> Sets the maximum escaped length of key and value fields to be logged to the trace file via the LOG_TRANSACTION option, after which the field will be truncated. A negative value disables truncation.</li>
-</ul>
-<h2 id="the-metadataversion"><a class="header" href="#the-metadataversion">The <code>metadataVersion</code></a></h2>
-<p>The metadata version key <code>\xFF/metadataVersion</code> is a key intended to help layers deal with hot keys. The value of this key is sent to clients along with the read version from the proxy, so a client can read its value without communicating with a storage server.</p>
-<p>It is useful to implement some caching-strategy on a layer. More info on how to use the metadataVersion key can be found <a href="https://forums.foundationdb.org/t/sharing-the-metadataversionkey-for-multiple-tenants/1659">here</a>.</p>
-<p>⚠️ In a transaction, if you update the \xff/metadataVersion key, and then attempt to read it again, I get a “Read or wrote an unreadable key” error (1036) when trying to read again. Context can be found <a href="https://forums.foundationdb.org/t/cannot-commit-transaction-that-reads-the-metadataversion-key-after-changing-it/1833">here</a></p>
-<p>More info about the <code>metadataVersion</code> can be found <a href="https://youtu.be/2HiIgbxtx0c">here</a>.</p>
-<h2 id="the-timekeeper"><a class="header" href="#the-timekeeper">The TimeKeeper</a></h2>
-<p><code>Cluster Controller</code> actor is keeping a map of read version to system clock time, updated every second. Can be accessible by scanning the <code>\xFF\x02/timeKeeper/map/</code>. More info <a href="https://forums.foundationdb.org/t/approximating-a-global-clock-for-a-watchdog-timer-using-versionstamps-readversions-or-the-timekeeper/477">here</a></p>
-<h2 id="special-keys"><a class="header" href="#special-keys">Special keys</a></h2>
-<blockquote>
-<p>Keys starting with the bytes \xff\xff are called “special” keys, and they are materialized when read. \xff\xff/status/json is an example of a special key.</p>
-</blockquote>
-<p>More info can be found <a href="https://apple.github.io/foundationdb/special-keys.html">here</a></p>
-<h2 id="caveats-when-using-directory"><a class="header" href="#caveats-when-using-directory">Caveats when using directory</a></h2>
-<ul>
-<li>
-<p><a href="https://github.com/apple/foundationdb/issues/895">Mutating a directory multiple times simultaneously in the same transaction is unsafe</a></p>
-</li>
-<li>
-<p>Opening a path with multiple items will generate many read on the metadata-subspace for every transaction. This can lead to hotspotting the <a href="https://forums.foundationdb.org/t/query-hotspotting-on-directory-layers-metadata-subspace/2487">Directory Layer’s metadata subspace</a>. Also, developing a directory that use the <a href="https://github.com/apple/foundationdb/pull/1213">metadataVersion's key</a> is not that easy:</p>
-<ul>
-<li><a href="https://forums.foundationdb.org/t/how-to-safely-add-a-metadata-caching-layer-on-top-of-existing-layers/1809/2?u=pierrez">Exhibit A</a>,</li>
-<li><a href="https://github.com/apple/foundationdb/issues/1415">Exhibit B</a>.</li>
+<li><a href="develop_layer/tips.html#use-timeouts-and-retry-limits">Use Timeouts and Retry Limits</a></li>
+<li><a href="develop_layer/tips.html#set-transaction-priority">Set Transaction Priority</a></li>
 </ul>
 </li>
+<li><a href="develop_layer/tips.html#observability">Observability</a>
+<ul>
+<li><a href="develop_layer/tips.html#tag-your-transactions">Tag Your Transactions</a></li>
+<li><a href="develop_layer/tips.html#enable-client-trace-logs">Enable Client Trace Logs</a></li>
+</ul>
+</li>
+<li><a href="develop_layer/tips.html#advanced-techniques">Advanced Techniques</a>
+<ul>
+<li><a href="develop_layer/tips.html#the-metadataversion-key">The <code>metadataVersion</code> Key</a></li>
+<li><a href="develop_layer/tips.html#the-timekeeper">The <code>TimeKeeper</code></a></li>
+<li><a href="develop_layer/tips.html#special-keys">Special Keys</a></li>
+</ul>
+</li>
+<li><a href="develop_layer/tips.html#common-pitfalls-the-directory-layer">Common Pitfalls: The Directory Layer</a></li>
+</ul>
+<h2 id="transaction-management"><a class="header" href="#transaction-management">Transaction Management</a></h2>
+<h3 id="use-timeouts-and-retry-limits"><a class="header" href="#use-timeouts-and-retry-limits">Use Timeouts and Retry Limits</a></h3>
+<p>Most language bindings provide a <code>run</code> or <code>transact</code> method that automatically handles the retry loop for you. However, to prevent transactions from running indefinitely, it is critical to configure two options:</p>
+<ul>
+<li><strong>Timeout:</strong> Set a timeout in milliseconds. If the transaction takes longer than this to commit, it will be automatically cancelled. This is a crucial backstop for preventing stuck application threads.</li>
+<li><strong>Retry Limit:</strong> Set a maximum number of retries. This prevents a transaction from retrying endlessly in the case of a persistent conflict or a live-lock scenario.</li>
+</ul>
+<p>These options should be set on every transaction to ensure your application remains stable under load.</p>
+<h3 id="set-transaction-priority"><a class="header" href="#set-transaction-priority">Set Transaction Priority</a></h3>
+<p>FoundationDB supports transaction priorities to help manage workloads.</p>
+<ul>
+<li><strong>Default:</strong> The standard priority for most latency-sensitive, user-facing operations.</li>
+<li><strong>Batch:</strong> A lower priority for background work, such as data cleanup or analytics. Batch priority transactions will yield to default priority transactions, ensuring that they don't interfere with your main application workload.</li>
+<li><strong>System Immediate:</strong> The highest priority, which can block other transactions. Its use is discouraged outside of low-level administrative tools.</li>
+</ul>
+<h2 id="observability"><a class="header" href="#observability">Observability</a></h2>
+<h3 id="tag-your-transactions"><a class="header" href="#tag-your-transactions">Tag Your Transactions</a></h3>
+<p>FoundationDB allows you to add a byte-string <strong>tag</strong> to any transaction. This is an invaluable tool for observability and performance management. You can use tags to identify different types of workloads (e.g., <code>user_signup</code>, <code>post_comment</code>). The <code>fdbcli</code> tool can then be used to monitor the rate of transactions with specific tags and even throttle them if they are causing excessive load.</p>
+<p>See the official documentation on <a href="https://apple.github.io/foundationdb/transaction-tagging.html">Transaction Tagging</a> for more details.</p>
+<h3 id="enable-client-trace-logs"><a class="header" href="#enable-client-trace-logs">Enable Client Trace Logs</a></h3>
+<p>By default, clients do not generate detailed trace logs. To debug performance issues, you can enable them by setting the <code>TraceEnable</code> database option. You can then add a <code>DebugTransactionIdentifier</code> to a specific transaction and set the <code>LogTransaction</code> option to get detailed, low-level logs about its execution, including all keys and values read and written.</p>
+<h2 id="advanced-techniques"><a class="header" href="#advanced-techniques">Advanced Techniques</a></h2>
+<h3 id="the-metadataversion-key"><a class="header" href="#the-metadataversion-key">The <code>metadataVersion</code> Key</a></h3>
+<p>The special key <code>\xFF/metadataVersion</code> is a cluster-wide version counter that can be used to implement client-side caching. Its value is sent to clients with every read version, so reading it does not require a round-trip to a storage server. A layer can watch this key to know when to invalidate a local cache.</p>
+<p><strong>Note:</strong> If you write to the <code>metadataVersion</code> key, you cannot read it again in the same transaction.</p>
+<h3 id="the-timekeeper"><a class="header" href="#the-timekeeper">The <code>TimeKeeper</code></a></h3>
+<p>The <code>Cluster Controller</code> maintains a map of recent read versions to wall-clock times. This can be accessed by scanning the key range beginning with <code>\xFF\x02/timeKeeper/map/</code>. This can be useful for approximating a global clock.</p>
+<h3 id="special-keys"><a class="header" href="#special-keys">Special Keys</a></h3>
+<p>Keys prefixed with <code>\xFF\xFF</code> are “special” keys that are materialized on-demand when read. The most common example is <code>\xFF\xFF/status/json</code>, which returns a JSON document containing the cluster's status.</p>
+<p>See the official documentation on <a href="https://apple.github.io/foundationdb/special-keys.html">Special Keys</a> for more details.</p>
+<h2 id="common-pitfalls-the-directory-layer"><a class="header" href="#common-pitfalls-the-directory-layer">Common Pitfalls: The Directory Layer</a></h2>
+<p>The Directory Layer is a powerful tool, but it has several sharp edges that developers must be aware of:</p>
+<ul>
+<li><strong>Concurrent Mutations:</strong> Modifying the same directory (e.g., creating two different subdirectories within it) in multiple, concurrent transactions is not safe and can lead to corruption.</li>
+<li><strong>Metadata Hotspots:</strong> Opening a directory with a long path requires one read per path element for every transaction. This can create a hotspot on the directory's internal metadata subspace.</li>
+<li><strong>Multi-Cluster Deployments:</strong> The directory prefix allocator is not safe for multi-cluster deployments and can allocate the same prefix in different clusters, leading to data corruption if the data is ever merged.</li>
+<li><strong>Redwood and Prefix Compression:</strong> The Redwood storage engine (new in 7.0) provides native key-prefix compression. This offers many of the same space-saving benefits as the Directory Layer without the associated complexity and caveats. For new projects, especially those using Redwood, consider whether you can use subspaces with descriptive prefixes directly instead of relying on the Directory Layer.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-cluster-roles"><a class="header" href="#anatomy-of-a-cluster-roles">Anatomy of a Cluster: Roles</a></h1>
+<ul>
+<li><a href="internals/roles.html#the-coordinator">The Coordinator</a></li>
+<li><a href="internals/roles.html#the-cluster-controller">The Cluster Controller</a></li>
+<li><a href="internals/roles.html#the-proxies">The Proxies</a>
+<ul>
+<li><a href="internals/roles.html#the-grv-proxy">The GRV Proxy</a></li>
+<li><a href="internals/roles.html#the-commit-proxy">The Commit Proxy</a></li>
+</ul>
+</li>
+<li><a href="internals/roles.html#the-resolver">The Resolver</a></li>
+<li><a href="internals/roles.html#the-log-server">The Log Server</a></li>
+<li><a href="internals/roles.html#the-storage-server">The Storage Server</a></li>
+<li><a href="internals/roles.html#the-data-distributor">The Data Distributor</a></li>
+</ul>
+<p>FoundationDB's architecture is built on a collection of specialized, stateless roles. This separation of concerns is a key reason for its high performance, scalability, and fault tolerance. A running <code>fdbserver</code> process can dynamically take on any of these roles as needed. Understanding them is the first step to understanding how FoundationDB works.</p>
+<p>Here are the core roles in a FoundationDB cluster:</p>
+<h2 id="the-coordinator"><a class="header" href="#the-coordinator">The Coordinator</a></h2>
+<p>The <strong>Coordinator</strong> is the first process that any client or server connects to when joining the cluster. Its primary job is to manage the <em>cluster file</em>, a small, durable text file that contains the IP addresses and ports of the coordinators themselves. The coordinators elect a <strong>Cluster Controller</strong>, which serves as the singleton brain of the cluster.</p>
+<h2 id="the-cluster-controller"><a class="header" href="#the-cluster-controller">The Cluster Controller</a></h2>
+<p>The <strong>Cluster Controller</strong> is the authoritative monitor for the entire cluster. There is only one active Cluster Controller at any time. It is responsible for:</p>
+<ul>
+<li>Monitoring the health of all other <code>fdbserver</code> processes.</li>
+<li>Recruiting new processes to take on roles as needed (e.g., if a Log Server fails).</li>
+<li>Orchestrating recovery when a process fails.</li>
+</ul>
+<h2 id="the-proxies"><a class="header" href="#the-proxies">The Proxies</a></h2>
+<p>FoundationDB splits the traditional role of a proxy into two distinct components: the <strong>GRV Proxy</strong> and the <strong>Commit Proxy</strong>. This separation allows for better scaling and specialization. Clients first interact with a GRV proxy to start a transaction and then with a Commit Proxy to commit it.</p>
+<h3 id="the-grv-proxy"><a class="header" href="#the-grv-proxy">The GRV Proxy</a></h3>
+<p>The <strong>GRV Proxy</strong> (Get Read Version Proxy) is responsible for one critical task: providing a <strong>Read Version</strong> to a client when it begins a transaction. To do this, the GRV proxy communicates with the Master to get the latest committed version from the transaction system. This ensures that the transaction gets a consistent snapshot view of the database. The <code>Ratekeeper</code> process can apply backpressure by slowing down the rate at which GRV Proxies issue read versions, which helps manage cluster load.</p>
+<h3 id="the-commit-proxy"><a class="header" href="#the-commit-proxy">The Commit Proxy</a></h3>
+<p>The <strong>Commit Proxy</strong> is the front door for all transaction <em>commits</em>. When a client commits a transaction, it sends its read and write sets to a Commit Proxy. The Commit Proxy orchestrates the second half of the transaction lifecycle:</p>
+<ol>
+<li>Getting a <strong>Commit Version</strong> from the Master.</li>
+<li>Sending the transaction's read and write sets to the <strong>Resolver</strong> to check for conflicts.</li>
+<li>If the transaction is valid, sending its mutations to the <strong>Log Servers</strong> to be made durable.</li>
+<li>Reporting the final commit status back to the client.</li>
+</ol>
+<p>Because both proxy types are stateless, you can add more of them to the cluster to increase both the number of transactions that can be started and the overall commit throughput.</p>
+<h2 id="the-resolver"><a class="header" href="#the-resolver">The Resolver</a></h2>
+<p>The <strong>Resolver</strong> is the component that enforces serializability. During the commit process, the Commit Proxy sends the transaction's read and write sets to the Resolver. The Resolver checks if any of the keys in the read set have been modified by another transaction that has committed since the current transaction's read version was assigned. If a conflict is found, the transaction is rejected, and the client must retry.</p>
+<h2 id="the-log-server"><a class="header" href="#the-log-server">The Log Server</a></h2>
+<p>The <strong>Log Server</strong> is the heart of FoundationDB's durability guarantee. It implements the transaction log. When a transaction is ready to be committed, its mutations are sent to the Log Servers, which write them to durable storage (typically an SSD) before the commit is acknowledged to the client. The Log Servers do not need to apply the changes to the main data store; they just need to record them.</p>
+<h2 id="the-storage-server"><a class="header" href="#the-storage-server">The Storage Server</a></h2>
+<p>The <strong>Storage Server</strong> is responsible for storing the data. Each Storage Server holds a set of key ranges (shards). It serves read requests from clients and receives committed mutations from the Log Servers, applying them to its in-memory B-tree and eventually writing them to disk. Storage Servers are the workhorses of the cluster, and you can add more of them to increase both storage capacity and I/O performance.</p>
+<h2 id="the-data-distributor"><a class="header" href="#the-data-distributor">The Data Distributor</a></h2>
+<p>The <strong>Data Distributor</strong> is a background role responsible for ensuring that data is evenly distributed and replicated across all of the Storage Servers. It monitors the size and workload of each shard and will automatically move data between servers to prevent hotspots and ensure fault tolerance. It is also responsible for initiating data replication and healing the cluster after a Storage Server fails.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-write-path"><a class="header" href="#the-write-path">The Write Path</a></h1>
+<ul>
+<li><a href="internals/the-write-path.html#the-steps-of-a-commit">The Steps of a Commit</a></li>
+<li><a href="internals/the-write-path.html#the-final-step-data-storage">The Final Step: Data Storage</a></li>
+</ul>
+<p>Understanding the life of a write transaction is key to understanding how FoundationDB provides its powerful guarantees of strict serializability and durability. The process involves a carefully choreographed dance between several cluster roles.</p>
+<p>Let's walk through the journey of a transaction from the moment a client calls <code>commit()</code> to the point where it is safely stored in the database.</p>
+<pre class="mermaid">sequenceDiagram
+    participant Client
+    participant Proxy
+    participant Resolver
+    participant Log Server
+    participant Storage Server
+
+    Client-&gt;&gt;+Proxy: commit(read_set, write_set)
+    Proxy-&gt;&gt;Proxy: 1. Get Read Version
+    Proxy-&gt;&gt;+Resolver: 2. Resolve(read_version, read_set, write_set)
+    Resolver--&gt;&gt;-Proxy: OK (no conflicts)
+    Proxy-&gt;&gt;+Log Server: 3. Log(commit_version, write_set)
+    Log Server--&gt;&gt;-Proxy: 4. Durable
+    Proxy--&gt;&gt;-Client: 5. Commit Successful
+    loop Later
+        Storage Server-&gt;&gt;+Log Server: Pull mutations
+        Log Server--&gt;&gt;-Storage Server: Mutations
+        Storage Server-&gt;&gt;Storage Server: Apply to B-Tree
+    end
+</pre>
+<h3 id="the-steps-of-a-commit"><a class="header" href="#the-steps-of-a-commit">The Steps of a Commit</a></h3>
+<ol>
 <li>
-<p>Because on how the prefix is generated, multi-cluster deployments can allocate the same <a href="https://forums.foundationdb.org/t/redwood-engine-and-directory-layer/3084/8">prefix multiple times</a>:</p>
+<p><strong>Get Read Version:</strong> When the transaction is ready to be committed, the client library sends it to a <strong>Proxy</strong>. The first thing the Proxy does is request a <strong>Read Version</strong> from the Cluster Controller. This version number establishes the logical point in time at which the transaction's reads occurred.</p>
 </li>
 <li>
-<p>Redwood Engine is a new storage engine released in FDB-7.0. It has some nice features, including native key-prefix compression. Prefix compression's performance is likely to be <a href="https://youtu.be/5iqKu1pVDvE?t=158">similar to using the Directory</a>. When using the Redwood storage engine the remaining benefit of the Directory becomes the ability to move/rename directories and having smaller keys in network messages (though some of these may eventually use prefix compression).</p>
+<p><strong>Conflict Resolution:</strong> The Proxy sends the transaction's Read Version, its <em>read set</em> (the list of keys it read), and its <em>write set</em> to the <strong>Resolver</strong>. The Resolver checks if any of the keys in the read set have been written to by another transaction that committed <em>after</em> this transaction's Read Version. If a conflict is detected, the Resolver tells the Proxy to reject the transaction, and the client must retry.</p>
+</li>
+<li>
+<p><strong>Logging for Durability:</strong> If the Resolver finds no conflicts, the Proxy assigns the transaction a <strong>Commit Version</strong> (which will be higher than its Read Version) and sends the transaction's <em>write set</em> (the keys and values to be written) to the <strong>Log Servers</strong>.</p>
+</li>
+<li>
+<p><strong>Durable Commit:</strong> The Log Servers write the transaction's mutations to their durable, on-disk transaction logs. Once a quorum of Log Servers has confirmed that the data is safely on disk, they respond to the Proxy. At this point, the transaction is considered <strong>durable</strong>. Even if the entire cluster lost power, the transaction would be recovered.</p>
+</li>
+<li>
+<p><strong>Success!</strong> The Proxy, having received confirmation from the Log Servers, reports back to the client that the commit was successful.</p>
+</li>
+</ol>
+<h3 id="the-final-step-data-storage"><a class="header" href="#the-final-step-data-storage">The Final Step: Data Storage</a></h3>
+<p>Notice that the <strong>Storage Servers</strong> were not involved in the critical commit path. This is a key design decision that makes commits extremely fast.</p>
+<p>After the transaction is durable, the Storage Servers will eventually pull the new data from the Log Servers and apply the mutations to their own on-disk B-trees. This process happens asynchronously in the background and does not block new incoming transactions. This separation of the transaction log from the primary data store is a pattern known as Command Query Responsibility Segregation (CQRS) and is fundamental to FoundationDB's performance.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-read-path"><a class="header" href="#the-read-path">The Read Path</a></h1>
+<ul>
+<li><a href="internals/the-read-path.html#the-steps-of-a-read">The Steps of a Read</a></li>
+<li><a href="internals/the-read-path.html#key-takeaways">Key Takeaways</a></li>
+</ul>
+<p>FoundationDB's read path is designed to be highly scalable and efficient. Unlike the write path, which is coordinated through a central set of proxies, the read path is almost entirely decentralized. This allows the cluster to serve a massive number of concurrent reads without creating bottlenecks.</p>
+<p>Here is a high-level overview of how a read operation works:</p>
+<pre class="mermaid">sequenceDiagram
+    participant Client
+    participant Proxy
+    participant Storage Server
+
+    Client-&gt;&gt;+Proxy: 1. Get Read Version
+    Proxy--&gt;&gt;-Client: read_version
+    Client-&gt;&gt;Client: 2. Locate Storage Server (from cache)
+    Client-&gt;&gt;+Storage Server: 3. Read(key, read_version)
+    Storage Server--&gt;&gt;-Client: Value
+</pre>
+<h3 id="the-steps-of-a-read"><a class="header" href="#the-steps-of-a-read">The Steps of a Read</a></h3>
+<ol>
+<li>
+<p><strong>Get Read Version:</strong> When a client begins a transaction, the first thing it does is request a <strong>Read Version</strong> from a <strong>Proxy</strong>. This version is a timestamp that represents a consistent, immutable snapshot of the entire database. All reads within the transaction will be served from this snapshot, which is the foundation of FoundationDB's snapshot isolation.</p>
+</li>
+<li>
+<p><strong>Locate the Storage Server:</strong> The client library maintains a local cache that maps key ranges to the <strong>Storage Servers</strong> responsible for them. When the client needs to read a key, it uses this cache to determine which Storage Server to contact. This lookup is extremely fast and does not require a network round-trip.</p>
+</li>
+<li>
+<p><strong>Read from the Storage Server:</strong> The client connects directly to the appropriate Storage Server and requests the value for the key at the transaction's Read Version. The Storage Server uses its in-memory B-tree and on-disk data files to find the correct version of the value and return it to the client.</p>
+</li>
+</ol>
+<h3 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h3>
+<ul>
+<li><strong>Decentralized and Scalable:</strong> Because clients read directly from Storage Servers, read throughput can be scaled horizontally simply by adding more Storage Servers to the cluster.</li>
+<li><strong>Snapshot Isolation:</strong> The use of a Read Version ensures that a transaction sees a perfectly consistent view of the database, even as other transactions are being committed concurrently. Your reads are never "dirty."</li>
+<li><strong>Low Latency:</strong> By caching the mapping of keys to Storage Servers, the client can avoid extra network hops and read data with very low latency.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="what-is-the-record-layer"><a class="header" href="#what-is-the-record-layer">What is the Record Layer?</a></h1>
+<p>The FoundationDB Record Layer is an open-source library that provides a record-oriented data store with semantics similar to a relational database, implemented on top of FoundationDB. Think of it as a "middle layer" that provides common database-like features, making it easier to build complex, scalable applications on FDB.</p>
+<p>It was created to solve the common and difficult challenges that arise when building a structured data layer on top of a key-value store, such as schema management, indexing, and query execution, especially in a multi-tenant environment.</p>
+<h2 id="core-design-principles"><a class="header" href="#core-design-principles">Core Design Principles</a></h2>
+<p>The Record Layer is built around a few core principles:</p>
+<ul>
+<li>
+<p><strong>Structured, Schematized Data</strong>: It stores structured records using Google's <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a>. This provides a robust way to define a schema and evolve it over time.</p>
+</li>
+<li>
+<p><strong>Stateless Architecture</strong>: The layer itself is completely stateless. All state is stored in FoundationDB or returned to the client (e.g., as a <code>continuation</code>). This simplifies scaling and operation, as any server can handle any request.</p>
+</li>
+<li>
+<p><strong>Streaming Queries</strong>: The Record Layer is designed for a streaming model. For example, it only supports ordered queries (like SQL's <code>ORDER BY</code>) if there is an index that can produce the data in the requested order. This avoids large, stateful in-memory operations and makes performance predictable, favoring fast OLTP workloads over analytical OLAP queries.</p>
+</li>
+<li>
+<p><strong>Extensibility</strong>: The layer is highly extensible. Clients can define their own custom index types, index maintainers, and query planner rules, allowing them to tailor the database's behavior to their specific needs.</p>
 </li>
 </ul>
-<blockquote>
-<p>I’ll also note that due to caching, the Record Layer can’t really make use of the directory layer’s renaming features (at least not without rethinking cache invalidation). I suspect that if we’d had Redwood and prefix compression when the Record Layer was being originally developed, we’d seriously have considered just relying on prefix compression instead of all of that because that would have significantly simplified cross-cluster data movement (and, if we’re honest, single cluster writes).</p>
-</blockquote>
+<h2 id="the-record-store-a-logical-database"><a class="header" href="#the-record-store-a-logical-database">The "Record Store": A Logical Database</a></h2>
+<p>A key abstraction in the Record Layer is the <strong>Record Store</strong>. A Record Store is a logical, self-contained database that holds all of a tenant's records, indexes, and metadata. This entire logical database is stored within a single, contiguous key-space in FoundationDB, called a <strong>subspace</strong>.</p>
+<p>This design is a perfect fit for multi-tenant applications. For example, Apple's CloudKit uses this model to provide a distinct logical database for every application on every user's device—billions of independent databases in total. Because a Record Store is just a range of keys, it can be easily moved between FDB clusters for load balancing.</p>
+<h2 id="key-technical-features"><a class="header" href="#key-technical-features">Key Technical Features</a></h2>
+<p>The Record Layer abstracts away several complex engineering problems by leveraging FoundationDB's core features.</p>
+<h3 id="key-expressions-for-flexible-indexing"><a class="header" href="#key-expressions-for-flexible-indexing">Key Expressions for Flexible Indexing</a></h3>
+<p>Indexes are defined using <strong>key expressions</strong>, which are functions that specify how to extract data from a record to form an index key. Key expressions can be simple (e.g., a single field's value) or complex. They can:</p>
+<ul>
+<li><strong>Concatenate</strong> multiple fields together.</li>
+<li><strong>Fan out</strong> by creating multiple index entries from a single record, such as indexing each element in a repeated field (a list).</li>
+<li><strong>Nest</strong> to index fields within a sub-record.</li>
+</ul>
+<p>This provides a powerful and flexible way to create indexes on highly structured, nested data.</p>
+<h3 id="online-index-building"><a class="header" href="#online-index-building">Online Index Building</a></h3>
+<p>Building an index on a large, live dataset is a hard problem. The Record Layer's online indexer handles this gracefully. When a new index is added, it transitions through several states:</p>
+<ol>
+<li><strong>Write-only</strong>: The index is maintained for all new and updated records, but it cannot yet be used for queries.</li>
+<li><strong>Building</strong>: A background process scans all existing records in batches, adding their corresponding entries to the index. This process is transactional, fault-tolerant, and resumable.</li>
+<li><strong>Readable</strong>: Once the background build is complete, the index is marked as readable and can be used by the query planner.</li>
+</ol>
+<h3 id="advanced-index-types"><a class="header" href="#advanced-index-types">Advanced Index Types</a></h3>
+<p>The Record Layer includes several powerful, built-in index types:</p>
+<ul>
+<li><strong>VALUE</strong>: A standard index that maps the value from a key expression to the record's primary key.</li>
+<li><strong>ATOMIC</strong>: An index that uses FoundationDB's atomic mutations to maintain aggregate statistics without transaction conflicts. This is used for <code>SUM</code>, <code>COUNT</code>, <code>MAX</code>, and <code>MIN</code> indexes.</li>
+<li><strong>VERSION</strong>: An index on the commit version of a record. This creates a conflict-free, totally-ordered change log, which is ideal for synchronization. The version is a unique 12-byte value: 10 bytes from the FDB commit version and 2 bytes from a transaction-local counter in the Record Layer.</li>
+<li><strong>RANK</strong>: An index that can answer questions like, "what is the Nth record in a given order?" or "what is the rank of this specific record?"</li>
+<li><strong>TEXT</strong>: A full-text index for searching for words or phrases within a text field.</li>
+</ul>
+<h3 id="query-continuations-for-resource-control"><a class="header" href="#query-continuations-for-resource-control">Query Continuations for Resource Control</a></h3>
+<p>To prevent any single request from consuming too many resources, all long-running operations are pausable. When a query hits a predefined limit (e.g., number of records scanned or time elapsed), it stops and returns the results it has found so far, along with an opaque <strong>continuation</strong>.</p>
+<p>This continuation captures the exact state of the query. The client can pass it back in a new request to resume the query exactly where it left off. This makes the system highly scalable and resilient, as it allows for fine-grained control over resource usage.</p>
+<h2 id="further-reading"><a class="header" href="#further-reading">Further Reading</a></h2>
+<ul>
+<li><strong>Paper</strong>: <a href="https://www.foundationdb.org/files/record-layer-paper.pdf">FoundationDB Record Layer: A Multi-Tenant Structured Datastore</a> (SIGMOD '19)</li>
+<li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=SvoUHHM9IKU">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB</a> (FDB Summit 2018)</li>
+<li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=HLE8chgw6LI">Using FoundationDB and the FDB Record Layer to Build CloudKit</a> (FDB Summit 2018)</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quick-a-queuing-system-in-cloudkit"><a class="header" href="#quick-a-queuing-system-in-cloudkit">QuiCK: A Queuing System in CloudKit</a></h1>
+<p>QuiCK is a distributed, transactional queuing system developed for and integrated into Apple's CloudKit. It is built on top of FoundationDB and the Record Layer. Its primary purpose is to reliably manage deferred, asynchronous tasks that are generated by CloudKit operations, such as updating search indexes, sending push notifications, or performing data compaction.</p>
+<h2 id="the-challenge-queuing-at-cloudkit-scale"><a class="header" href="#the-challenge-queuing-at-cloudkit-scale">The Challenge: Queuing at CloudKit Scale</a></h2>
+<p>CloudKit needed a way to manage a massive volume of asynchronous tasks without using a separate, external queuing system. Using an external system like Kafka or RabbitMQ presented several major challenges:</p>
+<ol>
+<li>
+<p><strong>No Transactionality</strong>: It's impossible to have a single atomic transaction that spans both CloudKit's database (FDB) and an external queue. For example, if a user shares a Keynote document, the system must both update access permissions in the database and enqueue a task to send a push notification. Without a transactional queue, the database update could succeed while the task enqueue fails, leaving collaborators unaware of the share.</p>
+</li>
+<li>
+<p><strong>Data Migration</strong>: CloudKit frequently moves user data between FDB clusters for load balancing. If a user's tasks were in a separate system, this would create a coordination nightmare. For example, if a user deletes a folder in iCloud Drive and their database is then moved to a new datacenter, their queued deletion task could be left behind, unable to find the data it's supposed to act on.</p>
+</li>
+<li>
+<p><strong>Tenancy Mismatch</strong>: CloudKit has a fine-grained tenancy model with billions of logical databases (one for each user of each app). Traditional queuing systems are designed for thousands of topics, not billions. Mapping the CloudKit model to a traditional queue would be impossible.</p>
+</li>
+<li>
+<p><strong>Operational Complexity</strong>: An external system would be another massive, stateful service to provision, monitor, and operate alongside the hundreds of FDB clusters that power CloudKit.</p>
+</li>
+</ol>
+<p>To solve these issues, the team built QuiCK directly into CloudKit, storing queued tasks right alongside the user data they pertain to.</p>
+<h2 id="core-design-and-technical-features"><a class="header" href="#core-design-and-technical-features">Core Design and Technical Features</a></h2>
+<p>QuiCK's design overcomes the traditional concerns of building a queue on a database (like hotspots and consumer contention) through several key innovations.</p>
+<h3 id="two-level-sharding"><a class="header" href="#two-level-sharding">Two-Level Sharding</a></h3>
+<p>QuiCK avoids hotspots by sharding at an extreme scale:</p>
+<ul>
+<li>
+<p><strong>Level 1: Queue Zones</strong>: The primary level of sharding consists of tens of billions of individual queues, called <strong>Queue Zones</strong>. Each tenant (a user of a CloudKit app) gets their own queue within their logical database. This means one tenant's activity can never create a hotspot that affects another.</p>
+</li>
+<li>
+<p><strong>Level 2: Cluster Queues</strong>: To help consumers find work efficiently, a second, higher-level queue exists on each FDB cluster. When a task is first enqueued into a tenant's previously empty Queue Zone, the same transaction also adds a <strong>pointer</strong> to that zone into the higher-level Cluster Queue. Consumers poll the Cluster Queue to find these pointers, which efficiently leads them to tenants with work to be done.</p>
+</li>
+</ul>
+<h3 id="fault-tolerant-leases-via-vesting-time"><a class="header" href="#fault-tolerant-leases-via-vesting-time">Fault-Tolerant Leases via Vesting Time</a></h3>
+<p>To prevent multiple consumers from processing the same item, QuiCK uses a clever, fault-tolerant leasing mechanism. Instead of locking or immediately deleting an item, a consumer takes a lease by updating the item's <strong>vesting time</strong> to some point in the future (e.g., 5 minutes from now). This makes the item invisible to other consumers for the duration of the lease. If the consumer processes the item successfully, it deletes it. If the consumer crashes, the lease simply expires, and the item automatically becomes visible again for another consumer to pick up.</p>
+<h3 id="polling-for-fairness-and-efficiency"><a class="header" href="#polling-for-fairness-and-efficiency">Polling for Fairness and Efficiency</a></h3>
+<p>Given the massive number of queues, a push-based model is not feasible. Instead, QuiCK uses a polling-based model where a shared pool of consumers asks for work when they have capacity. This allows QuiCK to implement scheduling and fairness policies, deciding which queue to service next based on tenant priority or resource usage, preventing a single user from starving others.</p>
+<h3 id="leveraging-foundationdb-and-the-record-layer"><a class="header" href="#leveraging-foundationdb-and-the-record-layer">Leveraging FoundationDB and the Record Layer</a></h3>
+<p>QuiCK is a powerful example of building a complex subsystem on top of the FDB/Record Layer stack:</p>
+<ul>
+<li><strong>Transactional Integrity</strong>: Enqueuing a task and adding a pointer to the cluster queue are atomic operations within a standard FDB transaction.</li>
+<li><strong>Exactly-Once Semantics</strong>: For tasks that only modify the database (no external side effects), QuiCK can achieve exactly-once semantics by processing the task and deleting it from the queue within a single transaction.</li>
+<li><strong>Indexed Queues</strong>: The Record Layer's secondary indexes are used to order items within a Queue Zone by priority and vesting time, so consumers always process the most important item first.</li>
+</ul>
+<h2 id="further-reading-1"><a class="header" href="#further-reading-1">Further Reading</a></h2>
+<ul>
+<li><strong>Paper</strong>: <a href="https://www.foundationdb.org/files/QuiCK.pdf">QuiCK: A Queuing System in CloudKit</a> (SIGMOD '21)</li>
+<li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=I9mNENkZT90">QuiCK: A Queuing System in CloudKit</a> (SIGMOD '21)</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
             </nav>
 
         </div>
 
-        <script type="text/javascript">
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script type="text/javascript" src="mermaid.min.js"></script>
-        <script type="text/javascript" src="mermaid-init.js"></script>
-        <script type="text/javascript">
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+        <script>
         window.addEventListener('load', function() {
             window.setTimeout(window.print, 100);
         });
         </script>
+
+    </div>
     </body>
 </html>

@@ -1,14 +1,16 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Existing open-source layers - the FoundationDB Book</title>
+        <title>Learning from the Community: Open-Source Layers - the FoundationDB Book</title>
+
+
         <!-- Custom HTML head -->
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="../favicon.svg">
         <link rel="shortcut icon" href="../favicon.png">
@@ -16,28 +18,46 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
     </head>
     <body>
-        <!-- Provide site root to javascript -->
-        <script type="text/javascript">
-            var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
-        </script>
-
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -50,56 +70,66 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
-            var theme;
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
 
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
+            sidebar_toggle.checked = sidebar === 'visible';
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../welcome.html">The FoundationDB Book</a></li><li class="chapter-item expanded affix "><li class="part-title">Meet FoundationDB</li><li class="chapter-item expanded "><a href="../meet_fdb/another_db.html"><strong aria-hidden="true">1.</strong> Yet another database?</a></li><li class="chapter-item expanded "><a href="../meet_fdb/enter_fdb.html"><strong aria-hidden="true">2.</strong> Enter FoundationDB</a></li><li class="chapter-item expanded "><a href="../meet_fdb/everything_is_kv.html"><strong aria-hidden="true">3.</strong> Everything is a key-value!</a></li><li class="chapter-item expanded "><a href="../meet_fdb/correctess.html"><strong aria-hidden="true">4.</strong> Correct and robust, choose both</a></li><li class="chapter-item expanded affix "><li class="part-title">Getting started with FoundationDB</li><li class="chapter-item expanded "><a href="../getting_started/installing-fdb.html"><strong aria-hidden="true">5.</strong> Installing FoundationDB</a></li><li class="chapter-item expanded "><a href="../getting_started/fdbcli.html"><strong aria-hidden="true">6.</strong> Playing with fdbcli</a></li><li class="chapter-item expanded affix "><li class="part-title">Developing a layer</li><li class="chapter-item expanded "><a href="../develop_layer/transactions.html"><strong aria-hidden="true">7.</strong> ACID transactions</a></li><li class="chapter-item expanded "><a href="../develop_layer/crafting-row-keys.html"><strong aria-hidden="true">8.</strong> Crafting row keys</a></li><li class="chapter-item expanded "><a href="../develop_layer/studiable-layers.html" class="active"><strong aria-hidden="true">9.</strong> Existing open-source layers</a></li><li class="chapter-item expanded "><a href="../develop_layer/tips.html"><strong aria-hidden="true">10.</strong> Tips and tricks</a></li><li class="chapter-item expanded affix "><li class="part-title">FoundationDB's internals</li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> TODO: the list of roles</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> TODO: the write-path</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> TODO: the read-path</div></li><li class="chapter-item expanded affix "><li class="part-title">The Record-Layer</li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> TODO: What is the Record-layer?</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> TODO: QuiCK</div></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-<script defer data-domain="pierrez.github.io/fdb-book" src="https://plausible.io/js/plausible.js"></script>                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <script defer data-domain="pierrez.github.io/fdb-book" src="https://plausible.io/js/plausible.js"></script>                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -113,6 +143,7 @@
                         <a href="https://github.com/PierreZ/fdb-book" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -126,8 +157,9 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -137,53 +169,52 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="existing-open-source-layers"><a class="header" href="#existing-open-source-layers">Existing open-source layers</a></h1>
-<p>The community has released a number of layers that can be studied, including:</p>
+                        <h1 id="learning-from-the-community-open-source-layers"><a class="header" href="#learning-from-the-community-open-source-layers">Learning from the Community: Open-Source Layers</a></h1>
+<p>One of the best ways to learn how to build on FoundationDB is to study existing, production-proven layers. A "layer" is simply a library or service that provides a higher-level data model on top of FoundationDB's ordered key-value store. By examining how these layers map their data models to keys and values, you can gain invaluable insights for your own projects.</p>
+<p>Here are some of the most prominent open-source layers developed by the FoundationDB community.</p>
 <ul>
-<li><a href="#the-record-layer">the Record-layer</a></li>
-<li><a href="#the-document-layer">the Document Layer</a></li>
-<li><a href="#the-zookeeper-layer">the Zookeeper Layer</a></li>
-<li><a href="#timeseries-layer">TimeSeries layer</a></li>
+<li><a href="#the-record-layer">The Record Layer</a></li>
+<li><a href="#the-document-layer">The Document Layer</a></li>
+<li><a href="#the-zookeeper-layer">The ZooKeeper Layer</a></li>
+<li><a href="#the-time-series-layer">The Time-Series Layer</a></li>
 </ul>
-<h2 id="the-record-layer"><a class="header" href="#the-record-layer">the Record-layer</a></h2>
+<h2 id="the-record-layer"><a class="header" href="#the-record-layer">The Record Layer</a></h2>
+<p>The Record Layer provides a structured, record-oriented data store on top of FoundationDB, similar to a traditional relational database. It is used in production at Apple to power CloudKit.</p>
 <ul>
-<li><a href="https://github.com/foundationdb/fdb-record-layer">Github repo</a></li>
-<li><a href="https://www.foundationdb.org/files/record-layer-paper.pdf">Academic paper</a></li>
-<li>Videos:
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/foundationdb/fdb-record-layer">foundationdb/fdb-record-layer</a></li>
+<li><strong>Academic Paper:</strong> <a href="https://www.foundationdb.org/files/record-layer-paper.pdf">FoundationDB Record Layer</a></li>
+<li><strong>Key Videos:</strong>
 <ul>
-<li><a href="https://youtu.be/HLE8chgw6LI">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB - Nicholas Schiefer, Apple</a></li>
-<li><a href="https://youtu.be/SvoUHHM9IKU">Using FoundationDB and the FDB Record Layer to Build CloudKit - Scott Gray, Apple</a></li>
-<li><a href="https://youtu.be/_mDIhQ1HLcs">Meta-Data Caching and Record Store Scalability - Alec Grieser, Apple</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="the-document-layer"><a class="header" href="#the-document-layer">the Document Layer</a></h2>
-<ul>
-<li><a href="https://github.com/FoundationDB/fdb-document-layer">Github repo</a></li>
-<li>Videos:
-<ul>
-<li><a href="https://youtu.be/KPqmB13zI9c">FoundationDB Document Layer - Bhaskar Muppana, Apple</a></li>
+<li><a href="https://youtu.be/HLE8chgw6LI">FoundationDB Record Layer: Open Source Structured Storage on FoundationDB</a> (Nicholas Schiefer, Apple)</li>
+<li><a href="https://youtu.be/SvoUHHM9IKU">Using FoundationDB and the FDB Record Layer to Build CloudKit</a> (Scott Gray, Apple)</li>
 </ul>
 </li>
 </ul>
-<h2 id="the-zookeeper-layer"><a class="header" href="#the-zookeeper-layer">the Zookeeper Layer</a></h2>
+<h2 id="the-document-layer"><a class="header" href="#the-document-layer">The Document Layer</a></h2>
+<p>The Document Layer implements a MongoDB®-compatible API, allowing you to store and query JSON documents within FoundationDB.</p>
 <ul>
-<li><a href="https://github.com/pH14/fdb-zk">Github repo</a></li>
-<li>Forum posts:
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/FoundationDB/fdb-document-layer">FoundationDB/fdb-document-layer</a></li>
+<li><strong>Key Video:</strong>
 <ul>
-<li><a href="https://forums.foundationdb.org/t/fdb-zk-rough-cut-of-zookeeper-api-layer/1278">Fdb-zk: rough cut of Zookeeper API layer</a></li>
-</ul>
-</li>
-<li>Videos:
-<ul>
-<li><a href="https://youtu.be/3FYpf1QMPgQ">A ZooKeeper Layer for FoundationDB - Paul Hemberger, HubSpot</a></li>
+<li><a href="https://youtu.be/KPqmB13zI9c">FoundationDB Document Layer</a> (Bhaskar Muppana, Apple)</li>
 </ul>
 </li>
 </ul>
-<h2 id="timeseries-layer"><a class="header" href="#timeseries-layer">TimeSeries layer</a></h2>
+<h2 id="the-zookeeper-layer"><a class="header" href="#the-zookeeper-layer">The ZooKeeper Layer</a></h2>
+<p>This layer implements the Apache ZooKeeper API, providing a distributed coordination service built on FoundationDB.</p>
 <ul>
-<li><a href="https://github.com/richardartoul/tsdb-layer">Github repo</a></li>
-<li>Videos:
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/pH14/fdb-zk">pH14/fdb-zk</a></li>
+<li><strong>Key Video:</strong>
+<ul>
+<li><a href="https://youtu.be/3FYpf1QMPgQ">A ZooKeeper Layer for FoundationDB</a> (Paul Hemberger, HubSpot)</li>
+</ul>
+</li>
+</ul>
+<h2 id="the-time-series-layer"><a class="header" href="#the-time-series-layer">The Time-Series Layer</a></h2>
+<p>This is a high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.</p>
+<ul>
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/richardartoul/tsdb-layer">richardartoul/tsdb-layer</a></li>
+<li><strong>Key Video:</strong>
 <ul>
 <li><a href="https://www.youtube.com/watch?v=W6yQ9Pwgb1A">Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go</a></li>
 </ul>
@@ -197,9 +228,11 @@
                             <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="../develop_layer/tips.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+
+                            <a rel="next prefetch" href="../develop_layer/tips.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -209,25 +242,35 @@
                     <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="../develop_layer/tips.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+
+                    <a rel="next prefetch" href="../develop_layer/tips.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
-        <script type="text/javascript">
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script type="text/javascript" src="../mermaid.min.js"></script>
-        <script type="text/javascript" src="../mermaid-init.js"></script>
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
     </body>
 </html>
