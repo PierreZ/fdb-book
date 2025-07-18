@@ -12,17 +12,17 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - run: which mdbook || cargo install mdbook --locked --version 0.4.15
-      - run: which mdbook-toc || cargo install mdbook-toc --locked --version 0.8.0
-      - run: which mdbook-mermaid || cargo install mdbook-mermaid --locked --version 0.9.0
-      - run: which mdbook-linkcheck || cargo install mdbook-linkcheck --locked --version 0.7.6
+      - uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
 
-      - run: mdbook build
+      - run: nix develop --command mdbook build
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
