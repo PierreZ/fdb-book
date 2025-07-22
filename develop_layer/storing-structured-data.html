@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>The fdbcli Command-Line Interface - the FoundationDB Book</title>
+        <title>Storing Structured Data - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -169,111 +169,40 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="the-fdbcli-command-line-interface"><a class="header" href="#the-fdbcli-command-line-interface">The <code>fdbcli</code> Command-Line Interface</a></h1>
-<ul>
-<li><a href="#your-first-cluster-a-local-sandbox">Your First Cluster: A Local Sandbox</a></li>
-<li><a href="#creating-the-database">Creating the Database</a></li>
-<li><a href="#reading-and-writing-data">Reading and Writing Data</a></li>
-</ul>
-<p><code>fdbcli</code> is the primary tool for administering and interacting with your FoundationDB cluster. This chapter will walk you through the basics of using it to create a database and perform fundamental key-value operations.</p>
-<h2 id="your-first-cluster-a-local-sandbox"><a class="header" href="#your-first-cluster-a-local-sandbox">Your First Cluster: A Local Sandbox</a></h2>
-<p>The easiest way to get started is to run a local FoundationDB server using Docker. This command will start a container with FoundationDB, publish its port, and name it <code>fdb</code> for easy access.</p>
-<pre><code class="language-shell">docker run --name fdb -d -p 4500:4500 --rm foundationdb/foundationdb:7.1.25
+                        <h1 id="best-practice-for-storing-structured-data"><a class="header" href="#best-practice-for-storing-structured-data">Best practice for storing structured data</a></h1>
+<p>When storing structured data like JSON objects in FoundationDB, you have two primary approaches. Each has its own set of trade-offs.</p>
+<h2 id="store-the-object-as-a-blob"><a class="header" href="#store-the-object-as-a-blob">Store the object as a blob</a></h2>
+<p>If you decide to store the object as a single blob, you will need to pay the cost of reading the entire object back, even if you only need to access a single field. This approach can be efficient if you always read the entire document anyway (e.g., returning it as JSON via a REST API).</p>
+<p>However, if you have a few fields that are updated frequently (like a <code>last_accessed_timestamp</code>), this option will incur a large serialization overhead. Furthermore, due to the value size limit in FDB, you may need to split a large object into multiple key-value pairs.</p>
+<p>On the other hand, storing data as a single blob (or even more aggressively, batching multiple objects into one) provides an opportunity to compress the data on disk. FoundationDB does not provide built-in compression for key-value data, so this would need to be handled at the application layer.</p>
+<h2 id="store-the-object-as-separate-key-value-pairs"><a class="header" href="#store-the-object-as-separate-key-value-pairs">Store the object as separate key-value pairs</a></h2>
+<p>When an object is stored as separate key-value pairs, random access to a single field becomes much faster and more efficient. This approach makes implementing technologies like GraphQL more feasible.</p>
+<p>For example, a JSON object like:</p>
+<pre><code class="language-json">{
+  "id": 123,
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
 </code></pre>
-<p>Now, you can connect to the running container and start the CLI:</p>
-<pre><code class="language-shell">docker exec -it fdb fdbcli
+<p>Could be stored as:</p>
+<pre><code>(123, "name") = "John Doe"
+(123, "email") = "john.doe@example.com"
 </code></pre>
-<p>You'll be greeted with a welcome message and a warning:</p>
-<pre><code>Using cluster file '/var/fdb/fdb.cluster'.
-
-The database is unavailable; type `status' for more information.
-
-Welcome to the fdbcli. For help, type `help'.
-fdb&gt; 
-</code></pre>
-<h2 id="creating-the-database"><a class="header" href="#creating-the-database">Creating the Database</a></h2>
-<p>The database is unavailable because we haven't configured it yet. The <code>status</code> command provides a detailed report on the cluster's health. Let's see what it says:</p>
-<pre><code class="language-shell">fdb&gt; status
-
-Using cluster file `/var/fdb/fdb.cluster'.
-
-The coordinator(s) have no record of this database. Either the coordinator
-addresses are incorrect, the coordination state on those machines is missing, or
-no database has been created.
-
-  172.17.0.2:4500  (reachable)
-
-Unable to locate the data distributor worker.
-</code></pre>
-<p>The message is clear: "no database has been created." Let's fix that. The <code>configure</code> command sets up the database with a specific redundancy mode and storage engine. For a local sandbox, <code>single</code> redundancy and the <code>memory</code> storage engine are perfect.</p>
-<pre><code class="language-shell">fdb&gt; configure new single memory
-Database created
-</code></pre>
-<p><strong>Warning:</strong> Running <code>configure new</code> on an existing cluster will destroy all of its data. It is only safe to use on a brand-new cluster.</p>
-<p>Now, if we check the status again, we'll see a healthy, fully-operational cluster.</p>
-<pre><code class="language-shell">fdb&gt; status
-
-Configuration:
-  Redundancy mode        - single
-  Storage engine         - memory
-  Coordinators           - 1
-
-Cluster:
-  FoundationDB processes - 1
-  Machines               - 1
-
-Data:
-  Replication health     - Healthy
-  Moving data            - 0.000 GB
-
-...
-</code></pre>
-<h2 id="reading-and-writing-data"><a class="header" href="#reading-and-writing-data">Reading and Writing Data</a></h2>
-<p>Now for the fun part. <code>fdbcli</code> allows you to perform transactional reads and writes directly from the command line. Let's try to <code>get</code> a key that doesn't exist yet.</p>
-<pre><code class="language-shell">fdb&gt; get mykey
-`mykey' not found
-</code></pre>
-<p>As expected, nothing is there. Let's <code>set</code> a value.</p>
-<pre><code class="language-shell">fdb&gt; set mykey "hello world"
-Committed.
-</code></pre>
-<p>Now, if we <code>get</code> it again, we see our value. Notice that we use quotes because our value contains a space.</p>
-<pre><code class="language-shell">fdb&gt; get mykey
-`mykey' is `hello world'
-</code></pre>
-<p>We can also store multiple keys and retrieve them with <code>getrange</code>.</p>
-<pre><code class="language-shell">fdb&gt; set key1 value1
-Committed.
-fdb&gt; set key2 value2
-Committed.
-fdb&gt; set key3 value3
-Committed.
-
-fdb&gt; getrange key1 key4
-
-Range limited to 25 keys
-`key1' is `value1'
-`key2' is `value2'
-`key3' is `value3'
-</code></pre>
-<p>Finally, we can remove a key using <code>clear</code>.</p>
-<pre><code class="language-shell">fdb&gt; clear mykey
-Committed.
-
-fdb&gt; get mykey
-`mykey' not found
-</code></pre>
-<p>This is just a small sample of what <code>fdbcli</code> can do. You can use the <code>help</code> command to see a full list of commands or <code>help &lt;command&gt;</code> for details on a specific one.</p>
+<p>However, this comes at a cost: increased disk space usage. There is little to no opportunity to compress the data on disk when using this method.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>If you’re building a generic document database, it’s challenging to pick one strategy that works best for all use cases. You might consider making the storage strategy configurable, or even adaptive based on the workload.</p>
+<p>For example, the <a href="https://github.com/FoundationDB/fdb-document-layer">FDB Document Layer</a> allows data to be stored fully expanded or packed into 4k blocks.</p>
+<p>To learn more about compressing data in this context, you can read the discussion in <a href="https://forums.foundationdb.org/t/best-practice-of-storing-structs-should-i-pack-or-store-fields-separately/425/5?u=dongxineric">this forum post</a>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../getting_started/installation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../develop_layer/transactions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../develop_layer/studiable-layers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -283,11 +212,11 @@ fdb&gt; get mykey
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../getting_started/installation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../develop_layer/transactions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../develop_layer/studiable-layers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

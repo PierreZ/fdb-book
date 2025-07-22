@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Learning from the Community: Open-Source Layers - the FoundationDB Book</title>
+        <title>Studiable Layers - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -177,6 +177,7 @@
 <li><a href="#the-document-layer">The Document Layer</a></li>
 <li><a href="#the-zookeeper-layer">The ZooKeeper Layer</a></li>
 <li><a href="#the-time-series-layer">The Time-Series Layer</a></li>
+<li><a href="#warp-10">Warp 10</a></li>
 </ul>
 <h2 id="the-record-layer"><a class="header" href="#the-record-layer">The Record Layer</a></h2>
 <p>The Record Layer provides a structured, record-oriented data store on top of FoundationDB, similar to a traditional relational database. It is used in production at Apple to power CloudKit.</p>
@@ -211,7 +212,7 @@
 </li>
 </ul>
 <h2 id="the-time-series-layer"><a class="header" href="#the-time-series-layer">The Time-Series Layer</a></h2>
-<p>This is a high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.</p>
+<p>This is an experimental, high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.</p>
 <ul>
 <li><strong>GitHub Repo:</strong> <a href="https://github.com/richardartoul/tsdb-layer">richardartoul/tsdb-layer</a></li>
 <li><strong>Key Video:</strong>
@@ -220,12 +221,18 @@
 </ul>
 </li>
 </ul>
+<h2 id="warp-10"><a class="header" href="#warp-10">Warp 10</a></h2>
+<p>Warp 10 is a powerful platform for managing time-series data. While it was not originally built on FoundationDB, version 3.0 and later versions have adopted it to replace HBase. This change was motivated by a desire to simplify operations and eliminate the dependency on the Hadoop ecosystem.</p>
+<ul>
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/senx/warp10-platform">senx/warp10-platform</a></li>
+<li><strong>Key Blog Post:</strong> <a href="https://blog.senx.io/introducing-warp-10-3-0/">Introducing Warp 10 3.0!</a></li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../develop_layer/storing-structured-data.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -239,7 +246,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../develop_layer/crafting-row-keys.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../develop_layer/storing-structured-data.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

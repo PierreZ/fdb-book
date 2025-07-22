@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Another DB? - the FoundationDB Book</title>
+        <title>Roles - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -169,117 +169,63 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="yet-another-database"><a class="header" href="#yet-another-database">Yet Another Database?</a></h1>
+                        <h1 id="anatomy-of-a-cluster-roles"><a class="header" href="#anatomy-of-a-cluster-roles">Anatomy of a Cluster: Roles</a></h1>
 <ul>
-<li><a href="#how-are-databases-different">How Are Databases Different?</a></li>
-<li><a href="#the-rise-of-polyglot-persistence">The Rise of Polyglot Persistence</a></li>
-<li><a href="#the-anatomy-of-a-datastore">The Anatomy of a Datastore</a></li>
-<li><a href="#the-case-for-a-shared-storage-engine">The Case for a Shared Storage Engine</a></li>
-<li><a href="#requirements-for-a-universal-storage-engine">Requirements for a Universal Storage Engine</a></li>
-</ul>
-<blockquote>
-<p>"Another database? There are so many of them!"</p>
-</blockquote>
-<p>You're right. We live in a golden age of data, which means we have a dizzying number of options for storing it.</p>
-<p>According to the <a href="https://dbdb.io/">Database of Databases</a>, there are nearly <strong>800 different database management systems</strong> to choose from. This abundance of choice can be overwhelming.</p>
-<h2 id="how-are-databases-different"><a class="header" href="#how-are-databases-different">How Are Databases Different?</a></h2>
-<p>When choosing a database, engineers evaluate them against a long list of criteria. This leads to a wide variety of <strong>specialized datastores</strong>, each optimized for a different purpose. Key differentiators include:</p>
+<li><a href="#the-coordinator">The Coordinator</a></li>
+<li><a href="#the-cluster-controller">The Cluster Controller</a></li>
+<li><a href="#the-proxies">The Proxies</a>
 <ul>
-<li><strong>Data Model:</strong> Is it a document, column-family, key-value, graph, or relational database?</li>
-<li><strong>Workload:</strong> Is it designed for transactional (OLTP) or analytical (OLAP) workloads?</li>
-<li><strong>Architecture:</strong> Is it embedded, single-node, or distributed?</li>
-<li><strong>Transactions:</strong> Does it support ACID transactions?</li>
-<li><strong>Query Language:</strong> Does it use SQL or a proprietary language?</li>
-<li><strong>Scalability:</strong> What are its performance limits?</li>
-<li><strong>Licensing:</strong> Is it open-source?</li>
-<li><strong>Features:</strong> Does it offer secondary indexes, stored procedures, or materialized views?</li>
+<li><a href="#the-grv-proxy">The GRV Proxy</a></li>
+<li><a href="#the-commit-proxy">The Commit Proxy</a></li>
 </ul>
-<h2 id="the-rise-of-polyglot-persistence"><a class="header" href="#the-rise-of-polyglot-persistence">The Rise of Polyglot Persistence</a></h2>
-<p>This variety of specialized datastores leads developers to use multiple databases in a single application—a pattern sometimes called "polyglot persistence."</p>
-<p>For example, a project might require both a relational database for transactional data and a dedicated search index for text search.</p>
-<p>Because managing state is complex, a common architectural pattern is to build <strong>stateless applications</strong> that delegate the complexity of data storage to these specialized, stateful databases.</p>
-<p>A typical architecture might look like this:</p>
-<pre class="mermaid">flowchart TD
-    app(&quot;Stateless Application&quot;)
-    db1(&quot;Datastore 1 (e.g., PostgreSQL)&quot;)
-    db2(&quot;Datastore 2 (e.g., Elasticsearch)&quot;)
-
-    app -- uses --&gt; db1
-    app -- uses --&gt; db2
-</pre>
-<h2 id="the-anatomy-of-a-datastore"><a class="header" href="#the-anatomy-of-a-datastore">The Anatomy of a Datastore</a></h2>
-<p>While databases differ in many ways, we can simplify their architecture into three core components:</p>
+</li>
+<li><a href="#the-resolver">The Resolver</a></li>
+<li><a href="#the-log-server">The Log Server</a></li>
+<li><a href="#the-storage-server">The Storage Server</a></li>
+<li><a href="#the-data-distributor">The Data Distributor</a></li>
+</ul>
+<p>FoundationDB's architecture is built on a collection of specialized, stateless roles. This separation of concerns is a key reason for its high performance, scalability, and fault tolerance. A running <code>fdbserver</code> process can dynamically take on any of these roles as needed. Understanding them is the first step to understanding how FoundationDB works.</p>
+<p>Here are the core roles in a FoundationDB cluster:</p>
+<h2 id="the-coordinator"><a class="header" href="#the-coordinator">The Coordinator</a></h2>
+<p>The <strong>Coordinator</strong> is the first process that any client or server connects to when joining the cluster. Its primary job is to manage the <em>cluster file</em>, a small, durable text file that contains the IP addresses and ports of the coordinators themselves. The coordinators elect a <strong>Cluster Controller</strong>, which serves as the singleton brain of the cluster.</p>
+<h2 id="the-cluster-controller"><a class="header" href="#the-cluster-controller">The Cluster Controller</a></h2>
+<p>The <strong>Cluster Controller</strong> is the authoritative monitor for the entire cluster. There is only one active Cluster Controller at any time. It is responsible for:</p>
 <ul>
-<li>The <strong>Query Language:</strong> The interface for interacting with the data.</li>
-<li>The <strong>Data Model:</strong> The way the data is structured and presented (e.g., relational, document).</li>
-<li>The <strong>Storage Engine:</strong> The underlying component responsible for durably storing and retrieving data on disk.</li>
+<li>Monitoring the health of all other <code>fdbserver</code> processes.</li>
+<li>Recruiting new processes to take on roles as needed (e.g., if a Log Server fails).</li>
+<li>Orchestrating recovery when a process fails.</li>
 </ul>
-<p>For example, PostgreSQL exposes a relational data model via the SQL query language, all running on a storage engine designed for a single node.</p>
-<p>Let's update our diagram to show this breakdown:</p>
-<pre class="mermaid">flowchart TD
-    subgraph &quot;System Architecture&quot;
-        app(&quot;Stateless Application&quot;)
-
-        subgraph &quot;Datastore 1&quot;
-            ql1(&quot;Query Language 1&quot;) --&gt; dm1(&quot;Data Model 1&quot;) --&gt; se1(&quot;Storage Engine 1&quot;)
-        end
-
-        subgraph &quot;Datastore 2&quot;
-            ql2(&quot;Query Language 2&quot;) --&gt; dm2(&quot;Data Model 2&quot;) --&gt; se2(&quot;Storage Engine 2&quot;)
-        end
-
-        app -- &quot;uses&quot; --&gt; ql1
-        app -- &quot;uses&quot; --&gt; ql2
-    end
-</pre>
-<p>While the query language and data model are often specialized for a particular use case, what if we could consolidate the storage layer?</p>
-<h2 id="the-case-for-a-shared-storage-engine"><a class="header" href="#the-case-for-a-shared-storage-engine">The Case for a Shared Storage Engine</a></h2>
-<p>Let's imagine we could use a single, powerful storage engine for all our data models.</p>
-<pre class="mermaid">flowchart TD
-    subgraph &quot;System Architecture&quot;
-        app(&quot;Stateless Application&quot;)
-
-        subgraph &quot;Stateless Data Layer 1&quot;
-            ql1(&quot;Query Language 1&quot;) --&gt; dm1(&quot;Data Model 1&quot;)
-        end
-
-        subgraph &quot;Stateless Data Layer 2&quot;
-            ql2(&quot;Query Language 2&quot;) --&gt; dm2(&quot;Data Model 2&quot;)
-        end
-
-        se(&quot;Shared Storage Engine&quot;)
-
-        app -- &quot;uses&quot; --&gt; ql1
-        app -- &quot;uses&quot; --&gt; ql2
-
-        dm1 -- &quot;stores data in&quot; --&gt; se
-        dm2 -- &quot;stores data in&quot; --&gt; se
-    end
-</pre>
-<p>This design has powerful advantages:</p>
-<ul>
-<li><strong>Operational Simplicity:</strong> We only need to manage, scale, and back up one underlying storage system.</li>
-<li><strong>Stateless Components:</strong> The layers that provide the data models and query languages can themselves become stateless, simplifying their development and deployment.</li>
-</ul>
-<p>However, this places a heavy burden on the shared storage engine. What would it need to provide?</p>
-<h2 id="requirements-for-a-universal-storage-engine"><a class="header" href="#requirements-for-a-universal-storage-engine">Requirements for a Universal Storage Engine</a></h2>
-<p>To be a viable foundation for modern, cloud-native applications, such an engine must be:</p>
-<ul>
-<li><strong>Scalable, Fault-Tolerant, and Highly Available:</strong> It must handle growing workloads and survive hardware failures without downtime.</li>
-<li><strong>Transactional:</strong> It must provide strong consistency guarantees (like ACID) to allow developers to reason about their data correctly.</li>
-<li><strong>Unopinionated:</strong> It should impose a minimal, flexible data model (like an ordered key-value store) to support various data structures on top.</li>
-</ul>
-<p>Can such a storage engine exist? <strong>Yes.</strong> It's called FoundationDB.</p>
+<h2 id="the-proxies"><a class="header" href="#the-proxies">The Proxies</a></h2>
+<p>FoundationDB splits the traditional role of a proxy into two distinct components: the <strong>GRV Proxy</strong> and the <strong>Commit Proxy</strong>. This separation allows for better scaling and specialization. Clients first interact with a GRV proxy to start a transaction and then with a Commit Proxy to commit it.</p>
+<h3 id="the-grv-proxy"><a class="header" href="#the-grv-proxy">The GRV Proxy</a></h3>
+<p>The <strong>GRV Proxy</strong> (Get Read Version Proxy) is responsible for one critical task: providing a <strong>Read Version</strong> to a client when it begins a transaction. To do this, the GRV proxy communicates with the Master to get the latest committed version from the transaction system. This ensures that the transaction gets a consistent snapshot view of the database. The <code>Ratekeeper</code> process can apply backpressure by slowing down the rate at which GRV Proxies issue read versions, which helps manage cluster load.</p>
+<h3 id="the-commit-proxy"><a class="header" href="#the-commit-proxy">The Commit Proxy</a></h3>
+<p>The <strong>Commit Proxy</strong> is the front door for all transaction <em>commits</em>. When a client commits a transaction, it sends its read and write sets to a Commit Proxy. The Commit Proxy orchestrates the second half of the transaction lifecycle:</p>
+<ol>
+<li>Getting a <strong>Commit Version</strong> from the Master.</li>
+<li>Sending the transaction's read and write sets to the <strong>Resolver</strong> to check for conflicts.</li>
+<li>If the transaction is valid, sending its mutations to the <strong>Log Servers</strong> to be made durable.</li>
+<li>Reporting the final commit status back to the client.</li>
+</ol>
+<p>Because both proxy types are stateless, you can add more of them to the cluster to increase both the number of transactions that can be started and the overall commit throughput.</p>
+<h2 id="the-resolver"><a class="header" href="#the-resolver">The Resolver</a></h2>
+<p>The <strong>Resolver</strong> is the component that enforces serializability. During the commit process, the Commit Proxy sends the transaction's read and write sets to the Resolver. The Resolver checks if any of the keys in the read set have been modified by another transaction that has committed since the current transaction's read version was assigned. If a conflict is found, the transaction is rejected, and the client must retry.</p>
+<h2 id="the-log-server"><a class="header" href="#the-log-server">The Log Server</a></h2>
+<p>The <strong>Log Server</strong> is the heart of FoundationDB's durability guarantee. It implements the transaction log. When a transaction is ready to be committed, its mutations are sent to the Log Servers, which write them to durable storage (typically an SSD) before the commit is acknowledged to the client. The Log Servers do not need to apply the changes to the main data store; they just need to record them.</p>
+<h2 id="the-storage-server"><a class="header" href="#the-storage-server">The Storage Server</a></h2>
+<p>The <strong>Storage Server</strong> is responsible for storing the data. Each Storage Server holds a set of key ranges (shards). It serves read requests from clients and receives committed mutations from the Log Servers, applying them to its in-memory B-tree and eventually writing them to disk. Storage Servers are the workhorses of the cluster, and you can add more of them to increase both storage capacity and I/O performance.</p>
+<h2 id="the-data-distributor"><a class="header" href="#the-data-distributor">The Data Distributor</a></h2>
+<p>The <strong>Data Distributor</strong> is a background role responsible for ensuring that data is evenly distributed and replicated across all of the Storage Servers. It monitors the size and workload of each shard and will automatically move data between servers to prevent hotspots and ensure fault tolerance. It is also responsible for initiating data replication and healing the cluster after a Storage Server fails.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../meet_fdb/enter_fdb.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../operate_fdb/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../meet_fdb/everything_is_kv.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../operate_fdb/choosing-coordinators.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -289,11 +235,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../meet_fdb/enter_fdb.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../operate_fdb/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../meet_fdb/everything_is_kv.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../operate_fdb/choosing-coordinators.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

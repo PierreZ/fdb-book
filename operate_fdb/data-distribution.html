@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Another DB? - the FoundationDB Book</title>
+        <title>Data Distribution - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -169,117 +169,38 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="yet-another-database"><a class="header" href="#yet-another-database">Yet Another Database?</a></h1>
+                        <h1 id="data-distribution-and-movement"><a class="header" href="#data-distribution-and-movement">Data Distribution and Movement</a></h1>
+<p>FoundationDB automatically manages the distribution of data across the cluster. This process is crucial for ensuring fault tolerance, balancing load, and managing storage space efficiently.</p>
+<h2 id="reasons-for-data-movement"><a class="header" href="#reasons-for-data-movement">Reasons for Data Movement</a></h2>
+<p>FoundationDB will only move data for a few specific reasons:</p>
 <ul>
-<li><a href="#how-are-databases-different">How Are Databases Different?</a></li>
-<li><a href="#the-rise-of-polyglot-persistence">The Rise of Polyglot Persistence</a></li>
-<li><a href="#the-anatomy-of-a-datastore">The Anatomy of a Datastore</a></li>
-<li><a href="#the-case-for-a-shared-storage-engine">The Case for a Shared Storage Engine</a></li>
-<li><a href="#requirements-for-a-universal-storage-engine">Requirements for a Universal Storage Engine</a></li>
+<li><strong>To restore replication after a failure:</strong> If a storage server fails, the data it was responsible for becomes under-replicated. The data distribution system will create new copies of that data on other servers to restore the desired replication level.</li>
+<li><strong>To manage shard size:</strong> The system aims to keep data shards within an optimal size range (roughly 125MB to 500MB). It will split shards that grow too large and merge shards that become too small.</li>
+<li><strong>To handle write hotspots:</strong> If a particular shard experiences a high volume of writes, it may be split to distribute the write load.</li>
+<li><strong>To balance storage load:</strong> The system will move data to ensure that the total bytes stored are balanced evenly across all storage servers in the cluster.</li>
 </ul>
-<blockquote>
-<p>"Another database? There are so many of them!"</p>
-</blockquote>
-<p>You're right. We live in a golden age of data, which means we have a dizzying number of options for storing it.</p>
-<p>According to the <a href="https://dbdb.io/">Database of Databases</a>, there are nearly <strong>800 different database management systems</strong> to choose from. This abundance of choice can be overwhelming.</p>
-<h2 id="how-are-databases-different"><a class="header" href="#how-are-databases-different">How Are Databases Different?</a></h2>
-<p>When choosing a database, engineers evaluate them against a long list of criteria. This leads to a wide variety of <strong>specialized datastores</strong>, each optimized for a different purpose. Key differentiators include:</p>
-<ul>
-<li><strong>Data Model:</strong> Is it a document, column-family, key-value, graph, or relational database?</li>
-<li><strong>Workload:</strong> Is it designed for transactional (OLTP) or analytical (OLAP) workloads?</li>
-<li><strong>Architecture:</strong> Is it embedded, single-node, or distributed?</li>
-<li><strong>Transactions:</strong> Does it support ACID transactions?</li>
-<li><strong>Query Language:</strong> Does it use SQL or a proprietary language?</li>
-<li><strong>Scalability:</strong> What are its performance limits?</li>
-<li><strong>Licensing:</strong> Is it open-source?</li>
-<li><strong>Features:</strong> Does it offer secondary indexes, stored procedures, or materialized views?</li>
-</ul>
-<h2 id="the-rise-of-polyglot-persistence"><a class="header" href="#the-rise-of-polyglot-persistence">The Rise of Polyglot Persistence</a></h2>
-<p>This variety of specialized datastores leads developers to use multiple databases in a single application—a pattern sometimes called "polyglot persistence."</p>
-<p>For example, a project might require both a relational database for transactional data and a dedicated search index for text search.</p>
-<p>Because managing state is complex, a common architectural pattern is to build <strong>stateless applications</strong> that delegate the complexity of data storage to these specialized, stateful databases.</p>
-<p>A typical architecture might look like this:</p>
-<pre class="mermaid">flowchart TD
-    app(&quot;Stateless Application&quot;)
-    db1(&quot;Datastore 1 (e.g., PostgreSQL)&quot;)
-    db2(&quot;Datastore 2 (e.g., Elasticsearch)&quot;)
-
-    app -- uses --&gt; db1
-    app -- uses --&gt; db2
-</pre>
-<h2 id="the-anatomy-of-a-datastore"><a class="header" href="#the-anatomy-of-a-datastore">The Anatomy of a Datastore</a></h2>
-<p>While databases differ in many ways, we can simplify their architecture into three core components:</p>
-<ul>
-<li>The <strong>Query Language:</strong> The interface for interacting with the data.</li>
-<li>The <strong>Data Model:</strong> The way the data is structured and presented (e.g., relational, document).</li>
-<li>The <strong>Storage Engine:</strong> The underlying component responsible for durably storing and retrieving data on disk.</li>
-</ul>
-<p>For example, PostgreSQL exposes a relational data model via the SQL query language, all running on a storage engine designed for a single node.</p>
-<p>Let's update our diagram to show this breakdown:</p>
-<pre class="mermaid">flowchart TD
-    subgraph &quot;System Architecture&quot;
-        app(&quot;Stateless Application&quot;)
-
-        subgraph &quot;Datastore 1&quot;
-            ql1(&quot;Query Language 1&quot;) --&gt; dm1(&quot;Data Model 1&quot;) --&gt; se1(&quot;Storage Engine 1&quot;)
-        end
-
-        subgraph &quot;Datastore 2&quot;
-            ql2(&quot;Query Language 2&quot;) --&gt; dm2(&quot;Data Model 2&quot;) --&gt; se2(&quot;Storage Engine 2&quot;)
-        end
-
-        app -- &quot;uses&quot; --&gt; ql1
-        app -- &quot;uses&quot; --&gt; ql2
-    end
-</pre>
-<p>While the query language and data model are often specialized for a particular use case, what if we could consolidate the storage layer?</p>
-<h2 id="the-case-for-a-shared-storage-engine"><a class="header" href="#the-case-for-a-shared-storage-engine">The Case for a Shared Storage Engine</a></h2>
-<p>Let's imagine we could use a single, powerful storage engine for all our data models.</p>
-<pre class="mermaid">flowchart TD
-    subgraph &quot;System Architecture&quot;
-        app(&quot;Stateless Application&quot;)
-
-        subgraph &quot;Stateless Data Layer 1&quot;
-            ql1(&quot;Query Language 1&quot;) --&gt; dm1(&quot;Data Model 1&quot;)
-        end
-
-        subgraph &quot;Stateless Data Layer 2&quot;
-            ql2(&quot;Query Language 2&quot;) --&gt; dm2(&quot;Data Model 2&quot;)
-        end
-
-        se(&quot;Shared Storage Engine&quot;)
-
-        app -- &quot;uses&quot; --&gt; ql1
-        app -- &quot;uses&quot; --&gt; ql2
-
-        dm1 -- &quot;stores data in&quot; --&gt; se
-        dm2 -- &quot;stores data in&quot; --&gt; se
-    end
-</pre>
-<p>This design has powerful advantages:</p>
-<ul>
-<li><strong>Operational Simplicity:</strong> We only need to manage, scale, and back up one underlying storage system.</li>
-<li><strong>Stateless Components:</strong> The layers that provide the data models and query languages can themselves become stateless, simplifying their development and deployment.</li>
-</ul>
-<p>However, this places a heavy burden on the shared storage engine. What would it need to provide?</p>
-<h2 id="requirements-for-a-universal-storage-engine"><a class="header" href="#requirements-for-a-universal-storage-engine">Requirements for a Universal Storage Engine</a></h2>
-<p>To be a viable foundation for modern, cloud-native applications, such an engine must be:</p>
-<ul>
-<li><strong>Scalable, Fault-Tolerant, and Highly Available:</strong> It must handle growing workloads and survive hardware failures without downtime.</li>
-<li><strong>Transactional:</strong> It must provide strong consistency guarantees (like ACID) to allow developers to reason about their data correctly.</li>
-<li><strong>Unopinionated:</strong> It should impose a minimal, flexible data model (like an ordered key-value store) to support various data structures on top.</li>
-</ul>
-<p>Can such a storage engine exist? <strong>Yes.</strong> It's called FoundationDB.</p>
+<p>Notably, data distribution <strong>does not</strong> balance the load based on high read traffic. When moving a shard, it only considers the total bytes stored, not the read or write traffic on that shard. This means it's possible for multiple high-traffic ranges to be assigned to the same storage server.</p>
+<h2 id="observing-data-movement"><a class="header" href="#observing-data-movement">Observing Data Movement</a></h2>
+<p>You can monitor data movement activity through the <code>fdbcli</code> status command. The output provides key metrics:</p>
+<pre><code>Data:
+  Replication health   - Healthy
+  Moving data          - 0.043 GB
+  Sum of key-value sizes - 88 MB
+  Disk space used      - 382 MB
+</code></pre>
+<p>The <code>Moving data</code> field shows how much data is currently in flight. There is no ETA published for data movement, and it's normal for it to be happening constantly, especially in a cluster with a high write workload.</p>
+<h2 id="adjusting-distribution-speeds"><a class="header" href="#adjusting-distribution-speeds">Adjusting Distribution Speeds</a></h2>
+<p>There are no simple controls for adjusting the speed of data distribution. While some configuration knobs exist (e.g., <code>DD_MOVE_KEYS_PARALLELISM</code>, <code>MOVE_KEYS_KRM_LIMIT</code>), changing them is strongly discouraged unless you have a specific need and understand the potential consequences. These settings must be applied at the startup of your <code>fdbserver</code> processes and should be handled with extreme caution.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../meet_fdb/enter_fdb.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../operate_fdb/upgrading.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../meet_fdb/everything_is_kv.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../the-record-layer/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -289,11 +210,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../meet_fdb/enter_fdb.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../operate_fdb/upgrading.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../meet_fdb/everything_is_kv.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../the-record-layer/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

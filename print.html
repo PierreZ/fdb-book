@@ -184,6 +184,83 @@
 <li><strong>FoundationDB's Internals:</strong> Delve into the architecture of FoundationDB, including its read/write paths and powerful simulation framework.</li>
 <li><strong>The Record Layer:</strong> A dedicated look at the Record Layer, a Java library from Apple for building complex data models on FoundationDB.</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="meet-foundationdb"><a class="header" href="#meet-foundationdb">Meet FoundationDB</a></h1>
+<p>This section provides a quick introduction to FoundationDB.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="enter-foundationdb"><a class="header" href="#enter-foundationdb">Enter FoundationDB</a></h1>
+<ul>
+<li><a href="meet_fdb/enter_fdb.html#the-core-an-ordered-transactional-key-value-store">The Core: An Ordered, Transactional Key-Value Store</a>
+<ul>
+<li><a href="meet_fdb/enter_fdb.html#multi-key-acid-transactions">Multi-Key ACID Transactions</a></li>
+</ul>
+</li>
+<li><a href="meet_fdb/enter_fdb.html#the-powerhouse-performance-and-reliability">The Powerhouse: Performance and Reliability</a></li>
+<li><a href="meet_fdb/enter_fdb.html#the-ecosystem-a-foundation-for-layers">The Ecosystem: A Foundation for Layers</a></li>
+<li><a href="meet_fdb/enter_fdb.html#a-brief-history">A Brief History</a></li>
+<li><a href="meet_fdb/enter_fdb.html#who-uses-foundationdb">Who Uses FoundationDB?</a></li>
+<li><a href="meet_fdb/enter_fdb.html#tldr">TL;DR</a></li>
+</ul>
+<p>As the <a href="https://apple.github.io/foundationdb/">official overview</a> puts it:</p>
+<blockquote>
+<p>FoundationDB is a distributed database designed to handle large volumes of structured data across clusters of commodity servers. It organizes data as an ordered key-value store and employs ACID transactions for all operations. It is especially well-suited for read/write workloads but also has excellent performance for write-intensive workloads.</p>
+</blockquote>
+<p>Let's unpack what makes FoundationDB unique.</p>
+<h2 id="the-core-an-ordered-transactional-key-value-store"><a class="header" href="#the-core-an-ordered-transactional-key-value-store">The Core: An Ordered, Transactional Key-Value Store</a></h2>
+<p>At its heart, FoundationDB is a distributed, open-source (Apache 2.0) key-value store. Think of it as a massive, sorted dictionary where both keys and values are simple byte strings.</p>
+<p>The keys are stored in lexicographical order, which means you can efficiently scan ranges of keys. This simple but powerful feature is the basis for building complex data models. For example:</p>
+<ul>
+<li><code>'user:alice'</code> comes before <code>'user:bob'</code></li>
+<li><code>'user:bob'</code> comes before <code>'user:bob:profile'</code></li>
+<li>All keys prefixed with <code>'table1:'</code> are grouped together, allowing you to simulate rows in a table.</li>
+</ul>
+<h3 id="multi-key-acid-transactions"><a class="header" href="#multi-key-acid-transactions">Multi-Key ACID Transactions</a></h3>
+<p>The most important feature of FoundationDB is its support for <strong>multi-key, strictly serializable transactions</strong>. This is a rare and powerful guarantee for a distributed database.</p>
+<ul>
+<li><strong>Transactions:</strong> All operations, including reads and writes, are performed within a transaction. These transactions are fully ACID (Atomic, Consistent, Isolated, and Durable), even across multiple machines.</li>
+<li><strong>Multi-Key:</strong> A single transaction can read and write multiple, unrelated keys, no matter where they are stored in the cluster.</li>
+<li><strong>Strictly Serializable:</strong> This is the strongest isolation level. It ensures that the result of concurrent transactions is equivalent to them running one at a time in some sequential order. This makes writing correct applications dramatically simpler, as you are protected from a wide range of subtle race conditions.</li>
+</ul>
+<p>You can find a full list of <a href="https://apple.github.io/foundationdb/features.html">features</a> and, just as importantly, <a href="https://apple.github.io/foundationdb/anti-features.html">anti-features</a> in the official documentation.</p>
+<h2 id="the-powerhouse-performance-and-reliability"><a class="header" href="#the-powerhouse-performance-and-reliability">The Powerhouse: Performance and Reliability</a></h2>
+<p>FoundationDB is not just a theoretical model; it's a battle-tested engine built for performance and reliability on commodity hardware.</p>
+<ul>
+<li><strong>Performance:</strong> It delivers linear scalability and high performance, often achieving millions of operations per second on a cluster. You can expect sub-millisecond latencies for many workloads without any special tuning.</li>
+<li><strong>Reliability:</strong> It is designed to be fault-tolerant, easy to manage, and simple to grow. Its reliability is backed by an unmatched testing system based on a <strong>deterministic simulation engine</strong>, which we will explore later in this book.</li>
+</ul>
+<p><img src="https://apple.github.io/foundationdb/_images/scaling.png" alt="FoundationDB Performance Scaling" /></p>
+<blockquote>
+<p>A cluster of commodity hardware scaling to 8.2 million operations/sec on a 90% read, 10% write workload.</p>
+</blockquote>
+<h2 id="the-ecosystem-a-foundation-for-layers"><a class="header" href="#the-ecosystem-a-foundation-for-layers">The Ecosystem: A Foundation for Layers</a></h2>
+<p>Because FoundationDB provides such a powerful and reliable core, it can serve as a universal storage engine—a foundation for building other data models. These are called <strong>"layers."</strong></p>
+<p>A layer is a stateless component that maps a high-level data model (like a document, graph, or relational model) to FoundationDB's simple key-value model.</p>
+<pre class="mermaid">graph TD
+    subgraph &quot;Your Application&quot;
+        l1(&quot;Document Layer&quot;)
+        l2(&quot;Graph Layer&quot;)
+        l3(&quot;Queue Layer&quot;)
+    end
+
+    subgraph &quot;FoundationDB Cluster&quot;
+        fdb[(&quot;Ordered Key-Value Store&lt;br/&gt;ACID Transactions&quot;)]
+    end
+
+    l1 -- &quot;stores data in&quot; --&gt; fdb
+    l2 -- &quot;stores data in&quot; --&gt; fdb
+    l3 -- &quot;stores data in&quot; --&gt; fdb
+</pre>
+<p>This architecture decouples the data model from data storage, allowing developers to focus on building features without reinventing the complexities of a distributed database.</p>
+<h2 id="a-brief-history"><a class="header" href="#a-brief-history">A Brief History</a></h2>
+<p>FoundationDB began as a company in 2009. After a successful beta program, version 1.0 was released in 2013. Apple acquired the company in 2015 and subsequently open-sourced the project under the Apache 2.0 license in 2018, making it available to the wider community.</p>
+<h2 id="who-uses-foundationdb"><a class="header" href="#who-uses-foundationdb">Who Uses FoundationDB?</a></h2>
+<p>FoundationDB is the storage engine behind critical systems at major technology companies, including:</p>
+<ul>
+<li><strong>Apple:</strong> A massive-scale deployment for iCloud, where it stores billions of logical databases.</li>
+<li><strong>Snowflake:</strong> Stores all metadata for its cloud data platform.</li>
+<li><strong>VMware:</strong> Used in the Tanzu observability platform.</li>
+<li>And many others, including <strong>IBM</strong>, <strong>eBay</strong>, and <strong>Epic Games</strong>.</li>
+</ul>
+<h2 id="tldr"><a class="header" href="#tldr">TL;DR</a></h2>
+<p>FoundationDB is a scalable, distributed key-value store with strictly serializable ACID transactions. It's so powerful and reliable that it serves as a universal foundation for building any data model you can imagine.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="yet-another-database"><a class="header" href="#yet-another-database">Yet Another Database?</a></h1>
 <ul>
 <li><a href="meet_fdb/another_db.html#how-are-databases-different">How Are Databases Different?</a></li>
@@ -285,87 +362,13 @@
 <li><strong>Unopinionated:</strong> It should impose a minimal, flexible data model (like an ordered key-value store) to support various data structures on top.</li>
 </ul>
 <p>Can such a storage engine exist? <strong>Yes.</strong> It's called FoundationDB.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="enter-foundationdb"><a class="header" href="#enter-foundationdb">Enter FoundationDB</a></h1>
-<ul>
-<li><a href="meet_fdb/enter_fdb.html#the-core-an-ordered-transactional-key-value-store">The Core: An Ordered, Transactional Key-Value Store</a>
-<ul>
-<li><a href="meet_fdb/enter_fdb.html#multi-key-acid-transactions">Multi-Key ACID Transactions</a></li>
-</ul>
-</li>
-<li><a href="meet_fdb/enter_fdb.html#the-powerhouse-performance-and-reliability">The Powerhouse: Performance and Reliability</a></li>
-<li><a href="meet_fdb/enter_fdb.html#the-ecosystem-a-foundation-for-layers">The Ecosystem: A Foundation for Layers</a></li>
-<li><a href="meet_fdb/enter_fdb.html#a-brief-history">A Brief History</a></li>
-<li><a href="meet_fdb/enter_fdb.html#who-uses-foundationdb">Who Uses FoundationDB?</a></li>
-<li><a href="meet_fdb/enter_fdb.html#tldr">TL;DR</a></li>
-</ul>
-<p>As the <a href="https://apple.github.io/foundationdb/">official overview</a> puts it:</p>
-<blockquote>
-<p>FoundationDB is a distributed database designed to handle large volumes of structured data across clusters of commodity servers. It organizes data as an ordered key-value store and employs ACID transactions for all operations. It is especially well-suited for read/write workloads but also has excellent performance for write-intensive workloads.</p>
-</blockquote>
-<p>Let's unpack what makes FoundationDB unique.</p>
-<h2 id="the-core-an-ordered-transactional-key-value-store"><a class="header" href="#the-core-an-ordered-transactional-key-value-store">The Core: An Ordered, Transactional Key-Value Store</a></h2>
-<p>At its heart, FoundationDB is a distributed, open-source (Apache 2.0) key-value store. Think of it as a massive, sorted dictionary where both keys and values are simple byte strings.</p>
-<p>The keys are stored in lexicographical order, which means you can efficiently scan ranges of keys. This simple but powerful feature is the basis for building complex data models. For example:</p>
-<ul>
-<li><code>'user:alice'</code> comes before <code>'user:bob'</code></li>
-<li><code>'user:bob'</code> comes before <code>'user:bob:profile'</code></li>
-<li>All keys prefixed with <code>'table1:'</code> are grouped together, allowing you to simulate rows in a table.</li>
-</ul>
-<h3 id="multi-key-acid-transactions"><a class="header" href="#multi-key-acid-transactions">Multi-Key ACID Transactions</a></h3>
-<p>The most important feature of FoundationDB is its support for <strong>multi-key, strictly serializable transactions</strong>. This is a rare and powerful guarantee for a distributed database.</p>
-<ul>
-<li><strong>Transactions:</strong> All operations, including reads and writes, are performed within a transaction. These transactions are fully ACID (Atomic, Consistent, Isolated, and Durable), even across multiple machines.</li>
-<li><strong>Multi-Key:</strong> A single transaction can read and write multiple, unrelated keys, no matter where they are stored in the cluster.</li>
-<li><strong>Strictly Serializable:</strong> This is the strongest isolation level. It ensures that the result of concurrent transactions is equivalent to them running one at a time in some sequential order. This makes writing correct applications dramatically simpler, as you are protected from a wide range of subtle race conditions.</li>
-</ul>
-<p>You can find a full list of <a href="https://apple.github.io/foundationdb/features.html">features</a> and, just as importantly, <a href="https://apple.github.io/foundationdb/anti-features.html">anti-features</a> in the official documentation.</p>
-<h2 id="the-powerhouse-performance-and-reliability"><a class="header" href="#the-powerhouse-performance-and-reliability">The Powerhouse: Performance and Reliability</a></h2>
-<p>FoundationDB is not just a theoretical model; it's a battle-tested engine built for performance and reliability on commodity hardware.</p>
-<ul>
-<li><strong>Performance:</strong> It delivers linear scalability and high performance, often achieving millions of operations per second on a cluster. You can expect sub-millisecond latencies for many workloads without any special tuning.</li>
-<li><strong>Reliability:</strong> It is designed to be fault-tolerant, easy to manage, and simple to grow. Its reliability is backed by an unmatched testing system based on a <strong>deterministic simulation engine</strong>, which we will explore later in this book.</li>
-</ul>
-<p><img src="https://apple.github.io/foundationdb/_images/scaling.png" alt="FoundationDB Performance Scaling" /></p>
-<blockquote>
-<p>A cluster of commodity hardware scaling to 8.2 million operations/sec on a 90% read, 10% write workload.</p>
-</blockquote>
-<h2 id="the-ecosystem-a-foundation-for-layers"><a class="header" href="#the-ecosystem-a-foundation-for-layers">The Ecosystem: A Foundation for Layers</a></h2>
-<p>Because FoundationDB provides such a powerful and reliable core, it can serve as a universal storage engine—a foundation for building other data models. These are called <strong>"layers."</strong></p>
-<p>A layer is a stateless component that maps a high-level data model (like a document, graph, or relational model) to FoundationDB's simple key-value model.</p>
-<pre class="mermaid">graph TD
-    subgraph &quot;Your Application&quot;
-        l1(&quot;Document Layer&quot;)
-        l2(&quot;Graph Layer&quot;)
-        l3(&quot;Queue Layer&quot;)
-    end
-
-    subgraph &quot;FoundationDB Cluster&quot;
-        fdb[(&quot;Ordered Key-Value Store&lt;br/&gt;ACID Transactions&quot;)]
-    end
-
-    l1 -- &quot;stores data in&quot; --&gt; fdb
-    l2 -- &quot;stores data in&quot; --&gt; fdb
-    l3 -- &quot;stores data in&quot; --&gt; fdb
-</pre>
-<p>This architecture decouples the data model from data storage, allowing developers to focus on building features without reinventing the complexities of a distributed database.</p>
-<h2 id="a-brief-history"><a class="header" href="#a-brief-history">A Brief History</a></h2>
-<p>FoundationDB began as a company in 2009. After a successful beta program, version 1.0 was released in 2013. Apple acquired the company in 2015 and subsequently open-sourced the project under the Apache 2.0 license in 2018, making it available to the wider community.</p>
-<h2 id="who-uses-foundationdb"><a class="header" href="#who-uses-foundationdb">Who Uses FoundationDB?</a></h2>
-<p>FoundationDB is the storage engine behind critical systems at major technology companies, including:</p>
-<ul>
-<li><strong>Apple:</strong> A massive-scale deployment for iCloud, where it stores billions of logical databases.</li>
-<li><strong>Snowflake:</strong> Stores all metadata for its cloud data platform.</li>
-<li><strong>VMware:</strong> Used in the Tanzu observability platform.</li>
-<li>And many others, including <strong>IBM</strong>, <strong>eBay</strong>, and <strong>Epic Games</strong>.</li>
-</ul>
-<h2 id="tldr"><a class="header" href="#tldr">TL;DR</a></h2>
-<p>FoundationDB is a scalable, distributed key-value store with strictly serializable ACID transactions. It's so powerful and reliable that it serves as a universal foundation for building any data model you can imagine.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="modeling-on-a-key-value-store"><a class="header" href="#modeling-on-a-key-value-store">Modeling on a Key-Value Store</a></h1>
 <ul>
 <li><a href="meet_fdb/everything_is_kv.html#the-pattern-a-tale-of-two-layers">The Pattern: A Tale of Two Layers</a></li>
 <li><a href="meet_fdb/everything_is_kv.html#industry-examples">Industry Examples</a>
 <ul>
 <li><a href="meet_fdb/everything_is_kv.html#sql-on-key-value-google-cockroachdb-and-tidb">SQL on Key-Value: Google, CockroachDB, and TiDB</a></li>
+<li><a href="meet_fdb/everything_is_kv.html#advanced-indexing-on-key-value">Advanced Indexing on Key-Value</a></li>
 <li><a href="meet_fdb/everything_is_kv.html#multi-model-databases-cosmos-db-and-yugabytedb">Multi-Model Databases: Cosmos DB and YugabyteDB</a></li>
 </ul>
 </li>
@@ -396,6 +399,19 @@
 </li>
 <li>
 <p><strong>TiDB:</strong> The TiDB ecosystem explicitly separates its components. <a href="https://www.vldb.org/pvldb/vol13/p3072-huang.pdf">TiDB</a> is the SQL computation layer, while <strong>TiKV</strong> is the distributed, transactional key-value storage layer. Each SQL row is mapped to a key-value pair in TiKV.</p>
+</li>
+</ul>
+<h3 id="advanced-indexing-on-key-value"><a class="header" href="#advanced-indexing-on-key-value">Advanced Indexing on Key-Value</a></h3>
+<p>The layered pattern extends beyond just mapping primary table data. Even sophisticated secondary indexing strategies, like those for semi-structured data (JSON) or full-text search, are implemented by modeling the index as a set of key-value pairs.</p>
+<ul>
+<li>
+<p><strong>CockroachDB's Inverted Indexes:</strong> To allow efficient querying of JSON or array data types, CockroachDB implements <a href="https://raw.githubusercontent.com/cockroachdb/cockroach/refs/heads/master/docs/RFCS/20171020_inverted_indexes.md">inverted indexes</a>. Instead of storing a single key for the whole JSON document, it tokenizes the document and creates multiple key-value entries mapping individual values back to the primary key of the row. This allows for fast lookups based on the contents of the JSON object, a feat not possible with traditional secondary indexes.</p>
+</li>
+<li>
+<p><strong>CouchDB's Map Indexes on FoundationDB:</strong> The design for CouchDB's powerful <a href="https://raw.githubusercontent.com/apache/couchdb/refs/heads/main/src/docs/rfcs/008-map-indexes.md">map-based views on FoundationDB</a> provides another clear example. A user-defined <code>map</code> function processes each document to <code>emit</code> key-value pairs, which are then stored in FoundationDB to create a secondary index. This entire indexing subsystem is a layer built on top of FDB's core key-value capabilities.</p>
+</li>
+<li>
+<p><strong>Azure DocumentDB's Schema-Agnostic Indexing:</strong> Before it was known as Cosmos DB, Microsoft's <a href="https://www.vldb.org/pvldb/vol8/p1668-shukla.pdf">Azure DocumentDB</a> was designed with a powerful indexing subsystem. It could automatically index all data within JSON documents without requiring developers to define a schema or configure secondary indexes. This allowed for real-time queries over schemaless data, a feature implemented by treating the index itself as data in the underlying storage engine.</p>
 </li>
 </ul>
 <h3 id="multi-model-databases-cosmos-db-and-yugabytedb"><a class="header" href="#multi-model-databases-cosmos-db-and-yugabytedb">Multi-Model Databases: Cosmos DB and YugabyteDB</a></h3>
@@ -506,156 +522,9 @@
 <p><strong>The Rule:</strong> The installed client library (<code>libfdb_c</code>) and the server binaries (<code>fdbserver</code>) <strong>must</strong> have the same major and minor version numbers. For example, a client with version <code>7.1.x</code> can only talk to a server with version <code>7.1.y</code>. It <strong>cannot</strong> talk to a server running <code>7.2.z</code> or <code>6.3.w</code>.</p>
 <p>However, you can connect to a cluster with an older version by specifying the API version in your client code. For example, if your client machine has the <code>7.4.x</code> libraries installed, you can still connect to a <code>7.3.z</code> cluster by calling <code>fdb.select_api_version(730)</code> before connecting. This mechanism is particularly useful for facilitating rolling upgrades, allowing clients to be upgraded before the servers.</p>
 <p>If you mix incompatible versions without selecting a compatible API version, your application will likely fail to connect, often by hanging indefinitely. The server logs may show <code>ConnectionRejected</code> errors with the reason <code>IncompatibleProtocolVersion</code>. It's crucial to ensure your client machines and server cluster are running compatible versions, or that you are using <code>select_api_version</code> correctly during an upgrade.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="the-fdbcli-command-line-interface"><a class="header" href="#the-fdbcli-command-line-interface">The <code>fdbcli</code> Command-Line Interface</a></h1>
-<ul>
-<li><a href="getting_started/fdbcli.html#your-first-cluster-a-local-sandbox">Your First Cluster: A Local Sandbox</a></li>
-<li><a href="getting_started/fdbcli.html#creating-the-database">Creating the Database</a></li>
-<li><a href="getting_started/fdbcli.html#reading-and-writing-data">Reading and Writing Data</a></li>
-</ul>
-<p><code>fdbcli</code> is the primary tool for administering and interacting with your FoundationDB cluster. This chapter will walk you through the basics of using it to create a database and perform fundamental key-value operations.</p>
-<h2 id="your-first-cluster-a-local-sandbox"><a class="header" href="#your-first-cluster-a-local-sandbox">Your First Cluster: A Local Sandbox</a></h2>
-<p>The easiest way to get started is to run a local FoundationDB server using Docker. This command will start a container with FoundationDB, publish its port, and name it <code>fdb</code> for easy access.</p>
-<pre><code class="language-shell">docker run --name fdb -d -p 4500:4500 --rm foundationdb/foundationdb:7.1.25
-</code></pre>
-<p>Now, you can connect to the running container and start the CLI:</p>
-<pre><code class="language-shell">docker exec -it fdb fdbcli
-</code></pre>
-<p>You'll be greeted with a welcome message and a warning:</p>
-<pre><code>Using cluster file '/var/fdb/fdb.cluster'.
-
-The database is unavailable; type `status' for more information.
-
-Welcome to the fdbcli. For help, type `help'.
-fdb&gt; 
-</code></pre>
-<h2 id="creating-the-database"><a class="header" href="#creating-the-database">Creating the Database</a></h2>
-<p>The database is unavailable because we haven't configured it yet. The <code>status</code> command provides a detailed report on the cluster's health. Let's see what it says:</p>
-<pre><code class="language-shell">fdb&gt; status
-
-Using cluster file `/var/fdb/fdb.cluster'.
-
-The coordinator(s) have no record of this database. Either the coordinator
-addresses are incorrect, the coordination state on those machines is missing, or
-no database has been created.
-
-  172.17.0.2:4500  (reachable)
-
-Unable to locate the data distributor worker.
-</code></pre>
-<p>The message is clear: "no database has been created." Let's fix that. The <code>configure</code> command sets up the database with a specific redundancy mode and storage engine. For a local sandbox, <code>single</code> redundancy and the <code>memory</code> storage engine are perfect.</p>
-<pre><code class="language-shell">fdb&gt; configure new single memory
-Database created
-</code></pre>
-<p><strong>Warning:</strong> Running <code>configure new</code> on an existing cluster will destroy all of its data. It is only safe to use on a brand-new cluster.</p>
-<p>Now, if we check the status again, we'll see a healthy, fully-operational cluster.</p>
-<pre><code class="language-shell">fdb&gt; status
-
-Configuration:
-  Redundancy mode        - single
-  Storage engine         - memory
-  Coordinators           - 1
-
-Cluster:
-  FoundationDB processes - 1
-  Machines               - 1
-
-Data:
-  Replication health     - Healthy
-  Moving data            - 0.000 GB
-
-...
-</code></pre>
-<h2 id="reading-and-writing-data"><a class="header" href="#reading-and-writing-data">Reading and Writing Data</a></h2>
-<p>Now for the fun part. <code>fdbcli</code> allows you to perform transactional reads and writes directly from the command line. Let's try to <code>get</code> a key that doesn't exist yet.</p>
-<pre><code class="language-shell">fdb&gt; get mykey
-`mykey' not found
-</code></pre>
-<p>As expected, nothing is there. Let's <code>set</code> a value.</p>
-<pre><code class="language-shell">fdb&gt; set mykey "hello world"
-Committed.
-</code></pre>
-<p>Now, if we <code>get</code> it again, we see our value. Notice that we use quotes because our value contains a space.</p>
-<pre><code class="language-shell">fdb&gt; get mykey
-`mykey' is `hello world'
-</code></pre>
-<p>We can also store multiple keys and retrieve them with <code>getrange</code>.</p>
-<pre><code class="language-shell">fdb&gt; set key1 value1
-Committed.
-fdb&gt; set key2 value2
-Committed.
-fdb&gt; set key3 value3
-Committed.
-
-fdb&gt; getrange key1 key4
-
-Range limited to 25 keys
-`key1' is `value1'
-`key2' is `value2'
-`key3' is `value3'
-</code></pre>
-<p>Finally, we can remove a key using <code>clear</code>.</p>
-<pre><code class="language-shell">fdb&gt; clear mykey
-Committed.
-
-fdb&gt; get mykey
-`mykey' not found
-</code></pre>
-<p>This is just a small sample of what <code>fdbcli</code> can do. You can use the <code>help</code> command to see a full list of commands or <code>help &lt;command&gt;</code> for details on a specific one.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="core-concept-transactions"><a class="header" href="#core-concept-transactions">Core Concept: Transactions</a></h1>
-<ul>
-<li><a href="develop_layer/transactions.html#strictly-serializable-acid-transactions">Strictly Serializable ACID Transactions</a></li>
-<li><a href="develop_layer/transactions.html#the-transactional-pattern-read-write-commit">The Transactional Pattern: Read, Write, Commit</a></li>
-<li><a href="develop_layer/transactions.html#conflict-resolution-the-retry-loop">Conflict Resolution: The Retry Loop</a></li>
-</ul>
-<p>Transactions are the heart of FoundationDB. They are the mechanism that allows you to build complex, multi-key operations while guaranteeing the database remains consistent. FoundationDB provides some of the strongest transactional guarantees in the industry, and understanding how they work is the key to building reliable layers.</p>
-<h2 id="strictly-serializable-acid-transactions"><a class="header" href="#strictly-serializable-acid-transactions">Strictly Serializable ACID Transactions</a></h2>
-<p>FoundationDB offers fully <strong>ACID</strong> (Atomicity, Consistency, Isolation, Durability) transactions. But it goes a step further by providing the strongest isolation level: <strong>strict serializability</strong>. This means that transactions behave as if they were executed one at a time, in some sequential order. You are completely insulated from the complexities of concurrent operations; you can write your code as if you are the only person using the database.</p>
-<h2 id="the-transactional-pattern-read-write-commit"><a class="header" href="#the-transactional-pattern-read-write-commit">The Transactional Pattern: Read, Write, Commit</a></h2>
-<p>Working with a transaction in FoundationDB follows a simple but powerful pattern:</p>
-<ol>
-<li><strong>Create a transaction object.</strong></li>
-<li><strong>Read from the database.</strong> You can read one or more keys. FoundationDB remembers which keys you've read (your <em>read set</em>).</li>
-<li><strong>Write to the database.</strong> You can write one or more keys. These writes are buffered locally in the transaction object (your <em>write set</em>).</li>
-<li><strong>Commit the transaction.</strong> The client sends the transaction (its read and write sets) to the cluster for validation.</li>
-</ol>
-<p>This is an <strong>optimistic</strong> concurrency model. The database <em>optimistically</em> assumes that your transaction will not conflict with others. The check only happens at the very end, during the commit phase.</p>
-<h2 id="conflict-resolution-the-retry-loop"><a class="header" href="#conflict-resolution-the-retry-loop">Conflict Resolution: The Retry Loop</a></h2>
-<p>What happens if another transaction commits a change to a key you <em>read</em> before your own transaction commits? This is a <strong>conflict</strong>. When the cluster detects a conflict, it will reject your transaction with a retryable error.</p>
-<p>This is not a failure; it's a core part of the design. Your application code is expected to catch this error and simply retry the entire transaction from the beginning. This is known as the <strong>transactional retry loop</strong>.</p>
-<p>Here is a pseudo-code example of this fundamental pattern:</p>
-<pre><code class="language-python"># A simplified view of the FDB transaction pattern
-def transfer_funds(db, from_acct, to_acct, amount):
-    # The retry loop is handled for you by the @transactional decorator
-    # in most language bindings.
-    @fdb.transactional
-    def _do_transfer(tr):
-        # 1. Read the current balances
-        from_balance = tr[from_acct].wait()
-        to_balance = tr[to_acct].wait()
-
-        # If we read a null value, the account doesn't exist
-        if from_balance is None or to_balance is None:
-            raise Exception("Account not found")
-
-        from_balance = int.from_bytes(from_balance, 'big')
-        to_balance = int.from_bytes(to_balance, 'big')
-
-        # 2. Perform local logic
-        if from_balance &lt; amount:
-            raise Exception("Insufficient funds")
-
-        # 3. Write the new balances to the local transaction buffer
-        tr[from_acct] = (from_balance - amount).to_bytes(8, 'big')
-        tr[to_acct] = (to_balance + amount).to_bytes(8, 'big')
-
-        # 4. The commit happens automatically when the function returns
-
-    # Execute the transaction
-    _do_transfer(db)
-</code></pre>
-<p>If another transaction modifies <code>from_acct</code> or <code>to_acct</code> after our transaction has read them but before it has committed, the commit will fail. The <code>@transactional</code> decorator will automatically catch the error and re-run the <code>_do_transfer</code> function from the beginning. This simple, powerful loop ensures that your logic always runs on a consistent snapshot of the database.</p>
-<p>For a deeper dive into how to avoid conflicts and design your data models for high-contention workloads, this talk is an excellent resource:</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/2HiIgbxtx0c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><div style="break-before: page; page-break-before: always;"></div><h1 id="key-design-tuples-subspaces-and-directories"><a class="header" href="#key-design-tuples-subspaces-and-directories">Key Design: Tuples, Subspaces, and Directories</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="develop-on-foundationdb"><a class="header" href="#develop-on-foundationdb">Develop on FoundationDB</a></h1>
+<p>This section provides a deeper look into the development of FoundationDB.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="key-design-tuples-subspaces-and-directories"><a class="header" href="#key-design-tuples-subspaces-and-directories">Key Design: Tuples, Subspaces, and Directories</a></h1>
 <ul>
 <li><a href="develop_layer/crafting-row-keys.html#the-challenge-hand-crafting-keys">The Challenge: Hand-Crafting Keys</a></li>
 <li><a href="develop_layer/crafting-row-keys.html#layer-1-the-tuple">Layer 1: The <code>Tuple</code></a></li>
@@ -745,6 +614,30 @@ def set_user(tr, name):
 set_user(db, 'charlie')
 </code></pre>
 <p>By using these three layers—Tuples for serialization, Subspaces for namespacing, and Directories for management—you can build sophisticated and maintainable data models on top of the simple key-value interface.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="best-practice-for-storing-structured-data"><a class="header" href="#best-practice-for-storing-structured-data">Best practice for storing structured data</a></h1>
+<p>When storing structured data like JSON objects in FoundationDB, you have two primary approaches. Each has its own set of trade-offs.</p>
+<h2 id="store-the-object-as-a-blob"><a class="header" href="#store-the-object-as-a-blob">Store the object as a blob</a></h2>
+<p>If you decide to store the object as a single blob, you will need to pay the cost of reading the entire object back, even if you only need to access a single field. This approach can be efficient if you always read the entire document anyway (e.g., returning it as JSON via a REST API).</p>
+<p>However, if you have a few fields that are updated frequently (like a <code>last_accessed_timestamp</code>), this option will incur a large serialization overhead. Furthermore, due to the value size limit in FDB, you may need to split a large object into multiple key-value pairs.</p>
+<p>On the other hand, storing data as a single blob (or even more aggressively, batching multiple objects into one) provides an opportunity to compress the data on disk. FoundationDB does not provide built-in compression for key-value data, so this would need to be handled at the application layer.</p>
+<h2 id="store-the-object-as-separate-key-value-pairs"><a class="header" href="#store-the-object-as-separate-key-value-pairs">Store the object as separate key-value pairs</a></h2>
+<p>When an object is stored as separate key-value pairs, random access to a single field becomes much faster and more efficient. This approach makes implementing technologies like GraphQL more feasible.</p>
+<p>For example, a JSON object like:</p>
+<pre><code class="language-json">{
+  "id": 123,
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
+</code></pre>
+<p>Could be stored as:</p>
+<pre><code>(123, "name") = "John Doe"
+(123, "email") = "john.doe@example.com"
+</code></pre>
+<p>However, this comes at a cost: increased disk space usage. There is little to no opportunity to compress the data on disk when using this method.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>If you’re building a generic document database, it’s challenging to pick one strategy that works best for all use cases. You might consider making the storage strategy configurable, or even adaptive based on the workload.</p>
+<p>For example, the <a href="https://github.com/FoundationDB/fdb-document-layer">FDB Document Layer</a> allows data to be stored fully expanded or packed into 4k blocks.</p>
+<p>To learn more about compressing data in this context, you can read the discussion in <a href="https://forums.foundationdb.org/t/best-practice-of-storing-structs-should-i-pack-or-store-fields-separately/425/5?u=dongxineric">this forum post</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="learning-from-the-community-open-source-layers"><a class="header" href="#learning-from-the-community-open-source-layers">Learning from the Community: Open-Source Layers</a></h1>
 <p>One of the best ways to learn how to build on FoundationDB is to study existing, production-proven layers. A "layer" is simply a library or service that provides a higher-level data model on top of FoundationDB's ordered key-value store. By examining how these layers map their data models to keys and values, you can gain invaluable insights for your own projects.</p>
 <p>Here are some of the most prominent open-source layers developed by the FoundationDB community.</p>
@@ -753,6 +646,7 @@ set_user(db, 'charlie')
 <li><a href="develop_layer/studiable-layers.html#the-document-layer">The Document Layer</a></li>
 <li><a href="develop_layer/studiable-layers.html#the-zookeeper-layer">The ZooKeeper Layer</a></li>
 <li><a href="develop_layer/studiable-layers.html#the-time-series-layer">The Time-Series Layer</a></li>
+<li><a href="develop_layer/studiable-layers.html#warp-10">Warp 10</a></li>
 </ul>
 <h2 id="the-record-layer"><a class="header" href="#the-record-layer">The Record Layer</a></h2>
 <p>The Record Layer provides a structured, record-oriented data store on top of FoundationDB, similar to a traditional relational database. It is used in production at Apple to power CloudKit.</p>
@@ -787,7 +681,7 @@ set_user(db, 'charlie')
 </li>
 </ul>
 <h2 id="the-time-series-layer"><a class="header" href="#the-time-series-layer">The Time-Series Layer</a></h2>
-<p>This is a high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.</p>
+<p>This is an experimental, high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.</p>
 <ul>
 <li><strong>GitHub Repo:</strong> <a href="https://github.com/richardartoul/tsdb-layer">richardartoul/tsdb-layer</a></li>
 <li><strong>Key Video:</strong>
@@ -795,6 +689,12 @@ set_user(db, 'charlie')
 <li><a href="https://www.youtube.com/watch?v=W6yQ9Pwgb1A">Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go</a></li>
 </ul>
 </li>
+</ul>
+<h2 id="warp-10"><a class="header" href="#warp-10">Warp 10</a></h2>
+<p>Warp 10 is a powerful platform for managing time-series data. While it was not originally built on FoundationDB, version 3.0 and later versions have adopted it to replace HBase. This change was motivated by a desire to simplify operations and eliminate the dependency on the Hadoop ecosystem.</p>
+<ul>
+<li><strong>GitHub Repo:</strong> <a href="https://github.com/senx/warp10-platform">senx/warp10-platform</a></li>
+<li><strong>Key Blog Post:</strong> <a href="https://blog.senx.io/introducing-warp-10-3-0/">Introducing Warp 10 3.0!</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="best-practices-and-pitfalls"><a class="header" href="#best-practices-and-pitfalls">Best Practices and Pitfalls</a></h1>
 <p>This chapter provides a collection of best practices, advanced techniques, and common pitfalls to help you build robust, production-ready layers on FoundationDB.</p>
@@ -858,20 +758,22 @@ set_user(db, 'charlie')
 <li><strong>Multi-Cluster Deployments:</strong> The directory prefix allocator is not safe for multi-cluster deployments and can allocate the same prefix in different clusters, leading to data corruption if the data is ever merged.</li>
 <li><strong>Redwood and Prefix Compression:</strong> The Redwood storage engine (new in 7.0) provides native key-prefix compression. This offers many of the same space-saving benefits as the Directory Layer without the associated complexity and caveats. For new projects, especially those using Redwood, consider whether you can use subspaces with descriptive prefixes directly instead of relying on the Directory Layer.</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="operate-foundationdb"><a class="header" href="#operate-foundationdb">Operate FoundationDB</a></h1>
+<p>This section provides a deeper look into the operation of FoundationDB.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="anatomy-of-a-cluster-roles"><a class="header" href="#anatomy-of-a-cluster-roles">Anatomy of a Cluster: Roles</a></h1>
 <ul>
-<li><a href="internals/roles.html#the-coordinator">The Coordinator</a></li>
-<li><a href="internals/roles.html#the-cluster-controller">The Cluster Controller</a></li>
-<li><a href="internals/roles.html#the-proxies">The Proxies</a>
+<li><a href="operate_fdb/roles.html#the-coordinator">The Coordinator</a></li>
+<li><a href="operate_fdb/roles.html#the-cluster-controller">The Cluster Controller</a></li>
+<li><a href="operate_fdb/roles.html#the-proxies">The Proxies</a>
 <ul>
-<li><a href="internals/roles.html#the-grv-proxy">The GRV Proxy</a></li>
-<li><a href="internals/roles.html#the-commit-proxy">The Commit Proxy</a></li>
+<li><a href="operate_fdb/roles.html#the-grv-proxy">The GRV Proxy</a></li>
+<li><a href="operate_fdb/roles.html#the-commit-proxy">The Commit Proxy</a></li>
 </ul>
 </li>
-<li><a href="internals/roles.html#the-resolver">The Resolver</a></li>
-<li><a href="internals/roles.html#the-log-server">The Log Server</a></li>
-<li><a href="internals/roles.html#the-storage-server">The Storage Server</a></li>
-<li><a href="internals/roles.html#the-data-distributor">The Data Distributor</a></li>
+<li><a href="operate_fdb/roles.html#the-resolver">The Resolver</a></li>
+<li><a href="operate_fdb/roles.html#the-log-server">The Log Server</a></li>
+<li><a href="operate_fdb/roles.html#the-storage-server">The Storage Server</a></li>
+<li><a href="operate_fdb/roles.html#the-data-distributor">The Data Distributor</a></li>
 </ul>
 <p>FoundationDB's architecture is built on a collection of specialized, stateless roles. This separation of concerns is a key reason for its high performance, scalability, and fault tolerance. A running <code>fdbserver</code> process can dynamically take on any of these roles as needed. Understanding them is the first step to understanding how FoundationDB works.</p>
 <p>Here are the core roles in a FoundationDB cluster:</p>
@@ -905,90 +807,113 @@ set_user(db, 'charlie')
 <p>The <strong>Storage Server</strong> is responsible for storing the data. Each Storage Server holds a set of key ranges (shards). It serves read requests from clients and receives committed mutations from the Log Servers, applying them to its in-memory B-tree and eventually writing them to disk. Storage Servers are the workhorses of the cluster, and you can add more of them to increase both storage capacity and I/O performance.</p>
 <h2 id="the-data-distributor"><a class="header" href="#the-data-distributor">The Data Distributor</a></h2>
 <p>The <strong>Data Distributor</strong> is a background role responsible for ensuring that data is evenly distributed and replicated across all of the Storage Servers. It monitors the size and workload of each shard and will automatically move data between servers to prevent hotspots and ensure fault tolerance. It is also responsible for initiating data replication and healing the cluster after a Storage Server fails.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="the-write-path"><a class="header" href="#the-write-path">The Write Path</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="guidelines-for-choosing-coordinators"><a class="header" href="#guidelines-for-choosing-coordinators">Guidelines for Choosing Coordinators</a></h1>
+<p>Unlike most roles in the cluster, which are assigned dynamically, coordinators must be configured statically. This requires careful consideration to ensure your cluster is both fault-tolerant and performant.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>Coordinators are responsible for three critical functions:</p>
+<ol>
+<li><strong>Electing the Cluster Controller:</strong> The cluster controller is the leader of the cluster. This election is an iterative process, and having too many coordinators can increase the probability of failure in each round, slowing down the election process significantly.</li>
+<li><strong>Storing Global State:</strong> During a recovery, this state is read, locked, and rewritten to all coordinators. The more coordinators you have, the longer this process takes, which can increase your recovery times.</li>
+<li><strong>Facilitating Client Connections:</strong> Clients discover the cluster controller through the coordinators. While this path is optimized, in the worst case, a client may need to communicate with all coordinators, making new connections slower.</li>
+</ol>
+<p>Losing a majority of your coordinators will cause the database to become unavailable. However, having more coordinators than necessary can harm performance and make operations more complex.</p>
+<h2 id="recommended-coordinator-counts"><a class="header" href="#recommended-coordinator-counts">Recommended Coordinator Counts</a></h2>
+<p>The goal is to have enough coordinators to meet your fault-tolerance goals without adding unnecessary overhead.</p>
 <ul>
-<li><a href="internals/the-write-path.html#the-steps-of-a-commit">The Steps of a Commit</a></li>
-<li><a href="internals/the-write-path.html#the-final-step-data-storage">The Final Step: Data Storage</a></li>
+<li>
+<p><strong>Single Data Center:</strong> For a single-DC configuration with a replication factor of <code>R</code>, the recommended number of coordinators is <code>2*R - 1</code>. This configuration can tolerate the failure of <code>R-1</code> coordinators while still maintaining a majority.</p>
+</li>
+<li>
+<p><strong>Multi-Data Center:</strong> For multi-DC deployments, you typically want to be resilient to the loss of at least one data center plus one additional machine failure. For these scenarios, we recommend <strong>9 coordinators</strong>, spread evenly across at least 3 DCs. This ensures that no single DC has more than 3 coordinators. If you lose one DC and one additional machine, you would lose at most 4 of your 9 coordinators, leaving a majority available.</p>
+</li>
+<li>
+<p><strong>Two Data Centers:</strong> If you are only storing data in two DCs, we recommend provisioning 3 processes in a third data center to serve exclusively as coordinators.</p>
+</li>
 </ul>
-<p>Understanding the life of a write transaction is key to understanding how FoundationDB provides its powerful guarantees of strict serializability and durability. The process involves a carefully choreographed dance between several cluster roles.</p>
-<p>Let's walk through the journey of a transaction from the moment a client calls <code>commit()</code> to the point where it is safely stored in the database.</p>
-<pre class="mermaid">sequenceDiagram
-    participant Client
-    participant Proxy
-    participant Resolver
-    participant Log Server
-    participant Storage Server
-
-    Client-&gt;&gt;+Proxy: commit(read_set, write_set)
-    Proxy-&gt;&gt;Proxy: 1. Get Read Version
-    Proxy-&gt;&gt;+Resolver: 2. Resolve(read_version, read_set, write_set)
-    Resolver--&gt;&gt;-Proxy: OK (no conflicts)
-    Proxy-&gt;&gt;+Log Server: 3. Log(commit_version, write_set)
-    Log Server--&gt;&gt;-Proxy: 4. Durable
-    Proxy--&gt;&gt;-Client: 5. Commit Successful
-    loop Later
-        Storage Server-&gt;&gt;+Log Server: Pull mutations
-        Log Server--&gt;&gt;-Storage Server: Mutations
-        Storage Server-&gt;&gt;Storage Server: Apply to B-Tree
-    end
-</pre>
-<h3 id="the-steps-of-a-commit"><a class="header" href="#the-steps-of-a-commit">The Steps of a Commit</a></h3>
+<h2 id="determining-which-processes-to-use"><a class="header" href="#determining-which-processes-to-use">Determining Which Processes to Use</a></h2>
+<p>When selecting which <code>fdbserver</code> processes will act as coordinators, follow two rules:</p>
+<ol>
+<li><strong>Unique Fault Domains:</strong> Every coordinator should be on a different physical machine or fault domain (and thus have a different <code>zoneid</code>).</li>
+<li><strong>Even Distribution:</strong> Coordinators should be spread as evenly as possible across data centers and racks.</li>
+</ol>
+<p>Following these guidelines will help ensure your cluster achieves its desired level of fault tolerance.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="upgrading-foundationdb"><a class="header" href="#upgrading-foundationdb">Upgrading FoundationDB</a></h1>
+<p>Upgrading a FoundationDB cluster can be a challenging process, but with the right procedure, it can be accomplished with zero downtime.</p>
+<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<p>The main challenge is that the internal wire protocol used for communication between server processes is not guaranteed to be stable across different minor versions. This means that during a minor version upgrade (e.g., from 6.1 to 6.2), all <code>fdbserver</code> processes must be restarted with the new binaries simultaneously.</p>
+<p>Clients must also use a protocol-compatible library to connect. To avoid client outages, FoundationDB supports a multi-version client feature, allowing an application to load both old and new client libraries at the same time.</p>
+<p>This guide outlines a safe, zero-downtime upgrade process, assuming you are running <code>fdbserver</code> through <code>fdbmonitor</code>.</p>
+<h2 id="server-upgrade-process"><a class="header" href="#server-upgrade-process">Server Upgrade Process</a></h2>
+<p>The high-level process is as follows:</p>
 <ol>
 <li>
-<p><strong>Get Read Version:</strong> When the transaction is ready to be committed, the client library sends it to a <strong>Proxy</strong>. The first thing the Proxy does is request a <strong>Read Version</strong> from the Cluster Controller. This version number establishes the logical point in time at which the transaction's reads occurred.</p>
+<p><strong>Install New Binaries:</strong> Install the new <code>fdbserver</code> binaries alongside the old ones. It's a good practice to place them in versioned directories, for example:</p>
+<ul>
+<li>Old: <code>/usr/bin/fdb/6.1.12/fdbserver</code></li>
+<li>New: <code>/usr/bin/fdb/6.2.8/fdbserver</code></li>
+</ul>
 </li>
 <li>
-<p><strong>Conflict Resolution:</strong> The Proxy sends the transaction's Read Version, its <em>read set</em> (the list of keys it read), and its <em>write set</em> to the <strong>Resolver</strong>. The Resolver checks if any of the keys in the read set have been written to by another transaction that committed <em>after</em> this transaction's Read Version. If a conflict is detected, the Resolver tells the Proxy to reject the transaction, and the client must retry.</p>
+<p><strong>Update Monitor Configuration:</strong> Update the <code>fdbmonitor.conf</code> file to point to the new <code>fdbserver</code> binary path.</p>
 </li>
 <li>
-<p><strong>Logging for Durability:</strong> If the Resolver finds no conflicts, the Proxy assigns the transaction a <strong>Commit Version</strong> (which will be higher than its Read Version) and sends the transaction's <em>write set</em> (the keys and values to be written) to the <strong>Log Servers</strong>.</p>
+<p><strong>Restart the Cluster:</strong> Using the <strong>old</strong> version of <code>fdbcli</code>, issue a coordinated restart of the cluster:</p>
+<pre><code class="language-bash">fdbcli --exec 'kill; kill all; status'
+</code></pre>
 </li>
 <li>
-<p><strong>Durable Commit:</strong> The Log Servers write the transaction's mutations to their durable, on-disk transaction logs. Once a quorum of Log Servers has confirmed that the data is safely on disk, they respond to the Proxy. At this point, the transaction is considered <strong>durable</strong>. Even if the entire cluster lost power, the transaction would be recovered.</p>
-</li>
-<li>
-<p><strong>Success!</strong> The Proxy, having received confirmation from the Log Servers, reports back to the client that the commit was successful.</p>
+<p><strong>Verify Health:</strong> Using the <strong>new</strong> version of <code>fdbcli</code>, connect to the database and confirm that the cluster is healthy and running the new version.</p>
 </li>
 </ol>
-<h3 id="the-final-step-data-storage"><a class="header" href="#the-final-step-data-storage">The Final Step: Data Storage</a></h3>
-<p>Notice that the <strong>Storage Servers</strong> were not involved in the critical commit path. This is a key design decision that makes commits extremely fast.</p>
-<p>After the transaction is durable, the Storage Servers will eventually pull the new data from the Log Servers and apply the mutations to their own on-disk B-trees. This process happens asynchronously in the background and does not block new incoming transactions. This separation of the transaction log from the primary data store is a pattern known as Command Query Responsibility Segregation (CQRS) and is fundamental to FoundationDB's performance.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="the-read-path"><a class="header" href="#the-read-path">The Read Path</a></h1>
-<ul>
-<li><a href="internals/the-read-path.html#the-steps-of-a-read">The Steps of a Read</a></li>
-<li><a href="internals/the-read-path.html#key-takeaways">Key Takeaways</a></li>
-</ul>
-<p>FoundationDB's read path is designed to be highly scalable and efficient. Unlike the write path, which is coordinated through a central set of proxies, the read path is almost entirely decentralized. This allows the cluster to serve a massive number of concurrent reads without creating bottlenecks.</p>
-<p>Here is a high-level overview of how a read operation works:</p>
-<pre class="mermaid">sequenceDiagram
-    participant Client
-    participant Proxy
-    participant Storage Server
-
-    Client-&gt;&gt;+Proxy: 1. Get Read Version
-    Proxy--&gt;&gt;-Client: read_version
-    Client-&gt;&gt;Client: 2. Locate Storage Server (from cache)
-    Client-&gt;&gt;+Storage Server: 3. Read(key, read_version)
-    Storage Server--&gt;&gt;-Client: Value
-</pre>
-<h3 id="the-steps-of-a-read"><a class="header" href="#the-steps-of-a-read">The Steps of a Read</a></h3>
+<p>To minimize the risk of processes restarting organically with the new binary before the coordinated <code>kill</code>, you should set <code>kill_on_configuration_change=false</code> in your <code>fdbmonitor.conf</code> and minimize the time between steps 2 and 3.</p>
+<h2 id="client-upgrade-process"><a class="header" href="#client-upgrade-process">Client Upgrade Process</a></h2>
+<p>To ensure clients remain connected during the server upgrade, you must prepare them ahead of time using the multi-version client feature.</p>
 <ol>
 <li>
-<p><strong>Get Read Version:</strong> When a client begins a transaction, the first thing it does is request a <strong>Read Version</strong> from a <strong>Proxy</strong>. This version is a timestamp that represents a consistent, immutable snapshot of the entire database. All reads within the transaction will be served from this snapshot, which is the foundation of FoundationDB's snapshot isolation.</p>
+<p><strong>Install New Client Library:</strong> Install the new client library (<code>.so</code> or <code>.dylib</code>) into a dedicated directory. The filename should include the version (e.g., <code>/var/lib/fdb-multiversion/libfdbc_6.2.8.so</code>).</p>
 </li>
 <li>
-<p><strong>Locate the Storage Server:</strong> The client library maintains a local cache that maps key ranges to the <strong>Storage Servers</strong> responsible for them. When the client needs to read a key, it uses this cache to determine which Storage Server to contact. This lookup is extremely fast and does not require a network round-trip.</p>
+<p><strong>Configure Environment Variable:</strong> Set the <code>FDB_NETWORK_OPTION_EXTERNAL_CLIENT_DIRECTORY</code> environment variable in your client application's environment to point to this directory (e.g., <code>/var/lib/fdb-multiversion</code>).</p>
 </li>
 <li>
-<p><strong>Read from the Storage Server:</strong> The client connects directly to the appropriate Storage Server and requests the value for the key at the transaction's Read Version. The Storage Server uses its in-memory B-tree and on-disk data files to find the correct version of the value and return it to the client.</p>
+<p><strong>Restart Client Application:</strong> Bounce your client application to make it load the new library in addition to the one it's already using.</p>
+</li>
+<li>
+<p><strong>Verify Client Compatibility:</strong> Before upgrading the servers, you can check the database status JSON (<code>status json</code>) to confirm that all clients have loaded a compatible protocol version. The <code>cluster.clients.supported_versions</code> field will list all protocol versions supported by connected clients.</p>
+</li>
+<li>
+<p><strong>Perform Server Upgrade:</strong> Once all clients are ready, proceed with the server upgrade steps described above.</p>
+</li>
+<li>
+<p><strong>Clean Up:</strong> After the server upgrade is complete and stable, you can update your client applications to use the new library as their primary version and remove the old library files from the multi-version directory.</p>
 </li>
 </ol>
-<h3 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h3>
+<h2 id="upgrading-other-binaries"><a class="header" href="#upgrading-other-binaries">Upgrading Other Binaries</a></h2>
+<p>Tools like <code>fdbbackup</code> and <code>fdbdr</code> must also be protocol-compatible. You should upgrade these binaries after the main cluster upgrade is complete. There will be a temporary lag in backup and disaster recovery operations until these components are also running the new version.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="data-distribution-and-movement"><a class="header" href="#data-distribution-and-movement">Data Distribution and Movement</a></h1>
+<p>FoundationDB automatically manages the distribution of data across the cluster. This process is crucial for ensuring fault tolerance, balancing load, and managing storage space efficiently.</p>
+<h2 id="reasons-for-data-movement"><a class="header" href="#reasons-for-data-movement">Reasons for Data Movement</a></h2>
+<p>FoundationDB will only move data for a few specific reasons:</p>
 <ul>
-<li><strong>Decentralized and Scalable:</strong> Because clients read directly from Storage Servers, read throughput can be scaled horizontally simply by adding more Storage Servers to the cluster.</li>
-<li><strong>Snapshot Isolation:</strong> The use of a Read Version ensures that a transaction sees a perfectly consistent view of the database, even as other transactions are being committed concurrently. Your reads are never "dirty."</li>
-<li><strong>Low Latency:</strong> By caching the mapping of keys to Storage Servers, the client can avoid extra network hops and read data with very low latency.</li>
+<li><strong>To restore replication after a failure:</strong> If a storage server fails, the data it was responsible for becomes under-replicated. The data distribution system will create new copies of that data on other servers to restore the desired replication level.</li>
+<li><strong>To manage shard size:</strong> The system aims to keep data shards within an optimal size range (roughly 125MB to 500MB). It will split shards that grow too large and merge shards that become too small.</li>
+<li><strong>To handle write hotspots:</strong> If a particular shard experiences a high volume of writes, it may be split to distribute the write load.</li>
+<li><strong>To balance storage load:</strong> The system will move data to ensure that the total bytes stored are balanced evenly across all storage servers in the cluster.</li>
 </ul>
+<p>Notably, data distribution <strong>does not</strong> balance the load based on high read traffic. When moving a shard, it only considers the total bytes stored, not the read or write traffic on that shard. This means it's possible for multiple high-traffic ranges to be assigned to the same storage server.</p>
+<h2 id="observing-data-movement"><a class="header" href="#observing-data-movement">Observing Data Movement</a></h2>
+<p>You can monitor data movement activity through the <code>fdbcli</code> status command. The output provides key metrics:</p>
+<pre><code>Data:
+  Replication health   - Healthy
+  Moving data          - 0.043 GB
+  Sum of key-value sizes - 88 MB
+  Disk space used      - 382 MB
+</code></pre>
+<p>The <code>Moving data</code> field shows how much data is currently in flight. There is no ETA published for data movement, and it's normal for it to be happening constantly, especially in a cluster with a high write workload.</p>
+<h2 id="adjusting-distribution-speeds"><a class="header" href="#adjusting-distribution-speeds">Adjusting Distribution Speeds</a></h2>
+<p>There are no simple controls for adjusting the speed of data distribution. While some configuration knobs exist (e.g., <code>DD_MOVE_KEYS_PARALLELISM</code>, <code>MOVE_KEYS_KRM_LIMIT</code>), changing them is strongly discouraged unless you have a specific need and understand the potential consequences. These settings must be applied at the startup of your <code>fdbserver</code> processes and should be handled with extreme caution.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-record-layer-1"><a class="header" href="#the-record-layer-1">The Record Layer</a></h1>
+<p>This section provides a deeper look into the Record Layer of FoundationDB.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="what-is-the-record-layer"><a class="header" href="#what-is-the-record-layer">What is the Record Layer?</a></h1>
 <p>The FoundationDB Record Layer is an open-source library that provides a record-oriented data store with semantics similar to a relational database, implemented on top of FoundationDB. Think of it as a "middle layer" that provides common database-like features, making it easier to build complex, scalable applications on FDB.</p>
 <p>It was created to solve the common and difficult challenges that arise when building a structured data layer on top of a key-value store, such as schema management, indexing, and query execution, especially in a multi-tenant environment.</p>
@@ -1092,6 +1017,92 @@ set_user(db, 'charlie')
 <ul>
 <li><strong>Paper</strong>: <a href="https://www.foundationdb.org/files/QuiCK.pdf">QuiCK: A Queuing System in CloudKit</a> (SIGMOD '21)</li>
 <li><strong>Video</strong>: <a href="https://www.youtube.com/watch?v=I9mNENkZT90">QuiCK: A Queuing System in CloudKit</a> (SIGMOD '21)</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="foundationdb-internals"><a class="header" href="#foundationdb-internals">FoundationDB Internals</a></h1>
+<p>This section provides a deeper look into the internal architecture and components of FoundationDB.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-write-path"><a class="header" href="#the-write-path">The Write Path</a></h1>
+<ul>
+<li><a href="internals/the-write-path.html#the-steps-of-a-commit">The Steps of a Commit</a></li>
+<li><a href="internals/the-write-path.html#the-final-step-data-storage">The Final Step: Data Storage</a></li>
+</ul>
+<p>Understanding the life of a write transaction is key to understanding how FoundationDB provides its powerful guarantees of strict serializability and durability. The process involves a carefully choreographed dance between several cluster roles.</p>
+<p>Let's walk through the journey of a transaction from the moment a client calls <code>commit()</code> to the point where it is safely stored in the database.</p>
+<pre class="mermaid">sequenceDiagram
+    participant Client
+    participant Proxy
+    participant Resolver
+    participant Log Server
+    participant Storage Server
+
+    Client-&gt;&gt;+Proxy: commit(read_set, write_set)
+    Proxy-&gt;&gt;Proxy: 1. Get Read Version
+    Proxy-&gt;&gt;+Resolver: 2. Resolve(read_version, read_set, write_set)
+    Resolver--&gt;&gt;-Proxy: OK (no conflicts)
+    Proxy-&gt;&gt;+Log Server: 3. Log(commit_version, write_set)
+    Log Server--&gt;&gt;-Proxy: 4. Durable
+    Proxy--&gt;&gt;-Client: 5. Commit Successful
+    loop Later
+        Storage Server-&gt;&gt;+Log Server: Pull mutations
+        Log Server--&gt;&gt;-Storage Server: Mutations
+        Storage Server-&gt;&gt;Storage Server: Apply to B-Tree
+    end
+</pre>
+<h3 id="the-steps-of-a-commit"><a class="header" href="#the-steps-of-a-commit">The Steps of a Commit</a></h3>
+<ol>
+<li>
+<p><strong>Get Read Version:</strong> When the transaction is ready to be committed, the client library sends it to a <strong>Proxy</strong>. The first thing the Proxy does is request a <strong>Read Version</strong> from the Cluster Controller. This version number establishes the logical point in time at which the transaction's reads occurred.</p>
+</li>
+<li>
+<p><strong>Conflict Resolution:</strong> The Proxy sends the transaction's Read Version, its <em>read set</em> (the list of keys it read), and its <em>write set</em> to the <strong>Resolver</strong>. The Resolver checks if any of the keys in the read set have been written to by another transaction that committed <em>after</em> this transaction's Read Version. If a conflict is detected, the Resolver tells the Proxy to reject the transaction, and the client must retry.</p>
+</li>
+<li>
+<p><strong>Logging for Durability:</strong> If the Resolver finds no conflicts, the Proxy assigns the transaction a <strong>Commit Version</strong> (which will be higher than its Read Version) and sends the transaction's <em>write set</em> (the keys and values to be written) to the <strong>Log Servers</strong>.</p>
+</li>
+<li>
+<p><strong>Durable Commit:</strong> The Log Servers write the transaction's mutations to their durable, on-disk transaction logs. Once a quorum of Log Servers has confirmed that the data is safely on disk, they respond to the Proxy. At this point, the transaction is considered <strong>durable</strong>. Even if the entire cluster lost power, the transaction would be recovered.</p>
+</li>
+<li>
+<p><strong>Success!</strong> The Proxy, having received confirmation from the Log Servers, reports back to the client that the commit was successful.</p>
+</li>
+</ol>
+<h3 id="the-final-step-data-storage"><a class="header" href="#the-final-step-data-storage">The Final Step: Data Storage</a></h3>
+<p>Notice that the <strong>Storage Servers</strong> were not involved in the critical commit path. This is a key design decision that makes commits extremely fast.</p>
+<p>After the transaction is durable, the Storage Servers will eventually pull the new data from the Log Servers and apply the mutations to their own on-disk B-trees. This process happens asynchronously in the background and does not block new incoming transactions. This separation of the transaction log from the primary data store is a pattern known as Command Query Responsibility Segregation (CQRS) and is fundamental to FoundationDB's performance.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-read-path"><a class="header" href="#the-read-path">The Read Path</a></h1>
+<ul>
+<li><a href="internals/the-read-path.html#the-steps-of-a-read">The Steps of a Read</a></li>
+<li><a href="internals/the-read-path.html#key-takeaways">Key Takeaways</a></li>
+</ul>
+<p>FoundationDB's read path is designed to be highly scalable and efficient. Unlike the write path, which is coordinated through a central set of proxies, the read path is almost entirely decentralized. This allows the cluster to serve a massive number of concurrent reads without creating bottlenecks.</p>
+<p>Here is a high-level overview of how a read operation works:</p>
+<pre class="mermaid">sequenceDiagram
+    participant Client
+    participant Proxy
+    participant Storage Server
+
+    Client-&gt;&gt;+Proxy: 1. Get Read Version
+    Proxy--&gt;&gt;-Client: read_version
+    Client-&gt;&gt;Client: 2. Locate Storage Server (from cache)
+    Client-&gt;&gt;+Storage Server: 3. Read(key, read_version)
+    Storage Server--&gt;&gt;-Client: Value
+</pre>
+<h3 id="the-steps-of-a-read"><a class="header" href="#the-steps-of-a-read">The Steps of a Read</a></h3>
+<ol>
+<li>
+<p><strong>Get Read Version:</strong> When a client begins a transaction, the first thing it does is request a <strong>Read Version</strong> from a <strong>Proxy</strong>. This version is a timestamp that represents a consistent, immutable snapshot of the entire database. All reads within the transaction will be served from this snapshot, which is the foundation of FoundationDB's snapshot isolation.</p>
+</li>
+<li>
+<p><strong>Locate the Storage Server:</strong> The client library maintains a local cache that maps key ranges to the <strong>Storage Servers</strong> responsible for them. When the client needs to read a key, it uses this cache to determine which Storage Server to contact. This lookup is extremely fast and does not require a network round-trip.</p>
+</li>
+<li>
+<p><strong>Read from the Storage Server:</strong> The client connects directly to the appropriate Storage Server and requests the value for the key at the transaction's Read Version. The Storage Server uses its in-memory B-tree and on-disk data files to find the correct version of the value and return it to the client.</p>
+</li>
+</ol>
+<h3 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h3>
+<ul>
+<li><strong>Decentralized and Scalable:</strong> Because clients read directly from Storage Servers, read throughput can be scaled horizontally simply by adding more Storage Servers to the cluster.</li>
+<li><strong>Snapshot Isolation:</strong> The use of a Read Version ensures that a transaction sees a perfectly consistent view of the database, even as other transactions are being committed concurrently. Your reads are never "dirty."</li>
+<li><strong>Low Latency:</strong> By caching the mapping of keys to Storage Servers, the client can avoid extra network hops and read data with very low latency.</li>
 </ul>
 
                     </main>

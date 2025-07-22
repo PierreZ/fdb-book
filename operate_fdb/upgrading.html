@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Core Concept: Transactions - the FoundationDB Book</title>
+        <title>Upgrading FoundationDB - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -169,70 +169,69 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="core-concept-transactions"><a class="header" href="#core-concept-transactions">Core Concept: Transactions</a></h1>
-<ul>
-<li><a href="#strictly-serializable-acid-transactions">Strictly Serializable ACID Transactions</a></li>
-<li><a href="#the-transactional-pattern-read-write-commit">The Transactional Pattern: Read, Write, Commit</a></li>
-<li><a href="#conflict-resolution-the-retry-loop">Conflict Resolution: The Retry Loop</a></li>
-</ul>
-<p>Transactions are the heart of FoundationDB. They are the mechanism that allows you to build complex, multi-key operations while guaranteeing the database remains consistent. FoundationDB provides some of the strongest transactional guarantees in the industry, and understanding how they work is the key to building reliable layers.</p>
-<h2 id="strictly-serializable-acid-transactions"><a class="header" href="#strictly-serializable-acid-transactions">Strictly Serializable ACID Transactions</a></h2>
-<p>FoundationDB offers fully <strong>ACID</strong> (Atomicity, Consistency, Isolation, Durability) transactions. But it goes a step further by providing the strongest isolation level: <strong>strict serializability</strong>. This means that transactions behave as if they were executed one at a time, in some sequential order. You are completely insulated from the complexities of concurrent operations; you can write your code as if you are the only person using the database.</p>
-<h2 id="the-transactional-pattern-read-write-commit"><a class="header" href="#the-transactional-pattern-read-write-commit">The Transactional Pattern: Read, Write, Commit</a></h2>
-<p>Working with a transaction in FoundationDB follows a simple but powerful pattern:</p>
+                        <h1 id="upgrading-foundationdb"><a class="header" href="#upgrading-foundationdb">Upgrading FoundationDB</a></h1>
+<p>Upgrading a FoundationDB cluster can be a challenging process, but with the right procedure, it can be accomplished with zero downtime.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The main challenge is that the internal wire protocol used for communication between server processes is not guaranteed to be stable across different minor versions. This means that during a minor version upgrade (e.g., from 6.1 to 6.2), all <code>fdbserver</code> processes must be restarted with the new binaries simultaneously.</p>
+<p>Clients must also use a protocol-compatible library to connect. To avoid client outages, FoundationDB supports a multi-version client feature, allowing an application to load both old and new client libraries at the same time.</p>
+<p>This guide outlines a safe, zero-downtime upgrade process, assuming you are running <code>fdbserver</code> through <code>fdbmonitor</code>.</p>
+<h2 id="server-upgrade-process"><a class="header" href="#server-upgrade-process">Server Upgrade Process</a></h2>
+<p>The high-level process is as follows:</p>
 <ol>
-<li><strong>Create a transaction object.</strong></li>
-<li><strong>Read from the database.</strong> You can read one or more keys. FoundationDB remembers which keys you've read (your <em>read set</em>).</li>
-<li><strong>Write to the database.</strong> You can write one or more keys. These writes are buffered locally in the transaction object (your <em>write set</em>).</li>
-<li><strong>Commit the transaction.</strong> The client sends the transaction (its read and write sets) to the cluster for validation.</li>
-</ol>
-<p>This is an <strong>optimistic</strong> concurrency model. The database <em>optimistically</em> assumes that your transaction will not conflict with others. The check only happens at the very end, during the commit phase.</p>
-<h2 id="conflict-resolution-the-retry-loop"><a class="header" href="#conflict-resolution-the-retry-loop">Conflict Resolution: The Retry Loop</a></h2>
-<p>What happens if another transaction commits a change to a key you <em>read</em> before your own transaction commits? This is a <strong>conflict</strong>. When the cluster detects a conflict, it will reject your transaction with a retryable error.</p>
-<p>This is not a failure; it's a core part of the design. Your application code is expected to catch this error and simply retry the entire transaction from the beginning. This is known as the <strong>transactional retry loop</strong>.</p>
-<p>Here is a pseudo-code example of this fundamental pattern:</p>
-<pre><code class="language-python"># A simplified view of the FDB transaction pattern
-def transfer_funds(db, from_acct, to_acct, amount):
-    # The retry loop is handled for you by the @transactional decorator
-    # in most language bindings.
-    @fdb.transactional
-    def _do_transfer(tr):
-        # 1. Read the current balances
-        from_balance = tr[from_acct].wait()
-        to_balance = tr[to_acct].wait()
-
-        # If we read a null value, the account doesn't exist
-        if from_balance is None or to_balance is None:
-            raise Exception("Account not found")
-
-        from_balance = int.from_bytes(from_balance, 'big')
-        to_balance = int.from_bytes(to_balance, 'big')
-
-        # 2. Perform local logic
-        if from_balance &lt; amount:
-            raise Exception("Insufficient funds")
-
-        # 3. Write the new balances to the local transaction buffer
-        tr[from_acct] = (from_balance - amount).to_bytes(8, 'big')
-        tr[to_acct] = (to_balance + amount).to_bytes(8, 'big')
-
-        # 4. The commit happens automatically when the function returns
-
-    # Execute the transaction
-    _do_transfer(db)
+<li>
+<p><strong>Install New Binaries:</strong> Install the new <code>fdbserver</code> binaries alongside the old ones. It's a good practice to place them in versioned directories, for example:</p>
+<ul>
+<li>Old: <code>/usr/bin/fdb/6.1.12/fdbserver</code></li>
+<li>New: <code>/usr/bin/fdb/6.2.8/fdbserver</code></li>
+</ul>
+</li>
+<li>
+<p><strong>Update Monitor Configuration:</strong> Update the <code>fdbmonitor.conf</code> file to point to the new <code>fdbserver</code> binary path.</p>
+</li>
+<li>
+<p><strong>Restart the Cluster:</strong> Using the <strong>old</strong> version of <code>fdbcli</code>, issue a coordinated restart of the cluster:</p>
+<pre><code class="language-bash">fdbcli --exec 'kill; kill all; status'
 </code></pre>
-<p>If another transaction modifies <code>from_acct</code> or <code>to_acct</code> after our transaction has read them but before it has committed, the commit will fail. The <code>@transactional</code> decorator will automatically catch the error and re-run the <code>_do_transfer</code> function from the beginning. This simple, powerful loop ensures that your logic always runs on a consistent snapshot of the database.</p>
-<p>For a deeper dive into how to avoid conflicts and design your data models for high-contention workloads, this talk is an excellent resource:</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/2HiIgbxtx0c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</li>
+<li>
+<p><strong>Verify Health:</strong> Using the <strong>new</strong> version of <code>fdbcli</code>, connect to the database and confirm that the cluster is healthy and running the new version.</p>
+</li>
+</ol>
+<p>To minimize the risk of processes restarting organically with the new binary before the coordinated <code>kill</code>, you should set <code>kill_on_configuration_change=false</code> in your <code>fdbmonitor.conf</code> and minimize the time between steps 2 and 3.</p>
+<h2 id="client-upgrade-process"><a class="header" href="#client-upgrade-process">Client Upgrade Process</a></h2>
+<p>To ensure clients remain connected during the server upgrade, you must prepare them ahead of time using the multi-version client feature.</p>
+<ol>
+<li>
+<p><strong>Install New Client Library:</strong> Install the new client library (<code>.so</code> or <code>.dylib</code>) into a dedicated directory. The filename should include the version (e.g., <code>/var/lib/fdb-multiversion/libfdbc_6.2.8.so</code>).</p>
+</li>
+<li>
+<p><strong>Configure Environment Variable:</strong> Set the <code>FDB_NETWORK_OPTION_EXTERNAL_CLIENT_DIRECTORY</code> environment variable in your client application's environment to point to this directory (e.g., <code>/var/lib/fdb-multiversion</code>).</p>
+</li>
+<li>
+<p><strong>Restart Client Application:</strong> Bounce your client application to make it load the new library in addition to the one it's already using.</p>
+</li>
+<li>
+<p><strong>Verify Client Compatibility:</strong> Before upgrading the servers, you can check the database status JSON (<code>status json</code>) to confirm that all clients have loaded a compatible protocol version. The <code>cluster.clients.supported_versions</code> field will list all protocol versions supported by connected clients.</p>
+</li>
+<li>
+<p><strong>Perform Server Upgrade:</strong> Once all clients are ready, proceed with the server upgrade steps described above.</p>
+</li>
+<li>
+<p><strong>Clean Up:</strong> After the server upgrade is complete and stable, you can update your client applications to use the new library as their primary version and remove the old library files from the multi-version directory.</p>
+</li>
+</ol>
+<h2 id="upgrading-other-binaries"><a class="header" href="#upgrading-other-binaries">Upgrading Other Binaries</a></h2>
+<p>Tools like <code>fdbbackup</code> and <code>fdbdr</code> must also be protocol-compatible. You should upgrade these binaries after the main cluster upgrade is complete. There will be a temporary lag in backup and disaster recovery operations until these components are also running the new version.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../getting_started/fdbcli.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../operate_fdb/choosing-coordinators.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../develop_layer/crafting-row-keys.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../operate_fdb/data-distribution.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -242,11 +241,11 @@ def transfer_funds(db, from_acct, to_acct, amount):
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../getting_started/fdbcli.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../operate_fdb/choosing-coordinators.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../develop_layer/crafting-row-keys.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../operate_fdb/data-distribution.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

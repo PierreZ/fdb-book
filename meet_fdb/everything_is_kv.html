@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Everything is a key-value! - the FoundationDB Book</title>
+        <title>Everything is a Key-Value - the FoundationDB Book</title>
 
 
         <!-- Custom HTML head -->
@@ -175,6 +175,7 @@
 <li><a href="#industry-examples">Industry Examples</a>
 <ul>
 <li><a href="#sql-on-key-value-google-cockroachdb-and-tidb">SQL on Key-Value: Google, CockroachDB, and TiDB</a></li>
+<li><a href="#advanced-indexing-on-key-value">Advanced Indexing on Key-Value</a></li>
 <li><a href="#multi-model-databases-cosmos-db-and-yugabytedb">Multi-Model Databases: Cosmos DB and YugabyteDB</a></li>
 </ul>
 </li>
@@ -207,6 +208,19 @@
 <p><strong>TiDB:</strong> The TiDB ecosystem explicitly separates its components. <a href="https://www.vldb.org/pvldb/vol13/p3072-huang.pdf">TiDB</a> is the SQL computation layer, while <strong>TiKV</strong> is the distributed, transactional key-value storage layer. Each SQL row is mapped to a key-value pair in TiKV.</p>
 </li>
 </ul>
+<h3 id="advanced-indexing-on-key-value"><a class="header" href="#advanced-indexing-on-key-value">Advanced Indexing on Key-Value</a></h3>
+<p>The layered pattern extends beyond just mapping primary table data. Even sophisticated secondary indexing strategies, like those for semi-structured data (JSON) or full-text search, are implemented by modeling the index as a set of key-value pairs.</p>
+<ul>
+<li>
+<p><strong>CockroachDB's Inverted Indexes:</strong> To allow efficient querying of JSON or array data types, CockroachDB implements <a href="https://raw.githubusercontent.com/cockroachdb/cockroach/refs/heads/master/docs/RFCS/20171020_inverted_indexes.md">inverted indexes</a>. Instead of storing a single key for the whole JSON document, it tokenizes the document and creates multiple key-value entries mapping individual values back to the primary key of the row. This allows for fast lookups based on the contents of the JSON object, a feat not possible with traditional secondary indexes.</p>
+</li>
+<li>
+<p><strong>CouchDB's Map Indexes on FoundationDB:</strong> The design for CouchDB's powerful <a href="https://raw.githubusercontent.com/apache/couchdb/refs/heads/main/src/docs/rfcs/008-map-indexes.md">map-based views on FoundationDB</a> provides another clear example. A user-defined <code>map</code> function processes each document to <code>emit</code> key-value pairs, which are then stored in FoundationDB to create a secondary index. This entire indexing subsystem is a layer built on top of FDB's core key-value capabilities.</p>
+</li>
+<li>
+<p><strong>Azure DocumentDB's Schema-Agnostic Indexing:</strong> Before it was known as Cosmos DB, Microsoft's <a href="https://www.vldb.org/pvldb/vol8/p1668-shukla.pdf">Azure DocumentDB</a> was designed with a powerful indexing subsystem. It could automatically index all data within JSON documents without requiring developers to define a schema or configure secondary indexes. This allowed for real-time queries over schemaless data, a feature implemented by treating the index itself as data in the underlying storage engine.</p>
+</li>
+</ul>
 <h3 id="multi-model-databases-cosmos-db-and-yugabytedb"><a class="header" href="#multi-model-databases-cosmos-db-and-yugabytedb">Multi-Model Databases: Cosmos DB and YugabyteDB</a></h3>
 <p>Other databases use this pattern to support multiple data models on a single, unified backend.</p>
 <ul>
@@ -231,7 +245,7 @@
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../meet_fdb/enter_fdb.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../meet_fdb/another_db.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -245,7 +259,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../meet_fdb/enter_fdb.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../meet_fdb/another_db.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
