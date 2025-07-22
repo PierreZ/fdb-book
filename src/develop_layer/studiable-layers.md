@@ -34,8 +34,15 @@ This layer implements the Apache ZooKeeper API, providing a distributed coordina
 
 ## The Time-Series Layer
 
-This is a high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.
+This is an experimental, high-performance layer written in Go, designed specifically for storing and querying time-series data with high compression.
 
 *   **GitHub Repo:** [richardartoul/tsdb-layer](https://github.com/richardartoul/tsdb-layer)
 *   **Key Video:**
     *   [Time Series and FoundationDB: Millions of Writes/s and 10x Compression in 2000 Lines of Go](https://www.youtube.com/watch?v=W6yQ9Pwgb1A)
+
+## Warp 10
+
+Warp 10 is a powerful platform for managing time-series data. While it was not originally built on FoundationDB, version 3.0 and later versions have adopted it to replace HBase. This change was motivated by a desire to simplify operations and eliminate the dependency on the Hadoop ecosystem.
+
+*   **GitHub Repo:** [senx/warp10-platform](https://github.com/senx/warp10-platform)
+*   **Key Blog Post:** [Introducing Warp 10 3.0!](https://blog.senx.io/introducing-warp-10-3-0/)

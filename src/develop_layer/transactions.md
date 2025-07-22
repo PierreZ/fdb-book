@@ -64,3 +64,20 @@ If another transaction modifies `from_acct` or `to_acct` after our transaction h
 For a deeper dive into how to avoid conflicts and design your data models for high-contention workloads, this talk is an excellent resource:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/2HiIgbxtx0c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Snapshot Reads vs. Regular Reads
+
+By default, any key you read within a transaction is added to your *read set*. This read set is used during the commit phase to check for conflicts. However, FoundationDB provides a `snapshot` option for reads that changes this behavior.
+
+A **snapshot read** retrieves a value from the database at the transaction's read version, just like a regular read. The key difference is that keys read with the `snapshot` option are **not** added to the transaction's read conflict range.
+
+This has a critical implication: your transaction will not conflict if another transaction modifies a key that you have only read using a snapshot read.
+
+### When to Use Snapshot Reads
+
+So, when is this useful?
+
+*   **Read-Only Transactions:** For transactions that only read data and do not write anything, using snapshot reads for all reads can be a micro-optimization. It avoids the small overhead of tracking the read set. The outcome is the same as using regular reads.
+*   **"Read-Mostly" Transactions:** Imagine a transaction that reads many keys for context but only modifies a small subset. If the contextual reads don't need to be part of the conflict detection (i.e., it's okay if they change), you can use snapshot reads for them. This can reduce the likelihood of conflicts and increase the transaction's success rate.
+
+Using snapshot reads is a way to manually tune the conflict detection logic for your transactions. It gives you finer-grained control, but it requires a clear understanding of your data access patterns and consistency requirements.

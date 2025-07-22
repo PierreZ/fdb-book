@@ -31,6 +31,16 @@ Several of the most prominent distributed SQL databases are built on a key-value
 
 *   **TiDB:** The TiDB ecosystem explicitly separates its components. [TiDB](https://www.vldb.org/pvldb/vol13/p3072-huang.pdf) is the SQL computation layer, while **TiKV** is the distributed, transactional key-value storage layer. Each SQL row is mapped to a key-value pair in TiKV.
 
+### Advanced Indexing on Key-Value
+
+The layered pattern extends beyond just mapping primary table data. Even sophisticated secondary indexing strategies, like those for semi-structured data (JSON) or full-text search, are implemented by modeling the index as a set of key-value pairs.
+
+*   **CockroachDB's Inverted Indexes:** To allow efficient querying of JSON or array data types, CockroachDB implements [inverted indexes](https://raw.githubusercontent.com/cockroachdb/cockroach/refs/heads/master/docs/RFCS/20171020_inverted_indexes.md). Instead of storing a single key for the whole JSON document, it tokenizes the document and creates multiple key-value entries mapping individual values back to the primary key of the row. This allows for fast lookups based on the contents of the JSON object, a feat not possible with traditional secondary indexes.
+
+*   **CouchDB's Map Indexes on FoundationDB:** The design for CouchDB's powerful [map-based views on FoundationDB](https://raw.githubusercontent.com/apache/couchdb/refs/heads/main/src/docs/rfcs/008-map-indexes.md) provides another clear example. A user-defined `map` function processes each document to `emit` key-value pairs, which are then stored in FoundationDB to create a secondary index. This entire indexing subsystem is a layer built on top of FDB's core key-value capabilities.
+
+*   **Azure DocumentDB's Schema-Agnostic Indexing:** Before it was known as Cosmos DB, Microsoft's [Azure DocumentDB](https://www.vldb.org/pvldb/vol8/p1668-shukla.pdf) was designed with a powerful indexing subsystem. It could automatically index all data within JSON documents without requiring developers to define a schema or configure secondary indexes. This allowed for real-time queries over schemaless data, a feature implemented by treating the index itself as data in the underlying storage engine.
+
 ### Multi-Model Databases: Cosmos DB and YugabyteDB
 
 Other databases use this pattern to support multiple data models on a single, unified backend.
