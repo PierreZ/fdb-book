@@ -39,6 +39,8 @@ The layered pattern extends beyond just mapping primary table data. Even sophist
 
 *   **CouchDB's Map Indexes on FoundationDB:** The design for CouchDB's powerful [map-based views on FoundationDB](https://raw.githubusercontent.com/apache/couchdb/refs/heads/main/src/docs/rfcs/008-map-indexes.md) provides another clear example. A user-defined `map` function processes each document to `emit` key-value pairs, which are then stored in FoundationDB to create a secondary index. This entire indexing subsystem is a layer built on top of FDB's core key-value capabilities.
 
+*   **Azure DocumentDB's Schema-Agnostic Indexing:** Before it was known as Cosmos DB, Microsoft's [Azure DocumentDB](https://www.vldb.org/pvldb/vol8/p1668-shukla.pdf) was designed with a powerful indexing subsystem. It could automatically index all data within JSON documents without requiring developers to define a schema or configure secondary indexes. This allowed for real-time queries over schemaless data, a feature implemented by treating the index itself as data in the underlying storage engine.
+
 ### Multi-Model Databases: Cosmos DB and YugabyteDB
 
 Other databases use this pattern to support multiple data models on a single, unified backend.
